@@ -1,0 +1,161 @@
+@startuml
+' SI Bimbingan Konseling - ERD (generated from models)
+' Notes: some model-association mismatches were normalized here for clarity.
+
+hide circle
+skinparam linetype ortho
+
+entity Admin {
+  * id_admin : INT <<PK>>
+  --
+  nama_admin : VARCHAR
+  email_admin : VARCHAR <<unique>>
+  password : VARCHAR
+}
+
+entity JenisPelanggaran {
+  * id_jenis_pelanggaran : INT <<PK>>
+  --
+  nama_jenis_pelanggaran : VARCHAR
+  kategori_pelanggaran : ENUM
+  deskripsi : TEXT
+  tindakan_sekolah : TEXT
+  poin_pelanggaran : INT
+  admin_id : INT <<FK,nullable>>
+}
+
+entity Guru {
+  * id_guru : INT <<PK>>
+  --
+  nama_guru : VARCHAR
+  nik : VARCHAR <<unique>>
+  tempat_lahir : VARCHAR
+  tanggal_lahir : DATE
+  jenis_kelamin : ENUM
+  pendidikan_terakhir : VARCHAR
+  jurusan : VARCHAR
+  jabatan : VARCHAR
+  status_aktif : ENUM
+  no_telepon : VARCHAR
+  email_guru : VARCHAR
+  password : VARCHAR
+}
+
+entity Kelas {
+  * id_kelas : INT <<PK>>
+  --
+  nama_kelas : VARCHAR
+  kelas_kejuruan : VARCHAR
+  guruId : INT <<FK,nullable>>
+}
+
+entity Siswa {
+  * id_siswa : INT <<PK>>
+  --
+  nama_siswa : VARCHAR
+  nis : VARCHAR <<unique>>
+  orangTuaId : INT <<FK,nullable>>
+  kelas_id : INT <<FK>>
+  jenis_kelamin : ENUM
+  tempat_lahir : VARCHAR
+  tanggal_lahir : DATE
+  alamat : TEXT
+  no_telepon : VARCHAR
+  email_siswa : VARCHAR
+  password : VARCHAR
+}
+
+entity OrangTua {
+  * id_orang_tua : INT <<PK>>
+  --
+  nama_ayah : VARCHAR
+  nama_ibu : VARCHAR
+  nik_ayah : VARCHAR
+  nik_ibu : VARCHAR
+  email_ayah : VARCHAR
+  email_ibu : VARCHAR
+  password : VARCHAR
+  no_telepon_ayah : VARCHAR
+  no_telepon_ibu : VARCHAR
+  pekerjaan_ayah : VARCHAR
+  pekerjaan_ibu : VARCHAR
+  alamat_ayah : TEXT
+  alamat_ibu : TEXT
+  pendidikan_ayah : VARCHAR
+  pendidikan_ibu : VARCHAR
+  penghasilan_ayah : DECIMAL
+  penghasilan_ibu : DECIMAL
+}
+
+entity PelanggaranSiswa {
+  * id_pelanggaran_siswa : INT <<PK>>
+  --
+  siswaId : INT <<FK>>
+  jenisPelanggaranId : INT <<FK>>
+  guruId : INT <<FK,nullable>>
+  tanggal_pelanggaran : DATE
+  catatan_konseling : TEXT
+  tindak_lanjut : TEXT
+  status_konseling : ENUM
+}
+
+entity TindakanSekolah {
+  * id_tindakan : INT <<PK>>
+  --
+  pelanggaranSiswaId : INT <<FK>>
+  guruId : INT <<FK>>
+  tanggal_tindakan : DATE
+  jenis_tindakan : ENUM
+  hasil_tindakan : TEXT
+  status_tindakan : ENUM
+}
+
+entity TanggapanOrangTua {
+  * id_tanggapan : INT <<PK>>
+  --
+  orangTuaId : INT <<FK>>
+  pelanggaranSiswaId : INT <<FK>>
+  tanggal_tanggapan : DATE
+  isi_tanggapan : TEXT
+  tindakan_rumah : VARCHAR
+}
+
+entity Laporan {
+  * id_laporan : INT <<PK>>
+  --
+  periode : VARCHAR
+  total_pelanggaran : INT
+  total_tindakan : INT
+  total_poin : INT
+  tanggal_generate : DATE
+  guru_id : INT <<FK,nullable>>
+  tindakan_id : INT <<FK,nullable>>
+}
+
+' Relationships (cardinality indicated in labels)
+Admin ||--o{ JenisPelanggaran : "1..* creates"
+Guru ||--o{ Kelas : "0..* wali_of"
+Kelas ||--o{ Siswa : "0..* has"
+OrangTua ||--o{ Siswa : "0..* (recommend change from current 1:1)"
+Siswa ||--o{ PelanggaranSiswa : "0..* has"
+JenisPelanggaran ||--o{ PelanggaranSiswa : "0..* is_type_of"
+Guru ||--o{ PelanggaranSiswa : "0..* reported_by"
+PelanggaranSiswa ||--o{ TindakanSekolah : "0..* followups"
+PelanggaranSiswa ||--o| TanggapanOrangTua : "0..1 parent_response"
+Guru ||--o{ TindakanSekolah : "0..* executed_by"
+TindakanSekolah ||--o{ Laporan : "0..* referenced_in"
+Guru ||--o{ Laporan : "0..* authored_by (optional)"
+
+' Convenience notes
+note right of PelanggaranSiswa
+  - Primary record for every offense instance.
+  - Linked to Siswa, JenisPelanggaran and optionally Guru (reporter).
+end note
+
+note left of Laporan
+  - Laporan model in code didn't declare
+    guru_id/tindakan_id fields; we include them
+    as nullable fields to match associations.js
+end note
+
+@enduml

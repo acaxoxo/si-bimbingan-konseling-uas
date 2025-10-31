@@ -1,0 +1,301 @@
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import Admin from "../models/AdminModel.js";
+import Guru from "../models/GuruModel.js";
+import Siswa from "../models/SiswaModel.js";
+import OrangTua from "../models/OrangTuaModel.js";
+import { Op } from "sequelize";
+import ActivityLogger from "../middleware/activityLogger.js";
+
+export const login = async (req, res) => {
+  try {
+    console.log('Login request body:', JSON.stringify(req.body, null, 2));
+    
+    const { email, password, role } = req.body;
+
+    if (!email || !password || !role) {
+      console.log('Missing required fields:', {
+        hasEmail: !!email,
+        hasPassword: !!password,
+        hasRole: !!role
+      });
+      return res.status(400).json({
+        message: "Email, password, dan role wajib diisi.",
+        missing: {
+          email: !email,
+          password: !password,
+          role: !role
+        }
+      });
+    }
+
+    let user;
+    let userId;
+    let userPassword;
+    let userEmail;
+
+    switch (role.toLowerCase()) {
+      case "admin":
+        user = await Admin.findOne({ where: { email_admin: email } });
+        if (user) {
+          userId = user.id_admin;
+          userPassword = user.password;
+          userEmail = user.email_admin;
+        }
+        break;
+
+      case "guru":
+        user = await Guru.findOne({ where: { email_guru: email } });
+        if (user) {
+          userId = user.id_guru;
+          userPassword = user.password;
+          userEmail = user.email_guru;
+        }
+        break;
+
+      case "siswa":
+        user = await Siswa.findOne({ where: { email_siswa: email } });
+        if (user) {
+          userId = user.id_siswa;
+          userPassword = user.password;
+          userEmail = user.email_siswa;
+        }
+        break;
+
+      case "orangtua":
+        // Allow parent to login using either father's or mother's email
+        user = await OrangTua.findOne({ 
+          where: { [Op.or]: [{ email_ayah: email }, { email_ibu: email }] }
+        });
+        if (user) {
+          userId = user.id_orang_tua;
+          userPassword = user.password;
+          userEmail = user.email_ayah || user.email_ibu;
+        }
+        break;
+
+      default:
+        return res.status(400).json({ message: "Role tidak valid." });
+    }
+
+    if (!user) {
+      return res.status(401).json({ message: "Email atau password salah." });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, userPassword);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Email atau password salah." });
+    }
+
+    const token = jwt.sign(
+      { id: userId, email: userEmail, role },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    // Log login activity
+    await ActivityLogger.login(req, userId, role);
+
+    res.status(200).json({
+      message: "Login berhasil.",
+      token,
+      user: { id: userId, email: userEmail, role },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server.",
+      error: error.message,
+    });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    // Log logout activity
+    await ActivityLogger.logout(req);
+    
+    // Since JWT is stateless, we just need to tell the client to remove the token
+    res.status(200).json({ message: "Logout berhasil." });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server.",
+      error: error.message,
+    });
+  }
+};
+
+// Issue a new access token based on an existing (possibly expired) token in the Authorization header
+export const refresh = async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"] || req.headers["Authorization"]; 
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Token tidak ditemukan" });
+    }
+
+    const oldToken = authHeader.split(" ")[1];
+    let payload;
+
+    try {
+      // Verify signature but ignore expiry so we can refresh expired tokens
+      payload = jwt.verify(oldToken, process.env.JWT_SECRET, { ignoreExpiration: true });
+    } catch (err) {
+      return res.status(401).json({ message: "Token tidak valid" });
+    }
+
+    const { id, email, role } = payload || {};
+    if (!id || !email || !role) {
+      return res.status(400).json({ message: "Payload token tidak lengkap" });
+    }
+
+    // Optionally: ensure user still exists (basic check by role)
+    try {
+      let exists = null;
+      switch ((role || "").toLowerCase()) {
+        case "admin":
+          exists = await Admin.findOne({ where: { id_admin: id } });
+          break;
+        case "guru":
+          exists = await Guru.findOne({ where: { id_guru: id } });
+          break;
+        case "siswa":
+          exists = await Siswa.findOne({ where: { id_siswa: id } });
+          break;
+        case "orangtua":
+          exists = await OrangTua.findOne({ where: { id_orang_tua: id } });
+          break;
+        default:
+          return res.status(400).json({ message: "Role tidak valid." });
+      }
+      if (!exists) {
+        return res.status(401).json({ message: "Pengguna tidak ditemukan" });
+      }
+    } catch (e) {
+      // If DB check fails, still prevent issuing a token
+      return res.status(500).json({ message: "Gagal memvalidasi pengguna" });
+    }
+
+    const newToken = jwt.sign({ id, email, role }, process.env.JWT_SECRET, { expiresIn: "2h" });
+
+    return res.status(200).json({ message: "Refresh token berhasil", token: newToken });
+  } catch (error) {
+    console.error("Refresh error:", error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server.", error: error.message });
+  }
+};
+
+export const register = async (req, res) => {
+  try {
+    const { email, password, role } = req.body;
+
+    if (!email || !password || !role) {
+      return res.status(400).json({
+        message: "Email, password, dan role wajib diisi.",
+      });
+    }
+
+    // Validasi format email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "Format email tidak valid.",
+      });
+    }
+
+    // Validasi password strength
+    if (password.length < 8) {
+      return res.status(400).json({
+        message: "Password minimal 8 karakter.",
+      });
+    }
+
+    if (!/[a-zA-Z]/.test(password)) {
+      return res.status(400).json({
+        message: "Password harus mengandung huruf.",
+      });
+    }
+
+    if (!/[0-9]/.test(password)) {
+      return res.status(400).json({
+        message: "Password harus mengandung angka.",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    let newUser;
+    let userId;
+
+    switch (role.toLowerCase()) {
+      case "admin":
+        if (await Admin.findOne({ where: { email_admin: email } })) {
+          return res.status(400).json({ message: "Email sudah digunakan." });
+        }
+        newUser = await Admin.create({
+          nama_admin: "Admin Baru",
+          email_admin: email,
+          password: hashedPassword,
+        });
+        userId = newUser.id_admin;
+        break;
+
+      case "guru":
+        if (await Guru.findOne({ where: { email_guru: email } })) {
+          return res.status(400).json({ message: "Email sudah digunakan." });
+        }
+        newUser = await Guru.create({
+          nama_guru: "Guru Baru",
+          email_guru: email,
+          password: hashedPassword,
+          status_aktif: "Aktif",
+        });
+        userId = newUser.id_guru;
+        break;
+
+      case "siswa":
+        if (await Siswa.findOne({ where: { email_siswa: email } })) {
+          return res.status(400).json({ message: "Email sudah digunakan." });
+        }
+        newUser = await Siswa.create({
+          nama_siswa: "Siswa Baru",
+          email_siswa: email,
+          password: hashedPassword,
+        });
+        userId = newUser.id_siswa;
+        break;
+
+      case "orangtua":
+        if (await OrangTua.findOne({ where: { email_ayah: email } })) {
+          return res.status(400).json({ message: "Email sudah digunakan." });
+        }
+        newUser = await OrangTua.create({
+          nama_ayah: "Orang Tua Baru",
+          email_ayah: email,
+          password: hashedPassword,
+        });
+        userId = newUser.id_orang_tua;
+        break;
+
+      default:
+        return res.status(400).json({ message: "Role tidak valid." });
+    }
+
+    const token = jwt.sign(
+      { id: userId, email, role },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    res.status(201).json({
+      message: "Registrasi berhasil.",
+      token,
+      user: { id: userId, email, role },
+    });
+  } catch (error) {
+    console.error("Register error:", error);
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server.",
+      error: error.message,
+    });
+  }
+};
