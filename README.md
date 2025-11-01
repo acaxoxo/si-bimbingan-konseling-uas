@@ -9,9 +9,9 @@ Dokumentasi project ini dibagi menjadi beberapa bagian:
 
 | Dokumentasi | Deskripsi | Link |
 |-------------|-----------|------|
-| ** Dokumentasi Utama** | Setup lengkap, backend, database, API | *Anda di sini* |
-| ** Frontend** | React setup, komponen, struktur UI | [Frontend README](./frontend/README.md) |
-| ** Backend** | API endpoints, controllers, models | *Dalam development* |
+| Dokumentasi Utama | Setup lengkap, backend, database, API | *Anda di sini* |
+| Frontend | React setup, komponen, struktur UI | [Frontend README](./frontend/README.md) |
+| Backend | API endpoints, controllers, models | *Dalam development* |
 
 >  **Mulai dari mana?**
 > - Baru mulai? → Lihat [Quick Start](#-quick-start) di bawah
