@@ -66,12 +66,12 @@ function App() {
           theme="light"
         />
         <Routes>
-          {/* Public routes without Layout */}
+          {}
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* Protected routes with Layout (includes navbar) */}
+          {}
           <Route element={<Layout />}>
             <Route
               path="/admin"
@@ -82,7 +82,7 @@ function App() {
               }
             />
 
-            {/* Admin laporan */}
+            {}
             <Route
               path="/admin/laporan"
               element={
@@ -92,7 +92,7 @@ function App() {
               }
             />
 
-            {/* Admin data management routes */}
+            {}
             <Route
               path="/admin/data/siswa"
               element={
@@ -166,7 +166,7 @@ function App() {
               }
             />
 
-            {/* Admin add forms routes */}
+            {}
             <Route
               path="/admin/data/admin/add"
               element={
@@ -273,7 +273,7 @@ function App() {
               }
             />
 
-            {/* Guru routes */}
+            {}
             <Route
               path="/guru/data/pelanggaran-siswa"
               element={
@@ -332,7 +332,7 @@ function App() {
               }
             />
 
-            {/* Orang Tua routes */}
+            {}
             <Route
               path="/orangtua/data/guru"
               element={
@@ -375,7 +375,7 @@ function App() {
               }
             />
 
-            {/* Siswa routes */}
+            {}
             <Route
               path="/siswa/data/guru"
               element={

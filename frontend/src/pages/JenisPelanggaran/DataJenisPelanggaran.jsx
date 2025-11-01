@@ -19,7 +19,7 @@ export default function JenisPelanggaranList() {
         setLoading(true);
         setError("");
         const res = await api.get("/jenis-pelanggaran");
-        // Backend returns paginated response: { data: [...], pagination: {...} }
+        
         const dataArray = res.data.data || res.data;
         setPelanggaranData(Array.isArray(dataArray) ? dataArray : []);
       } catch (err) {

@@ -57,7 +57,6 @@ export const getLaporanSekolah = async (req, res) => {
   }
 };
 
-// Laporan untuk orang tua: daftar pelanggaran anak yang terkait dengan akun orang tua saat ini
 export const getLaporanAnak = async (req, res) => {
   try {
     const parentId = req.user?.id;
@@ -65,7 +64,6 @@ export const getLaporanAnak = async (req, res) => {
       return res.status(401).json({ message: "Tidak terautentik" });
     }
 
-    // Temukan siswa yang terhubung dengan orang tua
     const siswa = await Siswa.findOne({ where: { orangTuaId: parentId } });
     if (!siswa) {
       return res.json([]);
@@ -107,12 +105,10 @@ export const getLaporanAnak = async (req, res) => {
   }
 };
 
-  // Dashboard statistics for charts
   export const getDashboardStats = async (req, res) => {
     try {
       const currentYear = new Date().getFullYear();
-    
-      // 1. Trend pelanggaran per bulan (12 bulan terakhir)
+
       const trendBulanan = await PelanggaranSiswa.findAll({
         attributes: [
           [db.fn('MONTH', db.col('tanggal_pelanggaran')), 'bulan'],
@@ -132,7 +128,6 @@ export const getLaporanAnak = async (req, res) => {
         raw: true
       });
 
-      // 2. Pelanggaran by kategori
       const pelanggaranByKategori = await db.query(
         `SELECT jp.kategori_pelanggaran, COUNT(ps.id_pelanggaran_siswa) as total
          FROM pelanggaran_siswa ps
@@ -141,7 +136,6 @@ export const getLaporanAnak = async (req, res) => {
         { type: db.QueryTypes.SELECT }
       );
 
-      // 3. Top 10 siswa pelanggar (berdasarkan total poin)
       const topPelanggar = await db.query(
         `SELECT ps.siswaId, s.nama_siswa, s.nis,
                 SUM(jp.poin_pelanggaran) as total_poin,
@@ -155,7 +149,6 @@ export const getLaporanAnak = async (req, res) => {
         { type: db.QueryTypes.SELECT }
       );
 
-      // 4. Pelanggaran per kelas
       const pelanggaranByKelas = await db.query(
         `SELECT k.nama_kelas, k.kelas_kejuruan, COUNT(ps.id_pelanggaran_siswa) as total
          FROM pelanggaran_siswa ps
@@ -177,14 +170,12 @@ export const getLaporanAnak = async (req, res) => {
     }
   };
 
-  // Get laporan pelanggaran with filters
   export const getLaporanPelanggaran = async (req, res) => {
     try {
       const { startDate, endDate, periode, kelasId, kategori } = req.query;
     
       let whereClause = {};
-    
-      // Filter by date range
+
       if (startDate && endDate) {
         whereClause.tanggal_pelanggaran = {
           [Op.between]: [new Date(startDate), new Date(endDate)]
@@ -215,7 +206,6 @@ export const getLaporanAnak = async (req, res) => {
         };
       }
 
-      // Build includes with filters
       const includeClause = [
         {
           model: Siswa,
@@ -254,7 +244,6 @@ export const getLaporanAnak = async (req, res) => {
     }
   };
 
-  // Get analisis poin per siswa
   export const getAnalisisPoinPerSiswa = async (req, res) => {
     try {
       const { kelasId } = req.query;
@@ -300,7 +289,6 @@ export const getLaporanAnak = async (req, res) => {
     }
   };
 
-  // Get analisis poin per kelas
   export const getAnalisisPoinPerKelas = async (req, res) => {
     try {
       const analisis = await PelanggaranSiswa.findAll({

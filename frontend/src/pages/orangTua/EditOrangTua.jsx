@@ -73,7 +73,7 @@ export default function EditOrangTua() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Only send password if it's filled
+      
       const payload = { ...form };
       if (!payload.password) {
         delete payload.password;
@@ -128,7 +128,7 @@ export default function EditOrangTua() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Data Ayah */}
+        {}
         <div className="card mb-4">
           <div className="card-header bg-primary text-white">
             <h5 className="mb-0"><i className="fa-solid fa-user me-2"></i>Data Ayah</h5>
@@ -237,7 +237,7 @@ export default function EditOrangTua() {
           </div>
         </div>
 
-        {/* Data Ibu */}
+        {}
         <div className="card mb-4">
           <div className="card-header bg-info text-white">
             <h5 className="mb-0"><i className="fa-solid fa-user me-2"></i>Data Ibu</h5>
@@ -346,7 +346,7 @@ export default function EditOrangTua() {
           </div>
         </div>
 
-        {/* Password untuk Login */}
+        {}
         <div className="card mb-4">
           <div className="card-header bg-secondary text-white">
             <h5 className="mb-0"><i className="fa-solid fa-lock me-2"></i>Akun Login</h5>

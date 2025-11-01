@@ -13,7 +13,6 @@ export const getAllPelanggaranSiswa = async (req, res) => {
     const { page, limit, offset } = getPaginationParams(req);
     const { search, siswaId, status_konseling } = req.query;
 
-    // Build where clause for filters
     const whereClause = {};
     if (siswaId) {
       whereClause.siswaId = siswaId;
@@ -130,9 +129,8 @@ export const createPelanggaranSiswa = async (req, res) => {
       status_konseling,
     });
 
-    // 🔔 Send notification to parent (real-time + email)
     try {
-      // Fetch related data for notification
+      
       const pelanggaranWithDetails = await PelanggaranSiswa.findByPk(newData.id_pelanggaran, {
         include: [
           {
@@ -153,11 +151,11 @@ export const createPelanggaranSiswa = async (req, res) => {
           pelanggaranWithDetails.siswa.orang_tua,
           pelanggaranWithDetails.siswa
         );
-        console.log("✅ Parent notification sent successfully");
+        console.log(" Parent notification sent successfully");
       }
     } catch (notifError) {
-      console.error("⚠️  Error sending notification:", notifError.message);
-      // Don't fail the request if notification fails
+      console.error("  Error sending notification:", notifError.message);
+      
     }
 
     res.status(201).json({

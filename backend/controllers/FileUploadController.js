@@ -14,7 +14,7 @@ export const uploadFile = async (req, res) => {
     const { module, module_id, description } = req.body;
     
     if (!module) {
-      // Delete uploaded file if validation fails
+      
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: "Module wajib diisi" });
     }
@@ -33,7 +33,6 @@ export const uploadFile = async (req, res) => {
 
     const file = await FileUpload.create(fileData);
 
-    // Log activity
     await ActivityLogger.create(req, 'file_upload', req.file.originalname);
 
     res.status(201).json({
@@ -41,7 +40,7 @@ export const uploadFile = async (req, res) => {
       file,
     });
   } catch (error) {
-    // Delete file if database insert fails
+    
     if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
@@ -58,7 +57,7 @@ export const uploadMultipleFiles = async (req, res) => {
     const { module, module_id, description } = req.body;
     
     if (!module) {
-      // Delete all uploaded files if validation fails
+      
       req.files.forEach(file => fs.unlinkSync(file.path));
       return res.status(400).json({ message: "Module wajib diisi" });
     }
@@ -82,7 +81,6 @@ export const uploadMultipleFiles = async (req, res) => {
       uploadedFiles.push(uploadedFile);
     }
 
-    // Log activity
     await ActivityLogger.create(req, 'file_upload', `${req.files.length} files`);
 
     res.status(201).json({
@@ -90,7 +88,7 @@ export const uploadMultipleFiles = async (req, res) => {
       files: uploadedFiles,
     });
   } catch (error) {
-    // Delete files if database insert fails
+    
     if (req.files) {
       req.files.forEach(file => {
         if (fs.existsSync(file.path)) {
@@ -162,7 +160,6 @@ export const downloadFile = async (req, res) => {
       return res.status(404).json({ message: "File fisik tidak ditemukan" });
     }
 
-    // Log activity
     await ActivityLogger.read(req, 'file_upload', `Download: ${file.file_name}`);
 
     res.download(filePath, file.file_name);
@@ -179,16 +176,13 @@ export const deleteFile = async (req, res) => {
       return res.status(404).json({ message: "File tidak ditemukan" });
     }
 
-    // Delete physical file
     const filePath = path.resolve(file.file_path);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
 
-    // Log activity
     await ActivityLogger.delete(req, 'file_upload', file.file_name);
 
-    // Delete database record
     await file.destroy();
 
     res.json({ message: "File berhasil dihapus" });

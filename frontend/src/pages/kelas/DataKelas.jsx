@@ -13,7 +13,7 @@ export default function KelasList() {
   const fetchData = async () => {
     try {
       const res = await api.get("/kelas");
-      // Backend returns paginated response: { data: [...], pagination: {...} }
+      
       setKelasData(res.data.data || res.data || []);
     } catch (err) {
       console.error("Gagal ambil data:", err);

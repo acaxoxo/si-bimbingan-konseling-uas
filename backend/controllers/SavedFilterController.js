@@ -1,23 +1,18 @@
 import SavedFilter from "../models/SavedFilterModel.js";
 import { Op } from "sequelize";
 
-/**
- * Create new saved filter
- */
 export const createSavedFilter = async (req, res) => {
   try {
     const { filter_name, filter_type, filter_data, is_default } = req.body;
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    // Validation
     if (!filter_name || !filter_type || !filter_data) {
       return res.status(400).json({
         message: "filter_name, filter_type, dan filter_data wajib diisi",
       });
     }
 
-    // If this filter is set as default, unset other defaults for this user + filter_type
     if (is_default) {
       await SavedFilter.update(
         { is_default: false },
@@ -52,9 +47,6 @@ export const createSavedFilter = async (req, res) => {
   }
 };
 
-/**
- * Get all saved filters for current user
- */
 export const getUserSavedFilters = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -87,9 +79,6 @@ export const getUserSavedFilters = async (req, res) => {
   }
 };
 
-/**
- * Get single saved filter by ID
- */
 export const getSavedFilterById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -116,9 +105,6 @@ export const getSavedFilterById = async (req, res) => {
   }
 };
 
-/**
- * Update saved filter
- */
 export const updateSavedFilter = async (req, res) => {
   try {
     const { id } = req.params;
@@ -136,7 +122,6 @@ export const updateSavedFilter = async (req, res) => {
       return res.status(404).json({ message: "Saved filter tidak ditemukan" });
     }
 
-    // If setting as default, unset other defaults
     if (is_default) {
       await SavedFilter.update(
         { is_default: false },
@@ -169,9 +154,6 @@ export const updateSavedFilter = async (req, res) => {
   }
 };
 
-/**
- * Delete saved filter
- */
 export const deleteSavedFilter = async (req, res) => {
   try {
     const { id } = req.params;
@@ -200,9 +182,6 @@ export const deleteSavedFilter = async (req, res) => {
   }
 };
 
-/**
- * Set filter as default
- */
 export const setAsDefault = async (req, res) => {
   try {
     const { id } = req.params;
@@ -219,7 +198,6 @@ export const setAsDefault = async (req, res) => {
       return res.status(404).json({ message: "Saved filter tidak ditemukan" });
     }
 
-    // Unset other defaults
     await SavedFilter.update(
       { is_default: false },
       {
@@ -230,7 +208,6 @@ export const setAsDefault = async (req, res) => {
       }
     );
 
-    // Set this as default
     await filter.update({ is_default: true });
 
     res.json({

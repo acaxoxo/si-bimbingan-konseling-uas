@@ -8,7 +8,6 @@ export const getAllOrangTua = async (req, res) => {
         const { page, limit, offset } = getPaginationParams(req);
         const { search } = req.query;
 
-        // Build where clause for search
         const whereClause = {};
         if (search) {
             whereClause[Op.or] = [
@@ -57,14 +56,12 @@ export const createOrangTua = async (req, res) => {
             no_telepon_ibu 
         } = req.body;
 
-        // Validasi minimal salah satu orang tua harus diisi
         if (!nama_ayah && !nama_ibu) {
             return res.status(400).json({ 
                 message: "Minimal data ayah atau ibu harus diisi" 
             });
         }
 
-        // Validasi NIK Ayah
         if (nik_ayah) {
             if (!/^\d{16}$/.test(nik_ayah)) {
                 return res.status(400).json({ 
@@ -80,7 +77,6 @@ export const createOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi NIK Ibu
         if (nik_ibu) {
             if (!/^\d{16}$/.test(nik_ibu)) {
                 return res.status(400).json({ 
@@ -96,7 +92,6 @@ export const createOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi Email Ayah
         if (email_ayah) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email_ayah)) {
@@ -113,7 +108,6 @@ export const createOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi Email Ibu
         if (email_ibu) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email_ibu)) {
@@ -130,7 +124,6 @@ export const createOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi No Telepon Ayah
         if (no_telepon_ayah) {
             const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
             if (!phoneRegex.test(no_telepon_ayah)) {
@@ -140,7 +133,6 @@ export const createOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi No Telepon Ibu
         if (no_telepon_ibu) {
             const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
             if (!phoneRegex.test(no_telepon_ibu)) {
@@ -172,7 +164,6 @@ export const updateOrangTua = async (req, res) => {
             no_telepon_ibu 
         } = req.body;
 
-        // Validasi NIK Ayah jika diubah
         if (nik_ayah && nik_ayah !== orangTua.nik_ayah) {
             if (!/^\d{16}$/.test(nik_ayah)) {
                 return res.status(400).json({ 
@@ -188,7 +179,6 @@ export const updateOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi NIK Ibu jika diubah
         if (nik_ibu && nik_ibu !== orangTua.nik_ibu) {
             if (!/^\d{16}$/.test(nik_ibu)) {
                 return res.status(400).json({ 
@@ -204,7 +194,6 @@ export const updateOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi Email Ayah jika diubah
         if (email_ayah && email_ayah !== orangTua.email_ayah) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email_ayah)) {
@@ -221,7 +210,6 @@ export const updateOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi Email Ibu jika diubah
         if (email_ibu && email_ibu !== orangTua.email_ibu) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email_ibu)) {
@@ -238,7 +226,6 @@ export const updateOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi No Telepon Ayah jika diubah
         if (no_telepon_ayah && no_telepon_ayah !== orangTua.no_telepon_ayah) {
             const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
             if (!phoneRegex.test(no_telepon_ayah)) {
@@ -248,7 +235,6 @@ export const updateOrangTua = async (req, res) => {
             }
         }
 
-        // Validasi No Telepon Ibu jika diubah
         if (no_telepon_ibu && no_telepon_ibu !== orangTua.no_telepon_ibu) {
             const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
             if (!phoneRegex.test(no_telepon_ibu)) {

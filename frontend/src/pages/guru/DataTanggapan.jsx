@@ -47,7 +47,7 @@ export default function DataTanggapan() {
 
   return (
     <div className="container mt-4 mb-5">
-      {/* Modal for viewing full tanggapan */}
+      {}
       {showModal && selectedTanggapan && (
         <div className="modal d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-lg modal-dialog-centered">

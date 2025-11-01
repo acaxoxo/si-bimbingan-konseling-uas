@@ -10,7 +10,7 @@ export default function Pagination({ currentPage, totalItems, pageSize = 10, onP
   };
 
   const pages = [];
-  const maxButtons = 5; // show up to 5 page buttons
+  const maxButtons = 5; 
   let start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
   let end = Math.min(totalPages, start + maxButtons - 1);
   if (end - start + 1 < maxButtons) {

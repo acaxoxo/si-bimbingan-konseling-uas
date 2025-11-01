@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import ThemeToggle from "../ThemeToggle";
 
-
 export default function Header() {
   const { user, logout } = useAuth(); 
 
@@ -140,7 +139,7 @@ export default function Header() {
           </ul>
 
           <div className="d-flex align-items-center gap-2">
-            {/* Theme Toggle */}
+            {}
             <ThemeToggle />
             
             {user ? (

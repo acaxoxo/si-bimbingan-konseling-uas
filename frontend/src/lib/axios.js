@@ -10,7 +10,6 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Attach token from localStorage on each request
 api.interceptors.request.use(
   (config) => {
     try {
@@ -20,20 +19,18 @@ api.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch {
-      // ignore errors reading localStorage
+      
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-
-// Emit an event on 401 so the app can react (logout/redirect)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error?.response?.status;
-    // If 401, emit unauthorized event and reject
+    
     if (status === 401) {
       window.dispatchEvent(
         new CustomEvent("app:unauthorized", { detail: { source: "axios-401" } })

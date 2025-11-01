@@ -1,7 +1,4 @@
-/**
- * Password validation utility
- * Requirement: minimal 8 karakter, kombinasi huruf dan angka
- */
+
 export const validatePassword = (password) => {
   const errors = [];
   
@@ -23,9 +20,6 @@ export const validatePassword = (password) => {
   };
 };
 
-/**
- * Email validation
- */
 export const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return {
@@ -34,9 +28,6 @@ export const validateEmail = (email) => {
   };
 };
 
-/**
- * NIS validation (10 digit angka)
- */
 export const validateNIS = (nis) => {
   const nisRegex = /^\d{10}$/;
   return {
@@ -45,9 +36,6 @@ export const validateNIS = (nis) => {
   };
 };
 
-/**
- * NIK validation (16 digit angka)
- */
 export const validateNIK = (nik) => {
   const nikRegex = /^\d{16}$/;
   return {
@@ -56,11 +44,8 @@ export const validateNIK = (nik) => {
   };
 };
 
-/**
- * Phone number validation (Indonesia)
- */
 export const validatePhone = (phone) => {
-  // Format: 08xx-xxxx-xxxx atau +628xx-xxxx-xxxx
+  
   const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
   return {
     isValid: phoneRegex.test(phone.replace(/[\s-]/g, '')),
@@ -68,9 +53,6 @@ export const validatePhone = (phone) => {
   };
 };
 
-/**
- * Required field validation
- */
 export const validateRequired = (value, fieldName = "Field") => {
   const isValid = value !== null && value !== undefined && value.toString().trim() !== "";
   return {
@@ -79,9 +61,6 @@ export const validateRequired = (value, fieldName = "Field") => {
   };
 };
 
-/**
- * Sanitize input to prevent XSS
- */
 export const sanitizeInput = (input) => {
   if (typeof input !== 'string') return input;
   

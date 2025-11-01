@@ -3,9 +3,6 @@ import { getPaginationParams, paginateResponse } from "../utils/pagination.js";
 import { Op } from "sequelize";
 import sequelize from "sequelize";
 
-/**
- * Get all notifications untuk user tertentu (with pagination & filters)
- */
 export const getUserNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -13,23 +10,19 @@ export const getUserNotifications = async (req, res) => {
     const { page, limit, offset } = getPaginationParams(req);
     const { type, isRead, startDate, endDate } = req.query;
 
-    // Build where clause
     const whereClause = {
       user_id: userId,
       user_role: userRole,
     };
 
-    // Filter by type
     if (type) {
       whereClause.type = type;
     }
 
-    // Filter by read status
     if (isRead !== undefined) {
       whereClause.is_read = isRead === "true";
     }
 
-    // Filter by date range
     if (startDate || endDate) {
       whereClause.created_at = {};
       if (startDate) {
@@ -57,9 +50,6 @@ export const getUserNotifications = async (req, res) => {
   }
 };
 
-/**
- * Get unread notification count
- */
 export const getUnreadCount = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -81,9 +71,6 @@ export const getUnreadCount = async (req, res) => {
   }
 };
 
-/**
- * Mark notification as read
- */
 export const markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
@@ -118,9 +105,6 @@ export const markAsRead = async (req, res) => {
   }
 };
 
-/**
- * Mark all notifications as read
- */
 export const markAllAsRead = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -151,9 +135,6 @@ export const markAllAsRead = async (req, res) => {
   }
 };
 
-/**
- * Delete notification
- */
 export const deleteNotification = async (req, res) => {
   try {
     const { id } = req.params;
@@ -182,9 +163,6 @@ export const deleteNotification = async (req, res) => {
   }
 };
 
-/**
- * Delete all read notifications
- */
 export const deleteAllRead = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -209,9 +187,6 @@ export const deleteAllRead = async (req, res) => {
   }
 };
 
-/**
- * Get notification statistics
- */
 export const getNotificationStats = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -228,7 +203,6 @@ export const getNotificationStats = async (req, res) => {
       where: { user_id: userId, is_read: true },
     });
 
-    // Count by type
     const typeStats = await Notification.findAll({
       where: { user_id: userId },
       attributes: [
@@ -254,9 +228,6 @@ export const getNotificationStats = async (req, res) => {
   }
 };
 
-/**
- * Send test notification (for testing purposes)
- */
 export const sendTestNotification = async (req, res) => {
   try {
     const { createNotification } = await import("../services/notificationService.js");

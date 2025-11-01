@@ -12,7 +12,7 @@ export default function DataKelasSiswa() {
 
   const fetchData = async () => {
     try {
-      // Fetch kelas with guru information to get wali kelas names
+      
       const res = await api.get("/kelas/with-guru");
       setKelasData(res.data);
     } catch (err) {

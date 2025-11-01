@@ -47,14 +47,14 @@ export default function AddAdmin() {
 
       <hr />
 
-      {/* Tombol Kembali */}
+      {}
       <div className="d-flex justify-content-between mb-4">
         <Link className="btn btn-sm btn-warning" to="/admin/data/admin">
           Kembali
         </Link>
       </div>
 
-      {/* Form Input */}
+      {}
       <form onSubmit={handleSubmit}>
         <div className="row g-3">
           <div className="col-lg-6">

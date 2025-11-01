@@ -11,7 +11,7 @@ function humanRetryAfter(req, fallbackMinutes = 1, capMinutes = 60) {
     } else if (rt instanceof Date) {
       minutes = Math.ceil((rt.getTime() - Date.now()) / 1000 / 60);
     } else {
-      // assume milliseconds remaining
+      
       minutes = Math.ceil(Number(rt) / 1000 / 60);
     }
     if (!Number.isFinite(minutes)) minutes = fallbackMinutes;
@@ -22,18 +22,17 @@ function humanRetryAfter(req, fallbackMinutes = 1, capMinutes = 60) {
   }
 }
 
-// Rate limiter untuk login - lebih ketat
 export const loginLimiter = rateLimit({
-  windowMs: isProd ? 15 * 60 * 1000 : 60 * 1000, // dev: 1 menit
-  max: isProd ? 5 : 100, // dev: longgar
+  windowMs: isProd ? 15 * 60 * 1000 : 60 * 1000, 
+  max: isProd ? 5 : 100, 
   message: {
     message: "Terlalu banyak percobaan login. Silakan coba lagi setelah 15 menit."
   },
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  // Jangan hitung request yang sukses
+  standardHeaders: true, 
+  legacyHeaders: false, 
+  
   skipSuccessfulRequests: true,
-  // Custom handler untuk error
+  
   handler: (req, res) => {
     res.status(429).json({
       message: "Terlalu banyak percobaan login. Silakan coba lagi setelah 15 menit.",
@@ -42,10 +41,9 @@ export const loginLimiter = rateLimit({
   }
 });
 
-// Rate limiter untuk register - sedang
 export const registerLimiter = rateLimit({
-  windowMs: isProd ? 60 * 60 * 1000 : 5 * 60 * 1000, // dev: 5 menit
-  max: isProd ? 3 : 50, // dev: longgar
+  windowMs: isProd ? 60 * 60 * 1000 : 5 * 60 * 1000, 
+  max: isProd ? 3 : 50, 
   message: {
     message: "Terlalu banyak percobaan registrasi. Silakan coba lagi setelah 1 jam."
   },
@@ -59,7 +57,6 @@ export const registerLimiter = rateLimit({
   }
 });
 
-// Rate limiter untuk API umum - lebih longgar
 export const apiLimiter = rateLimit({
   windowMs: isProd ? 15 * 60 * 1000 : 60 * 1000,
   max: isProd ? 100 : 1000,
@@ -76,7 +73,6 @@ export const apiLimiter = rateLimit({
   }
 });
 
-// Rate limiter untuk CRUD operations - sedang
 export const crudLimiter = rateLimit({
   windowMs: isProd ? 15 * 60 * 1000 : 60 * 1000,
   max: isProd ? 50 : 1000,

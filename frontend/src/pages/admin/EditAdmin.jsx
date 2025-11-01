@@ -21,7 +21,7 @@ export default function EditAdmin() {
         setForm({
           nama_admin: res.data.nama_admin || "",
           email_admin: res.data.email_admin || "",
-          password: "", // Don't populate password for security
+          password: "", 
         });
         setLoading(false);
       } catch (err) {
@@ -40,7 +40,7 @@ export default function EditAdmin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Only send password if it's filled
+      
       const payload = { ...form };
       if (!payload.password) {
         delete payload.password;
@@ -83,14 +83,14 @@ export default function EditAdmin() {
 
       <hr />
 
-      {/* Tombol Kembali */}
+      {}
       <div className="d-flex justify-content-between mb-4">
         <Link className="btn btn-sm btn-warning" to="/admin/data/admin">
           Kembali
         </Link>
       </div>
 
-      {/* Form Input */}
+      {}
       <form onSubmit={handleSubmit}>
         <div className="row g-3">
           <div className="col-lg-6">

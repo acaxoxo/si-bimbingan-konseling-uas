@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 
-/**
- * Breakpoints sesuai Tailwind CSS
- */
 export const BREAKPOINTS = {
   xs: 0,
   sm: 640,
@@ -12,18 +9,6 @@ export const BREAKPOINTS = {
   "2xl": 1536,
 };
 
-/**
- * Custom hook untuk detect screen size dan breakpoint
- * 
- * @returns {Object} - Object berisi width, height, dan helper functions
- * 
- * @example
- * const { width, isMobile, isTablet, isDesktop } = useMediaQuery();
- * 
- * if (isMobile) {
- *   return <MobileView />;
- * }
- */
 export function useMediaQuery() {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
@@ -39,8 +24,7 @@ export function useMediaQuery() {
     }
 
     window.addEventListener("resize", handleResize);
-    
-    // Call handler right away so state gets updated with initial window size
+
     handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
@@ -60,25 +44,11 @@ export function useMediaQuery() {
   };
 }
 
-/**
- * Hook untuk detect specific breakpoint
- * 
- * @param {string} breakpoint - Breakpoint name (sm, md, lg, xl, 2xl)
- * @returns {boolean} - True jika screen size >= breakpoint
- * 
- * @example
- * const isLargeScreen = useBreakpoint('lg');
- */
 export function useBreakpoint(breakpoint) {
   const { width } = useMediaQuery();
   return width >= BREAKPOINTS[breakpoint];
 }
 
-/**
- * Hook untuk detect orientation (portrait/landscape)
- * 
- * @returns {string} - "portrait" atau "landscape"
- */
 export function useOrientation() {
   const [orientation, setOrientation] = useState(
     typeof window !== "undefined"
@@ -102,20 +72,6 @@ export function useOrientation() {
   return orientation;
 }
 
-/**
- * Utility function untuk conditional classes berdasarkan screen size
- * 
- * @param {Object} classes - Object dengan key breakpoint dan value classname
- * @param {number} currentWidth - Current screen width
- * @returns {string} - Classname yang sesuai
- * 
- * @example
- * const className = getResponsiveClass({
- *   default: 'text-sm',
- *   md: 'text-base',
- *   lg: 'text-lg',
- * }, width);
- */
 export function getResponsiveClass(classes, currentWidth) {
   const breakpoints = Object.keys(BREAKPOINTS).sort(
     (a, b) => BREAKPOINTS[b] - BREAKPOINTS[a]
@@ -130,11 +86,6 @@ export function getResponsiveClass(classes, currentWidth) {
   return classes.default || "";
 }
 
-/**
- * Hook untuk detect if device is touch-enabled
- * 
- * @returns {boolean} - True jika device support touch
- */
 export function useTouchDevice() {
   const [isTouch, setIsTouch] = useState(false);
 
@@ -150,12 +101,6 @@ export function useTouchDevice() {
   return isTouch;
 }
 
-/**
- * Utility untuk check if current device is mobile based on user agent
- * Lebih akurat daripada hanya check screen size
- * 
- * @returns {boolean} - True jika mobile device
- */
 export function isMobileDevice() {
   if (typeof window === "undefined") return false;
 
@@ -164,12 +109,6 @@ export function isMobileDevice() {
   );
 }
 
-/**
- * Hook untuk combine screen size check dengan user agent check
- * Memberikan hasil paling akurat untuk mobile detection
- * 
- * @returns {boolean} - True jika benar-benar mobile device
- */
 export function useIsMobile() {
   const { isMobile } = useMediaQuery();
   const [isMobileUA, setIsMobileUA] = useState(false);

@@ -8,8 +8,6 @@ export default function DataJenisPelanggaranOrangtua() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  
-
   const normalize = (row) => ({
     id: row?.id_jenis_pelanggaran ?? row?.id ?? row?.id_pelanggaran ?? Math.random(),
     nama: row?.nama_jenis_pelanggaran ?? row?.nama_pelanggaran ?? row?.nama ?? "",

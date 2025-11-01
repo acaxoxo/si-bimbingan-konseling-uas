@@ -53,14 +53,12 @@ export const createKelas = async (req, res) => {
   try {
     const { nama_kelas, kelas_kejuruan, guruId } = req.body;
 
-    // Validasi required fields
     if (!nama_kelas) {
       return res.status(400).json({ 
         message: "Nama kelas wajib diisi" 
       });
     }
 
-    // Validasi unique nama kelas
     const existingKelas = await Kelas.findOne({ where: { nama_kelas } });
     if (existingKelas) {
       return res.status(400).json({ 
@@ -68,7 +66,6 @@ export const createKelas = async (req, res) => {
       });
     }
 
-    // Validasi guruId (jika diisi, pastikan guru ada)
     if (guruId) {
       const guruExists = await Guru.findByPk(guruId);
       if (!guruExists) {
@@ -93,14 +90,12 @@ export const updateKelas = async (req, res) => {
 
     const { nama_kelas, guruId } = req.body;
 
-    // Validasi nama kelas tidak boleh kosong
     if (nama_kelas !== undefined && !nama_kelas) {
       return res.status(400).json({ 
         message: "Nama kelas tidak boleh kosong" 
       });
     }
 
-    // Validasi unique nama kelas jika diubah
     if (nama_kelas && nama_kelas !== kelas.nama_kelas) {
       const existingKelas = await Kelas.findOne({ where: { nama_kelas } });
       if (existingKelas) {
@@ -110,7 +105,6 @@ export const updateKelas = async (req, res) => {
       }
     }
 
-    // Validasi guruId jika diubah
     if (guruId && guruId !== kelas.guruId) {
       const guruExists = await Guru.findByPk(guruId);
       if (!guruExists) {

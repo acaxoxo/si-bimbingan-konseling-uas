@@ -15,11 +15,9 @@ JenisPelanggaran.belongsTo(Admin, { foreignKey: "admin_id" });
 Kelas.hasMany(Siswa, { foreignKey: "kelas_id" });
 Siswa.belongsTo(Kelas, { foreignKey: "kelas_id" });
 
-// Relasi Kelas - Guru (wali kelas)
 Guru.hasMany(Kelas, { foreignKey: "guruId" });
 Kelas.belongsTo(Guru, { foreignKey: "guruId" });
 
-// Relasi: Siswa milik OrangTua (FK di tabel siswa: orangTuaId)
 OrangTua.hasOne(Siswa, { foreignKey: "orangTuaId" });
 Siswa.belongsTo(OrangTua, { foreignKey: "orangTuaId" });
 

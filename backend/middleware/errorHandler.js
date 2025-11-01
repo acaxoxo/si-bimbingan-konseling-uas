@@ -1,10 +1,7 @@
-// middleware/errorHandler.js
 
-/**
- * Middleware untuk menangani error global
- */
+
 export const errorHandler = (err, req, res, next) => {
-  console.error("❌ Error:", err.stack);
+  console.error(" Error:", err.stack);
 
   const statusCode = err.statusCode || 500;
   res.status(statusCode).json({
@@ -13,9 +10,6 @@ export const errorHandler = (err, req, res, next) => {
   });
 };
 
-/**
- * Middleware untuk handle 404
- */
 export const notFound = (req, res, next) => {
   res.status(404).json({
     success: false,

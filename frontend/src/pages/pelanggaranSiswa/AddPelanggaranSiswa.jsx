@@ -27,7 +27,7 @@ export default function AddPelanggaranSiswa() {
   const fetchSiswa = async () => {
     try {
       const res = await api.get("/siswa");
-      // Backend returns paginated response: { data: [...], pagination: {...} }
+      
       setSiswaData(res.data.data || res.data || []);
     } catch (err) {
       console.error("Gagal ambil data siswa:", err);
@@ -39,7 +39,7 @@ export default function AddPelanggaranSiswa() {
     try {
       const res = await api.get("/jenis-pelanggaran");
       console.log("Jenis Pelanggaran data:", res.data);
-      // Backend returns paginated response: { data: [...], pagination: {...} }
+      
       setJenisPelanggaranData(res.data.data || res.data || []);
     } catch (err) {
       console.error("Gagal ambil data jenis pelanggaran:", err);
@@ -54,7 +54,7 @@ export default function AddPelanggaranSiswa() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Prepare payload - convert string IDs to numbers
+      
       const payload = {
         siswaId: parseInt(form.siswaId),
         jenisPelanggaranId: parseInt(form.jenisPelanggaranId),
@@ -62,7 +62,7 @@ export default function AddPelanggaranSiswa() {
         catatan_konseling: form.catatan_konseling || null,
         status_konseling: form.status_konseling,
         tindak_lanjut: form.tindak_lanjut || null,
-        guruId: user?.id || null, // Auto-fill from logged in user
+        guruId: user?.id || null, 
       };
       
       console.log("Submitting form data:", payload);

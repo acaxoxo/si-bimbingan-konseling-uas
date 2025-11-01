@@ -22,7 +22,6 @@ export default function Login() {
     setLocalError("");
     setFieldErrors({});
 
-    // Validasi input
     const emailValidation = validateEmail(email);
     if (!emailValidation.isValid) {
       setFieldErrors({ email: emailValidation.error });
@@ -65,10 +64,8 @@ export default function Login() {
     }
   };
 
-  // Update ref setiap kali handleSubmit berubah
   handleSubmitRef.current = handleSubmit;
 
-  // Native DOM event listener untuk mencegah form submission
   useEffect(() => {
     const container = formContainerRef.current;
     if (!container) return;
@@ -81,7 +78,7 @@ export default function Login() {
         if (e.returnValue !== undefined) {
           e.returnValue = false;
         }
-        // Call melalui ref agar selalu dapat closure terbaru
+        
         if (handleSubmitRef.current) {
           handleSubmitRef.current();
         }
@@ -89,13 +86,12 @@ export default function Login() {
       }
     };
 
-    // Add event listener dengan capture phase dan passive: false
     container.addEventListener("keydown", handleKeyDown, { capture: true, passive: false });
 
     return () => {
       container.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
-  }, []); // Empty dependency karena kita pakai ref
+  }, []); 
 
   return (
     <div
@@ -274,7 +270,7 @@ export default function Login() {
           </div>
         )}
 
-        {/* Tombol diganti jadi type=button supaya gak trigger native submit */}
+        {}
         <button
           type="button"
           onClick={handleSubmit}

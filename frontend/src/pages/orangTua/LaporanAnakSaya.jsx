@@ -1,12 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-// import { useAuth } from "../../hooks/useAuth";
+
 import api from "../../lib/axios";
 
 export default function LaporanAnakSaya() {
   const [laporanData, setLaporanData] = useState([]);
   const [search, setSearch] = useState("");
-  // const { user } = useAuth();
+  
   const [showForm, setShowForm] = useState(false);
   const [currentRow, setCurrentRow] = useState(null);
   const [isi, setIsi] = useState("");
@@ -16,7 +16,7 @@ export default function LaporanAnakSaya() {
 
   const fetchData = useCallback(async () => {
     try {
-      // Backend route is /api/laporan/anak (see LaporanRoute)
+      
       const res = await api.get("/laporan/anak");
       const data = Array.isArray(res.data) ? res.data : [];
       setLaporanData(data);
@@ -34,7 +34,6 @@ export default function LaporanAnakSaya() {
     l.jenis_pelanggaran?.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Stats reflect what user sees (filtered rows). If no filter matches, fallback to overall when needed.
   const totalPelanggaran = filteredData.length;
   const totalPoin = filteredData.reduce((sum, l) => sum + (l.poin || 0), 0);
   const latestRow = filteredData[0] || laporanData[0] || null;
@@ -79,7 +78,7 @@ export default function LaporanAnakSaya() {
 
   return (
     <div className="container mt-4">
-      {/* Modal form for tanggapan */}
+      {}
       <TanggapanModal
         show={showForm}
         onClose={() => setShowForm(false)}
@@ -235,8 +234,6 @@ export default function LaporanAnakSaya() {
   );
 }
 
-// Simple modal implementation using Bootstrap classes
-// Note: Ensure Bootstrap CSS is loaded globally
 export function TanggapanModal({ show, onClose, onSubmit, isi, setIsi, tindakanRumah, setTindakanRumah, submitting, error }) {
   if (!show) return null;
   return (

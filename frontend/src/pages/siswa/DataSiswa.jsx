@@ -9,7 +9,7 @@ export default function SiswaList() {
   const fetchData = async () => {
     try {
       const res = await api.get("/siswa");
-      // Backend returns { data: [...], pagination: {...} }
+      
       setSiswaData(res.data.data || []);
     } catch (err) {
       console.error("Gagal fetch data siswa:", err);

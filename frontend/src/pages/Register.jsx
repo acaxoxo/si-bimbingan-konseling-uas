@@ -21,8 +21,7 @@ export default function Register() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    
-    // Validate password strength on change
+
     if (name === "password") {
       const validation = validatePassword(value);
       setPasswordStrength(validation);
@@ -35,7 +34,6 @@ export default function Register() {
     setError("");
     setSuccess("");
 
-    // Validasi email
     const emailValidation = validateEmail(form.email);
     if (!emailValidation.isValid) {
       toast.error(emailValidation.error);
@@ -44,7 +42,6 @@ export default function Register() {
       return;
     }
 
-    // Validasi password strength
     const passwordValidation = validatePassword(form.password);
     if (!passwordValidation.isValid) {
       toast.error(passwordValidation.errors.join(", "));
@@ -53,7 +50,6 @@ export default function Register() {
       return;
     }
 
-    // Validasi confirm password
     if (form.password !== form.confirmPassword) {
       toast.error("Password dan konfirmasi password tidak sama");
       setError("Password dan konfirmasi password tidak sama");
@@ -89,7 +85,7 @@ export default function Register() {
         padding: '2rem 1rem',
       }}
     >
-      {/* Theme Toggle - Top Right */}
+      {}
       <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1000 }}>
         <ThemeToggle />
       </div>

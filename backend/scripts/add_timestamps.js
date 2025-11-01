@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 
-// Ensure we load the .env from the backend folder when running this script
 dotenv.config({ path: './backend/.env' });
 
 const { default: db } = await import('../config/database.js');

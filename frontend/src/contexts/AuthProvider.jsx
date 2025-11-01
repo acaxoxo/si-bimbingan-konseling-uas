@@ -30,10 +30,10 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       const decoded = decodeToken(token);
       if (decoded) {
-        // If token has exp claim, check expiry
+        
         const now = Math.floor(Date.now() / 1000);
         if (decoded.exp && typeof decoded.exp === "number" && decoded.exp < now) {
-          // token expired
+          
           localStorage.removeItem("token");
         } else {
           setUser({
@@ -48,15 +48,14 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Listen for global unauthorized events (emitted by axios interceptor)
   useEffect(() => {
     const navigate = () => {
       try {
-        // attempt to use window.location to ensure navigation even outside React lifecycle
+        
         localStorage.removeItem("token");
         window.location.pathname = "/login";
       } catch {
-        // ignore
+        
       }
     };
 
@@ -68,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password, role = "admin") => {
     try {
       const res = await api.post("/auth/login", { email, password, role });
-      // Accept common token fields from various backends
+      
       const token = res?.data?.token ?? res?.data?.accessToken ?? null;
 
       if (!token) {
@@ -94,12 +93,11 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       return decoded;
     } catch (err) {
-      // Detailed logging to help debug 4xx/5xx responses from the backend
+      
       console.error("Login gagal:", err);
       console.error("Login response data:", err.response?.data);
       console.error("Login request payload:", { email, password });
 
-      // Prefer server-provided message when available
       const serverMessage =
         err.response?.data?.message || err.response?.data?.error || null;
       setError(serverMessage || "Email atau password salah");

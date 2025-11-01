@@ -7,7 +7,6 @@ export const getAllGuru = async (req, res) => {
     const { page, limit, offset } = getPaginationParams(req);
     const { search } = req.query;
 
-    // Build where clause for search
     const whereClause = {};
     if (search) {
       whereClause[Op.or] = [
@@ -44,21 +43,18 @@ export const createGuru = async (req, res) => {
   try {
     const { nama_guru, nik, email_guru, no_telepon, jenis_kelamin } = req.body;
 
-    // Validasi required fields
     if (!nama_guru || !nik) {
       return res.status(400).json({ 
         message: "Nama guru dan NIK wajib diisi" 
       });
     }
 
-    // Validasi format NIK (16 digit)
     if (!/^\d{16}$/.test(nik)) {
       return res.status(400).json({ 
         message: "NIK harus 16 digit angka" 
       });
     }
 
-    // Validasi NIK unique
     const existingNIK = await Guru.findOne({ where: { nik } });
     if (existingNIK) {
       return res.status(400).json({ 
@@ -66,7 +62,6 @@ export const createGuru = async (req, res) => {
       });
     }
 
-    // Validasi email format (jika diisi)
     if (email_guru) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email_guru)) {
@@ -75,7 +70,6 @@ export const createGuru = async (req, res) => {
         });
       }
 
-      // Validasi email unique
       const existingEmail = await Guru.findOne({ where: { email_guru } });
       if (existingEmail) {
         return res.status(400).json({ 
@@ -84,7 +78,6 @@ export const createGuru = async (req, res) => {
       }
     }
 
-    // Validasi no telepon (jika diisi)
     if (no_telepon) {
       const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
       if (!phoneRegex.test(no_telepon)) {
@@ -94,7 +87,6 @@ export const createGuru = async (req, res) => {
       }
     }
 
-    // Validasi jenis kelamin (jika diisi)
     if (jenis_kelamin && !["Laki-laki", "Perempuan"].includes(jenis_kelamin)) {
       return res.status(400).json({ 
         message: "Jenis kelamin harus 'Laki-laki' atau 'Perempuan'" 
@@ -115,14 +107,12 @@ export const updateGuru = async (req, res) => {
 
     const { nama_guru, nik, email_guru, no_telepon, jenis_kelamin } = req.body;
 
-    // Validasi required fields
     if (nama_guru !== undefined && !nama_guru) {
       return res.status(400).json({ 
         message: "Nama guru tidak boleh kosong" 
       });
     }
 
-    // Validasi format NIK jika diubah
     if (nik && nik !== guru.nik) {
       if (!/^\d{16}$/.test(nik)) {
         return res.status(400).json({ 
@@ -138,7 +128,6 @@ export const updateGuru = async (req, res) => {
       }
     }
 
-    // Validasi email jika diubah
     if (email_guru && email_guru !== guru.email_guru) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email_guru)) {
@@ -155,7 +144,6 @@ export const updateGuru = async (req, res) => {
       }
     }
 
-    // Validasi no telepon jika diisi
     if (no_telepon && no_telepon !== guru.no_telepon) {
       const phoneRegex = /^(\+62|62|0)[0-9]{9,12}$/;
       if (!phoneRegex.test(no_telepon)) {
@@ -165,7 +153,6 @@ export const updateGuru = async (req, res) => {
       }
     }
 
-    // Validasi jenis kelamin jika diubah
     if (jenis_kelamin && jenis_kelamin !== guru.jenis_kelamin) {
       if (!["Laki-laki", "Perempuan"].includes(jenis_kelamin)) {
         return res.status(400).json({ 

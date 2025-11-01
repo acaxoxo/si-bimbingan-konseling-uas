@@ -18,7 +18,7 @@ const run = async () => {
     console.log("Connecting to database...");
     await db.authenticate();
     console.log("Database connected.");
-    // Ensure password columns exist on tables that didn't declare them originally
+    
     const queries = [
       `ALTER TABLE guru ADD COLUMN IF NOT EXISTS password VARCHAR(255) NULL;`,
       `ALTER TABLE siswa ADD COLUMN IF NOT EXISTS password VARCHAR(255) NULL;`,
@@ -29,7 +29,7 @@ const run = async () => {
         await db.query(q);
         console.log("Executed:", q);
       } catch (err) {
-        // Some MySQL versions may not support IF NOT EXISTS; ignore duplicate errors
+        
         console.log("Skipping or error executing query:", q, err.message);
       }
     }
@@ -45,7 +45,7 @@ const run = async () => {
         continue;
       }
       const hashed = await bcrypt.hash(password, 10);
-      // Use update to set the password
+      
       await model.update({ password: hashed }, { where });
       console.log(`Password for ${role} (${email}) updated.`);
     }

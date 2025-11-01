@@ -9,7 +9,7 @@ export default function DataGuruOrangTua() {
   const fetchData = async () => {
     try {
       const res = await api.get("/guru");
-      // Extract data from paginated response
+      
       const dataArray = res.data?.data || res.data || [];
       setGuruData(Array.isArray(dataArray) ? dataArray : []);
     } catch (err) {

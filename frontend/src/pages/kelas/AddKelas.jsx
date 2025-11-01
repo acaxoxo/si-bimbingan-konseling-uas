@@ -14,7 +14,7 @@ export default function AddKelas() {
   const [guruList, setGuruList] = useState([]);
 
   useEffect(() => {
-    // Ambil daftar guru untuk pilihan wali kelas (opsional)
+    
     api
       .get("/guru")
       .then((res) => setGuruList(res.data))
@@ -31,7 +31,7 @@ export default function AddKelas() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Siapkan payload: guruId kosong => null
+      
       const payload = {
         nama_kelas: form.nama_kelas,
         kelas_kejuruan: form.kelas_kejuruan || null,

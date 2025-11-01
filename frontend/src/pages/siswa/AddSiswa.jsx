@@ -20,7 +20,7 @@ export default function AddSiswa() {
   const [kelasData, setKelasData] = useState([]);
 
   useEffect(() => {
-    // Backend returns paginated response: { data: [...], pagination: {...} }
+    
     api.get("/orang-tua").then((res) => setOrangTuaData(res.data.data || res.data || []));
     api.get("/kelas").then((res) => setKelasData(res.data.data || res.data || []));
   }, []);
@@ -32,7 +32,7 @@ export default function AddSiswa() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // sanitize phone number to pass backend validation (id-ID)
+      
       const onlyDigits = (form.no_telepon || "").replace(/\D+/g, "");
       let normalizedPhone = onlyDigits;
       if (onlyDigits.startsWith("62")) {

@@ -1,8 +1,5 @@
 import ActivityLog from "../models/ActivityLogModel.js";
 
-/**
- * Middleware untuk log aktivitas user
- */
 export const logActivity = async (req, action, module, description) => {
   try {
     const userId = req.user?.id || null;
@@ -20,14 +17,11 @@ export const logActivity = async (req, action, module, description) => {
       user_agent: userAgent,
     });
   } catch (error) {
-    // Log error but don't break the main flow
+    
     console.error("Error logging activity:", error.message);
   }
 };
 
-/**
- * Helper function untuk log berbagai tipe aktivitas
- */
 export const ActivityLogger = {
   login: (req, userId, role) => {
     return logActivity(req, "LOGIN", "auth", `User ${role} berhasil login`);

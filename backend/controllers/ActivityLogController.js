@@ -7,7 +7,6 @@ export const getAllActivityLogs = async (req, res) => {
     const { page, limit, offset } = getPaginationParams(req);
     const { user_role, action, module, start_date, end_date } = req.query;
 
-    // Build where clause for filters
     const whereClause = {};
     
     if (user_role) {
@@ -74,7 +73,6 @@ export const getActivityStats = async (req, res) => {
       };
     }
 
-    // Count by action
     const actionStats = await ActivityLog.findAll({
       where: whereClause,
       attributes: [
@@ -84,7 +82,6 @@ export const getActivityStats = async (req, res) => {
       group: ['action']
     });
 
-    // Count by module
     const moduleStats = await ActivityLog.findAll({
       where: whereClause,
       attributes: [
@@ -94,7 +91,6 @@ export const getActivityStats = async (req, res) => {
       group: ['module']
     });
 
-    // Count by user_role
     const roleStats = await ActivityLog.findAll({
       where: whereClause,
       attributes: [
@@ -116,8 +112,8 @@ export const getActivityStats = async (req, res) => {
 
 export const deleteOldLogs = async (req, res) => {
   try {
-    const { days } = req.query; // Delete logs older than X days
-    const daysAgo = days || 90; // Default 90 days
+    const { days } = req.query; 
+    const daysAgo = days || 90; 
     
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysAgo);

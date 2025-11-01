@@ -15,7 +15,7 @@ export default function DashboardSiswa() {
   useEffect(() => {
     const load = async () => {
       try {
-        // fetch pelanggaran and tindakan, plus siswa profile and guru list (readonly)
+        
         const [pelRes, sisRes, guruRes, tindRes] = await Promise.all([
           api.get("/pelanggaran-siswa"),
           api.get(`/siswa/${user?.id}`),
@@ -23,7 +23,6 @@ export default function DashboardSiswa() {
           api.get("/tindakan/tindakan").catch(() => ({ data: { data: [] } })),
         ]);
 
-        // Extract data from paginated response: { data: [...], pagination: {...} }
         const pel = pelRes.data?.data || pelRes.data || [];
         const myPelanggaran = pel.filter((p) => p.siswaId === user?.id);
         const siswa = sisRes.data || {};
@@ -33,7 +32,7 @@ export default function DashboardSiswa() {
         const guruAktif = (guru || []).filter((g) => g.status_aktif === "Aktif").length || (guru || []).length || 0;
 
         const tind = tindRes.data?.data || tindRes.data || [];
-        // Match tindakan by pelanggaran_siswa -> siswa relationship
+        
         const tindSiswa = (tind || []).filter((t) => {
           const pel = t?.pelanggaran_siswa || t?.PelanggaranSiswa;
           const siswa = pel?.siswa || pel?.Siswa;
@@ -55,7 +54,6 @@ export default function DashboardSiswa() {
     if (user?.id) load();
   }, [user]);
 
-  // TopMetric component for consistent styling
   const TopMetric = ({ title, value, color }) => (
     <div className="dashboard-card">
       <div className="card-label">{title}</div>
@@ -67,7 +65,7 @@ export default function DashboardSiswa() {
 
   return (
     <div className="container mt-4 mb-5 pb-4">
-      {/* Welcome Card */}
+      {}
       <div className="dashboard-card mb-4" style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "24px" }}>
         <h2 style={{ color: "var(--text-primary)", marginBottom: "8px", fontSize: "1.75rem", fontWeight: 600 }}>
           Dashboard Siswa
@@ -77,7 +75,7 @@ export default function DashboardSiswa() {
         </p>
       </div>
 
-      {/* Top Metrics */}
+      {}
       <div className="dashboard-grid-top mb-4">
         <TopMetric title="Pelanggaran Saya" value={stats.pelanggaran} color="#dc3545" />
         <TopMetric title="Kelas Aktif" value={stats.kelasLabel} color="#28a745" />
@@ -85,7 +83,7 @@ export default function DashboardSiswa() {
         <TopMetric title="Status Tindakan" value={stats.peringatan} color="#ffc107" />
       </div>
 
-      {/* Feature Cards */}
+      {}
       <h5 style={{ color: "var(--text-primary)", marginBottom: "16px", fontWeight: 600 }}>
         Akses Cepat
       </h5>

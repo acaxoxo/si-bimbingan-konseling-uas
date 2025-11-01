@@ -1,18 +1,18 @@
 # Sistem Bimbingan Konseling - Frontend
 
-> � **Navigation:** [Home](../README.md) > Frontend Documentation
+>  **Navigation:** [Home](../README.md) > Frontend Documentation
 > 
-> 📖 **Quick Links:**
+>  **Quick Links:**
 > - [← Dokumentasi Utama](../README.md) - Setup backend, database, troubleshooting
-> - [🚀 Quick Start](../README.md#-quick-start) - Install & run dalam 5 menit
-> - [🔐 Akun Testing](../README.md#-akun-login-testing) - Login credentials
-> - 🔧 Backend Documentation (dalam development)
+> - [ Quick Start](../README.md#-quick-start) - Install & run dalam 5 menit
+> - [ Akun Testing](../README.md#-akun-login-testing) - Login credentials
+> -  Backend Documentation (dalam development)
 
 ---
 
 Aplikasi frontend untuk Sistem Bimbingan Konseling SMK Negeri 1 Kupang.
 
-## 📑 Quick Navigation
+##  Quick Navigation
 
 - [Deskripsi Sistem](#deskripsi-sistem)
 - [Akun Login Testing](#akun-login-untuk-testing)
@@ -24,7 +24,7 @@ Aplikasi frontend untuk Sistem Bimbingan Konseling SMK Negeri 1 Kupang.
 - [Instalasi](#instalasi)
 - [Struktur Folder](#struktur-folder)
 
-> 💡 **Untuk setup lengkap backend dan database**, lihat [Dokumentasi Utama](../README.md)
+>  **Untuk setup lengkap backend dan database**, lihat [Dokumentasi Utama](../README.md)
 
 ---
 
@@ -52,33 +52,33 @@ Sistem Informasi Bimbingan Konseling adalah aplikasi berbasis web untuk mengelol
 ## Peran dan Hak Akses
 
 ### 1. Admin
-- ✅ Mengelola data admin
-- ✅ Mengelola data guru BK
-- ✅ Mengelola data siswa
-- ✅ Mengelola data orang tua
-- ✅ Mengelola data kelas
-- ✅ Mengelola jenis pelanggaran
-- ✅ Melihat laporan pelanggaran (read-only)
-- ✅ Export laporan ke Excel
+-  Mengelola data admin
+-  Mengelola data guru BK
+-  Mengelola data siswa
+-  Mengelola data orang tua
+-  Mengelola data kelas
+-  Mengelola jenis pelanggaran
+-  Melihat laporan pelanggaran (read-only)
+-  Export laporan ke Excel
 
 ### 2. Guru BK
-- ✅ Mencatat pelanggaran siswa
-- ✅ Memberikan tindakan sekolah
-- ✅ Melihat laporan pelanggaran
-- ✅ Melihat tanggapan orang tua
-- ✅ Export laporan ke Excel
-- ✅ Melihat data siswa, kelas, jenis pelanggaran (read-only)
+-  Mencatat pelanggaran siswa
+-  Memberikan tindakan sekolah
+-  Melihat laporan pelanggaran
+-  Melihat tanggapan orang tua
+-  Export laporan ke Excel
+-  Melihat data siswa, kelas, jenis pelanggaran (read-only)
 
 ### 3. Orang Tua
-- ✅ Melihat laporan pelanggaran anak
-- ✅ Memberikan tanggapan atas pelanggaran
-- ✅ Melihat tindakan sekolah
-- ✅ Melihat data guru BK, kelas, jenis pelanggaran (read-only)
+-  Melihat laporan pelanggaran anak
+-  Memberikan tanggapan atas pelanggaran
+-  Melihat tindakan sekolah
+-  Melihat data guru BK, kelas, jenis pelanggaran (read-only)
 
 ### 4. Siswa
-- ✅ Melihat riwayat pelanggaran diri sendiri
-- ✅ Melihat tindakan sekolah
-- ✅ Melihat data guru BK, kelas, jenis pelanggaran (read-only)
+-  Melihat riwayat pelanggaran diri sendiri
+-  Melihat tindakan sekolah
+-  Melihat data guru BK, kelas, jenis pelanggaran (read-only)
 
 ## Entitas dan Atribut
 
@@ -193,23 +193,23 @@ Sistem Informasi Bimbingan Konseling adalah aplikasi berbasis web untuk mengelol
 ## Relasi Antar Entitas
 
 ```
-Admin (1) ─── manages ─── (*) [All Entities]
+Admin (1)  manages  (*) [All Entities]
 
-Guru (1) ─── records ─── (*) PelanggaranSiswa
-Guru (1) ─── gives ─── (*) TindakanSekolah
+Guru (1)  records  (*) PelanggaranSiswa
+Guru (1)  gives  (*) TindakanSekolah
 
-Siswa (*) ─── belongs to ─── (1) Kelas
-Siswa (*) ─── has ─── (1) OrangTua
-Siswa (1) ─── commits ─── (*) PelanggaranSiswa
+Siswa (*)  belongs to  (1) Kelas
+Siswa (*)  has  (1) OrangTua
+Siswa (1)  commits  (*) PelanggaranSiswa
 
-OrangTua (1) ─── has ─── (*) Siswa
-OrangTua (1) ─── gives ─── (*) TanggapanOrangTua
+OrangTua (1)  has  (*) Siswa
+OrangTua (1)  gives  (*) TanggapanOrangTua
 
-JenisPelanggaran (1) ─── categorizes ─── (*) PelanggaranSiswa
+JenisPelanggaran (1)  categorizes  (*) PelanggaranSiswa
 
-PelanggaranSiswa (1) ─── generates ─── (1) Laporan
-PelanggaranSiswa (1) ─── receives ─── (*) TanggapanOrangTua
-PelanggaranSiswa (1) ─── receives ─── (*) TindakanSekolah
+PelanggaranSiswa (1)  generates  (1) Laporan
+PelanggaranSiswa (1)  receives  (*) TanggapanOrangTua
+PelanggaranSiswa (1)  receives  (*) TindakanSekolah
 ```
 
 ## Skenario Sistem
@@ -265,87 +265,87 @@ PelanggaranSiswa (1) ─── receives ─── (*) TindakanSekolah
 
 ### ERD (Entity Relationship Diagram) - Konsep
 ```
-┌─────────────┐       ┌─────────────────┐       ┌──────────────┐
-│   ADMIN     │       │      GURU       │       │    SISWA     │
-├─────────────┤       ├─────────────────┤       ├──────────────┤
-│ id_admin PK │       │ id_guru PK      │       │ id_siswa PK  │
-│ nama_admin  │       │ nama_guru       │       │ nama_siswa   │
-│ email       │       │ nik             │       │ nis          │
-│ password    │       │ email           │       │ nisn         │
-└─────────────┘       │ password        │       │ id_kelas FK  │
-                      └────────┬────────┘       │ id_ortu FK   │
-                               │                 └──────┬───────┘
-                               │                        │
-                               ▼                        ▼
-                      ┌─────────────────────────────────────┐
-                      │      PELANGGARAN SISWA              │
-                      ├─────────────────────────────────────┤
-                      │ id_pelanggaran_siswa PK             │
-                      │ id_siswa FK                         │
-                      │ id_jenis_pelanggaran FK             │
-                      │ id_guru FK                          │
-                      │ tanggal_pelanggaran                 │
-                      │ kronologi                           │
-                      └──────────┬──────────────────────────┘
-                                 │
-                 ┌───────────────┼───────────────┐
-                 ▼               ▼               ▼
-        ┌────────────┐  ┌────────────────┐  ┌──────────┐
-        │ TANGGAPAN  │  │    TINDAKAN    │  │ LAPORAN  │
-        │ ORANG TUA  │  │    SEKOLAH     │  │          │
-        └────────────┘  └────────────────┘  └──────────┘
+              
+   ADMIN                  GURU                  SISWA     
+              
+ id_admin PK         id_guru PK              id_siswa PK  
+ nama_admin          nama_guru               nama_siswa   
+ email               nik                     nis          
+ password            email                   nisn         
+        password                id_kelas FK  
+                              id_ortu FK   
+                                                
+                                                       
+                                                       
+                      
+                            PELANGGARAN SISWA              
+                      
+                       id_pelanggaran_siswa PK             
+                       id_siswa FK                         
+                       id_jenis_pelanggaran FK             
+                       id_guru FK                          
+                       tanggal_pelanggaran                 
+                       kronologi                           
+                      
+                                 
+                 
+                                               
+            
+         TANGGAPAN        TINDAKAN       LAPORAN  
+         ORANG TUA        SEKOLAH                 
+            
 ```
 
 ### DFD Level 0 (Context Diagram)
 ```
-┌─────────┐
-│  ADMIN  │─────┐
-└─────────┘     │
-                ▼
-┌─────────┐  ┌──────────────────────────┐
-│ GURU BK │──│   SISTEM BIMBINGAN       │
-└─────────┘  │      KONSELING           │
-             └──────────────────────────┘
-┌─────────┐     │             │
-│  SISWA  │─────┘             │
-└─────────┘                   │
-                              │
-┌──────────┐                  │
-│ ORANG TUA│──────────────────┘
-└──────────┘
+
+  ADMIN  
+     
+                
+  
+ GURU BK    SISTEM BIMBINGAN       
+        KONSELING           
+             
+                  
+  SISWA               
+                   
+                              
+                  
+ ORANG TUA
+
 ```
 
 ### DFD Level 1
 ```
-                    ┌──────────────────┐
-         ┌──────────│  1.0 Manajemen   │◄─── Admin
-         │          │      User        │
-         │          └──────────────────┘
-         ▼
+                    
+           1.0 Manajemen    Admin
+                         User        
+                   
+         
    [D1: Users]
-         │
-         │          ┌──────────────────┐
-         └──────────│  2.0 Pencatatan  │◄─── Guru BK
-                    │   Pelanggaran    │
-                    └──────────────────┘
-                              │
-                              ▼
+         
+                   
+           2.0 Pencatatan   Guru BK
+                       Pelanggaran    
+                    
+                              
+                              
                     [D2: Pelanggaran]
-                              │
-                    ┌─────────┴─────────┐
-                    ▼                   ▼
-         ┌──────────────────┐  ┌──────────────────┐
-         │  3.0 Tanggapan   │  │  4.0 Tindakan    │
-         │   Orang Tua      │  │    Sekolah       │
-         └──────────────────┘  └──────────────────┘
-                  ▲                      ▲
-                  │                      │
+                              
+                    
+                                       
+           
+           3.0 Tanggapan       4.0 Tindakan    
+            Orang Tua            Sekolah       
+           
+                                        
+                                        
             Orang Tua              Guru BK
                   
-         ┌──────────────────┐
-         │  5.0 Laporan &   │◄─── Semua User
-         │    Dashboard     │
-         └──────────────────┘
+         
+           5.0 Laporan &    Semua User
+             Dashboard     
+         
 ```
 
 ## Teknologi
@@ -374,42 +374,42 @@ npm run build
 ```
 
 ## Fitur Utama
-- ✅ Multi-role Authentication (Admin, Guru, Siswa, Orang Tua)
-- ✅ Manajemen Data Master (Guru, Siswa, Orang Tua, Kelas, Jenis Pelanggaran)
-- ✅ Pencatatan Pelanggaran Siswa dengan Poin
-- ✅ Laporan Pelanggaran dengan Filter Bulan & Tahun
-- ✅ Tanggapan Orang Tua
-- ✅ Tindakan Sekolah
-- ✅ Dashboard Statistik Real-time
-- ✅ Dark/Light Mode dengan LocalStorage Persistence
-- ✅ Export Laporan ke Excel
-- ✅ Responsive Design (Mobile & Desktop)
-- ✅ Form Validation
-- ✅ Protected Routes per Role
+-  Multi-role Authentication (Admin, Guru, Siswa, Orang Tua)
+-  Manajemen Data Master (Guru, Siswa, Orang Tua, Kelas, Jenis Pelanggaran)
+-  Pencatatan Pelanggaran Siswa dengan Poin
+-  Laporan Pelanggaran dengan Filter Bulan & Tahun
+-  Tanggapan Orang Tua
+-  Tindakan Sekolah
+-  Dashboard Statistik Real-time
+-  Dark/Light Mode dengan LocalStorage Persistence
+-  Export Laporan ke Excel
+-  Responsive Design (Mobile & Desktop)
+-  Form Validation
+-  Protected Routes per Role
 
 ## Struktur Folder
 ```
 frontend/
-├── public/              # Static assets
-├── src/
-│   ├── assets/          # Images, fonts
-│   ├── components/      # Reusable components
-│   │   ├── Layout.jsx
-│   │   ├── ProtectedRoute.jsx
-│   │   ├── ThemeToggle.jsx
-│   │   └── partials/
-│   ├── contexts/        # React Context (Auth, Theme)
-│   ├── hooks/           # Custom hooks
-│   ├── lib/             # Axios configuration
-│   ├── pages/           # Page components
-│   │   ├── admin/
-│   │   ├── guru/
-│   │   ├── siswa/
-│   │   └── orangTua/
-│   ├── utils/           # Utility functions
-│   ├── App.jsx
-│   └── main.jsx
-└── package.json
+ public/              # Static assets
+ src/
+    assets/          # Images, fonts
+    components/      # Reusable components
+       Layout.jsx
+       ProtectedRoute.jsx
+       ThemeToggle.jsx
+       partials/
+    contexts/        # React Context (Auth, Theme)
+    hooks/           # Custom hooks
+    lib/             # Axios configuration
+    pages/           # Page components
+       admin/
+       guru/
+       siswa/
+       orangTua/
+    utils/           # Utility functions
+    App.jsx
+    main.jsx
+ package.json
 ```
 
 ## Backend Repository
@@ -419,11 +419,11 @@ Backend API tersedia di folder `backend/` dengan teknologi:
 - JWT Authentication
 - Pagination & Filtering
 
-> 📖 **Untuk setup backend lengkap**, lihat [Dokumentasi Utama](../README.md#-quick-start)
+>  **Untuk setup backend lengkap**, lihat [Dokumentasi Utama](../README.md#-quick-start)
 
 ---
 
-## 🔗 Navigation Links
+##  Navigation Links
 
 - **[← Kembali ke Dokumentasi Utama](../README.md)** - Setup lengkap backend, database, dan API
 - **[Quick Start Guide](../README.md#-quick-start)** - Install dan jalankan aplikasi

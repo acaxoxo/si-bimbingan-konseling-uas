@@ -9,7 +9,7 @@ export default function DataAdmin() {
   const fetchData = async () => {
     try {
       const res = await api.get("/admin");
-      // Backend returns paginated response: { data: [...], pagination: {...} }
+      
       setAdminData(res.data.data || res.data || []);
     } catch (err) {
       console.error("Gagal fetch data admin:", err);

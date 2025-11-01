@@ -1,31 +1,31 @@
-# 📚 Sistem Informasi Bimbingan Konseling
+#  Sistem Informasi Bimbingan Konseling
 **SMK Negeri 1 Kupang**
 
 Aplikasi web untuk mengelola pencatatan pelanggaran siswa, laporan, dan komunikasi antara guru BK, siswa, dan orang tua.
 
-## 📖 Dokumentasi
+##  Dokumentasi
 
 Dokumentasi project ini dibagi menjadi beberapa bagian:
 
 | Dokumentasi | Deskripsi | Link |
 |-------------|-----------|------|
-| **📚 Dokumentasi Utama** | Setup lengkap, backend, database, API | *Anda di sini* |
-| **🎨 Frontend** | React setup, komponen, struktur UI | [Frontend README](./frontend/README.md) |
-| **🔧 Backend** | API endpoints, controllers, models | *Dalam development* |
+| ** Dokumentasi Utama** | Setup lengkap, backend, database, API | *Anda di sini* |
+| ** Frontend** | React setup, komponen, struktur UI | [Frontend README](./frontend/README.md) |
+| ** Backend** | API endpoints, controllers, models | *Dalam development* |
 
-> 💡 **Mulai dari mana?**
+>  **Mulai dari mana?**
 > - Baru mulai? → Lihat [Quick Start](#-quick-start) di bawah
 > - Developer frontend? → Buka [Frontend Documentation](./frontend/README.md)
 > - Butuh API reference? → Lihat [API Endpoints](#-api-endpoints)
 
-## 📑 Table of Contents
+##  Table of Contents
 
 - [Quick Start](#-quick-start)
 - [Akun Login Testing](#-akun-login-testing)
 - [Peran dan Fitur](#-peran-dan-fitur)
-- [Database Schema](#️-database-schema)
+- [Database Schema](#-database-schema)
 - [Use Case Skenario](#-use-case-skenario)
-- [Teknologi](#️-teknologi)
+- [Teknologi](#-teknologi)
 - [Struktur Project](#-struktur-project)
 - [Fitur Utama](#-fitur-utama)
 - [Security Features](#-security-features)
@@ -36,7 +36,7 @@ Dokumentasi project ini dibagi menjadi beberapa bagian:
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Node.js v18+ 
@@ -88,7 +88,7 @@ Frontend berjalan di: `http://localhost:5173`
 
 ---
 
-## 🔐 Akun Login Testing
+##  Akun Login Testing
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -99,33 +99,33 @@ Frontend berjalan di: `http://localhost:5173`
 
 ---
 
-## 👥 Peran dan Fitur
+##  Peran dan Fitur
 
-### 🔧 Admin
+###  Admin
 - Kelola data guru BK, siswa, orang tua
 - Kelola data kelas dan jenis pelanggaran  
 - Lihat laporan pelanggaran
 - Export data ke Excel
 
-### 👨‍🏫 Guru BK
+### ‍ Guru BK
 - Catat pelanggaran siswa dengan poin
 - Berikan tindakan sekolah
 - Lihat tanggapan orang tua
 - Buat laporan dan statistik
 
-### 👨‍👩‍👧 Orang Tua
+### ‍‍ Orang Tua
 - Lihat laporan pelanggaran anak
 - Berikan tanggapan atas pelanggaran
 - Lihat tindakan sekolah
 
-### 🎓 Siswa
+###  Siswa
 - Lihat riwayat pelanggaran sendiri
 - Lihat tindakan sekolah
 - Lihat poin pelanggaran
 
 ---
 
-## 🗄️ Database Schema
+##  Database Schema
 
 ### Entitas Utama
 
@@ -169,18 +169,18 @@ Frontend berjalan di: `http://localhost:5173`
 
 ### Relasi
 ```
-Guru (1) ──── records ──── (*) PelanggaranSiswa
-Siswa (1) ──── commits ──── (*) PelanggaranSiswa
-Siswa (*) ──── belongs to ──── (1) Kelas
-Siswa (*) ──── has ──── (1) OrangTua
-JenisPelanggaran (1) ──── categorizes ──── (*) PelanggaranSiswa
-PelanggaranSiswa (1) ──── receives ──── (*) TanggapanOrangTua
-PelanggaranSiswa (1) ──── receives ──── (*) TindakanSekolah
+Guru (1)  records  (*) PelanggaranSiswa
+Siswa (1)  commits  (*) PelanggaranSiswa
+Siswa (*)  belongs to  (1) Kelas
+Siswa (*)  has  (1) OrangTua
+JenisPelanggaran (1)  categorizes  (*) PelanggaranSiswa
+PelanggaranSiswa (1)  receives  (*) TanggapanOrangTua
+PelanggaranSiswa (1)  receives  (*) TindakanSekolah
 ```
 
 ---
 
-## 🎯 Use Case Skenario
+##  Use Case Skenario
 
 ### Skenario 1: Guru Mencatat Pelanggaran
 1. Guru login → Dashboard
@@ -205,7 +205,7 @@ PelanggaranSiswa (1) ──── receives ──── (*) TindakanSekolah
 
 ---
 
-## 🛠️ Teknologi
+##  Teknologi
 
 ### Backend
 - **Runtime**: Node.js v22
@@ -226,70 +226,70 @@ PelanggaranSiswa (1) ──── receives ──── (*) TindakanSekolah
 
 ---
 
-## 📁 Struktur Project
+##  Struktur Project
 
 ```
 si-bimbingan-konseling/
-├── backend/
-│   ├── config/
-│   │   └── database.js
-│   ├── controllers/
-│   │   ├── AuthController.js
-│   │   ├── AdminController.js
-│   │   ├── GuruController.js
-│   │   └── ... (10 controllers)
-│   ├── models/
-│   │   ├── AdminModel.js
-│   │   ├── GuruModel.js
-│   │   └── ... (10 models)
-│   ├── routes/
-│   │   └── ... (11 routes)
-│   ├── middleware/
-│   │   ├── verifyToken.js
-│   │   └── errorHandler.js
-│   ├── server.js
-│   └── package.json
-│
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── Layout.jsx
-    │   │   ├── ProtectedRoute.jsx
-    │   │   └── ThemeToggle.jsx
-    │   ├── contexts/
-    │   │   ├── AuthContext.jsx
-    │   │   └── ThemeContext.jsx
-    │   ├── pages/
-    │   │   ├── admin/
-    │   │   ├── guru/
-    │   │   ├── siswa/
-    │   │   └── orangTua/
-    │   ├── lib/
-    │   │   └── axios.js
-    │   └── App.jsx
-    └── package.json
+ backend/
+    config/
+       database.js
+    controllers/
+       AuthController.js
+       AdminController.js
+       GuruController.js
+       ... (10 controllers)
+    models/
+       AdminModel.js
+       GuruModel.js
+       ... (10 models)
+    routes/
+       ... (11 routes)
+    middleware/
+       verifyToken.js
+       errorHandler.js
+    server.js
+    package.json
+
+ frontend/
+     src/
+        components/
+           Layout.jsx
+           ProtectedRoute.jsx
+           ThemeToggle.jsx
+        contexts/
+           AuthContext.jsx
+           ThemeContext.jsx
+        pages/
+           admin/
+           guru/
+           siswa/
+           orangTua/
+        lib/
+           axios.js
+        App.jsx
+     package.json
 ```
 
 ---
 
-## ✨ Fitur Utama
+##  Fitur Utama
 
-- ✅ **Multi-role Authentication** (4 roles dengan hak akses berbeda)
-- ✅ **CRUD Data Master** (Guru, Siswa, Orang Tua, Kelas, Pelanggaran)
-- ✅ **Pencatatan Pelanggaran** dengan sistem poin otomatis
-- ✅ **Tanggapan Orang Tua** atas pelanggaran anak
-- ✅ **Tindakan Sekolah** oleh guru BK
-- ✅ **Laporan & Statistik** real-time di dashboard
-- ✅ **Filter & Search** pada semua tabel data
-- ✅ **Export Excel** untuk laporan
-- ✅ **Dark/Light Mode** dengan persistence
-- ✅ **Responsive Design** (Mobile & Desktop)
-- ✅ **Protected Routes** per role
-- ✅ **Form Validation** client & server side
+-  **Multi-role Authentication** (4 roles dengan hak akses berbeda)
+-  **CRUD Data Master** (Guru, Siswa, Orang Tua, Kelas, Pelanggaran)
+-  **Pencatatan Pelanggaran** dengan sistem poin otomatis
+-  **Tanggapan Orang Tua** atas pelanggaran anak
+-  **Tindakan Sekolah** oleh guru BK
+-  **Laporan & Statistik** real-time di dashboard
+-  **Filter & Search** pada semua tabel data
+-  **Export Excel** untuk laporan
+-  **Dark/Light Mode** dengan persistence
+-  **Responsive Design** (Mobile & Desktop)
+-  **Protected Routes** per role
+-  **Form Validation** client & server side
 
 ---
 
-## 🔒 Security Features
+##  Security Features
 
 - JWT authentication dengan refresh token
 - Password hashing dengan bcrypt (10 rounds)
@@ -302,7 +302,7 @@ si-bimbingan-konseling/
 
 ---
 
-## 📊 API Endpoints
+##  API Endpoints
 
 ### Authentication
 ```
@@ -348,7 +348,7 @@ DELETE /api/pelanggaran-siswa/:id  # Delete
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Manual Testing
 1. Jalankan backend dan frontend
@@ -370,7 +370,7 @@ Database sudah include seed data untuk testing:
 
 ---
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Backend tidak start
 ```bash
@@ -396,7 +396,7 @@ taskkill /PID <process_id> /F
 
 ---
 
-## 📝 Development Notes
+##  Development Notes
 
 ### Menambah Fitur Baru
 1. Buat model di `backend/models/`
@@ -416,29 +416,29 @@ npx sequelize-cli db:migrate
 
 ---
 
-## 📄 License
+##  License
 
 This project is for educational purposes - SMK Negeri 1 Kupang
 
 ---
 
-## � Dokumentasi Terkait
+##  Dokumentasi Terkait
 
-- 🎨 **[Frontend Documentation](./frontend/README.md)** - Setup React, komponen, dan struktur frontend
-- 🔧 **Backend Documentation** - API endpoints dan database schema (dalam development)
-- 📊 **Database Schema** - Lihat section "Database Schema" di atas
-- 🔐 **Security Features** - Lihat section "Security Features" di atas
+-  **[Frontend Documentation](./frontend/README.md)** - Setup React, komponen, dan struktur frontend
+-  **Backend Documentation** - API endpoints dan database schema (dalam development)
+-  **Database Schema** - Lihat section "Database Schema" di atas
+-  **Security Features** - Lihat section "Security Features" di atas
 
 ---
 
-## �👨‍💻 Developer
+## ‍ Developer
 
-Developed with ❤️ for SMK Negeri 1 Kupang
+Developed with  for SMK Negeri 1 Kupang
 © 2025 All Rights Reserved
 
 ---
 
-## 📧 Contact
+##  Contact
 
 Untuk pertanyaan atau support, hubungi:
 - Email: admin@smk1kupang.sch.id

@@ -20,7 +20,7 @@ const Siswa = db.define(
       unique: true,
     },
     orangTuaId: {
-      // Relasi ke tabel orang_tua (Siswa.belongsTo(OrangTua))
+      
       type: DataTypes.INTEGER,
       allowNull: true,
       field: "orangTuaId",
@@ -58,11 +58,7 @@ const Siswa = db.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    // foto_profil: {
-    //   type: DataTypes.STRING,
-    //   allowNull: true,
-    //   comment: "Path to profile photo",
-    // },
+
   },
   {
     freezeTableName: true,

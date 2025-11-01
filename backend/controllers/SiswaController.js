@@ -9,7 +9,6 @@ export const getAllSiswa = async (req, res) => {
     const { page, limit, offset } = getPaginationParams(req);
     const { search, kelas_id } = req.query;
 
-    // Build where clause for search
     const whereClause = {};
     if (search) {
       whereClause[Op.or] = [
@@ -68,21 +67,18 @@ export const createSiswa = async (req, res) => {
   try {
     const { nama_siswa, nis, email_siswa, no_telepon, jenis_kelamin } = req.body;
 
-    // Validasi required fields
     if (!nama_siswa || !nis) {
       return res.status(400).json({ 
         message: "Nama siswa dan NIS wajib diisi" 
       });
     }
 
-    // Validasi format NIS (10 digit)
     if (!/^\d{10}$/.test(nis)) {
       return res.status(400).json({ 
         message: "NIS harus 10 digit angka" 
       });
     }
 
-    // Check NIS unique
     const existingNIS = await Siswa.findOne({ where: { nis } });
     if (existingNIS) {
       return res.status(400).json({ 
@@ -90,7 +86,6 @@ export const createSiswa = async (req, res) => {
       });
     }
 
-    // Validasi email jika ada
     if (email_siswa) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email_siswa)) {
@@ -99,7 +94,6 @@ export const createSiswa = async (req, res) => {
         });
       }
 
-      // Check email unique
       const existingEmail = await Siswa.findOne({ where: { email_siswa } });
       if (existingEmail) {
         return res.status(400).json({ 
@@ -108,14 +102,12 @@ export const createSiswa = async (req, res) => {
       }
     }
 
-    // Validasi nomor telepon jika ada
     if (no_telepon && !/^(\+62|62|0)[0-9]{9,12}$/.test(no_telepon.replace(/[\s-]/g, ''))) {
       return res.status(400).json({ 
         message: "Format nomor telepon tidak valid" 
       });
     }
 
-    // Validasi jenis kelamin
     if (jenis_kelamin && !['Laki-laki', 'Perempuan'].includes(jenis_kelamin)) {
       return res.status(400).json({ 
         message: "Jenis kelamin harus Laki-laki atau Perempuan" 
@@ -137,14 +129,12 @@ export const updateSiswa = async (req, res) => {
 
     const { nama_siswa, nis, email_siswa, no_telepon, jenis_kelamin } = req.body;
 
-    // Validasi required fields jika ada
     if (nama_siswa !== undefined && !nama_siswa.trim()) {
       return res.status(400).json({ 
         message: "Nama siswa tidak boleh kosong" 
       });
     }
 
-    // Validasi NIS jika diubah
     if (nis && nis !== siswa.nis) {
       if (!/^\d{10}$/.test(nis)) {
         return res.status(400).json({ 
@@ -160,7 +150,6 @@ export const updateSiswa = async (req, res) => {
       }
     }
 
-    // Validasi email jika diubah
     if (email_siswa && email_siswa !== siswa.email_siswa) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email_siswa)) {
@@ -177,14 +166,12 @@ export const updateSiswa = async (req, res) => {
       }
     }
 
-    // Validasi nomor telepon jika ada
     if (no_telepon && !/^(\+62|62|0)[0-9]{9,12}$/.test(no_telepon.replace(/[\s-]/g, ''))) {
       return res.status(400).json({ 
         message: "Format nomor telepon tidak valid" 
       });
     }
 
-    // Validasi jenis kelamin
     if (jenis_kelamin && !['Laki-laki', 'Perempuan'].includes(jenis_kelamin)) {
       return res.status(400).json({ 
         message: "Jenis kelamin harus Laki-laki atau Perempuan" 

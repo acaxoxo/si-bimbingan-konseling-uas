@@ -19,7 +19,7 @@ export default function GuruList() {
         setLoading(true);
         setError("");
         const res = await api.get("/guru");
-        // Backend returns paginated response: { data: [...], pagination: {...} }
+        
         const dataArray = res.data.data || res.data;
         setGuruData(Array.isArray(dataArray) ? dataArray : []);
       } catch (err) {

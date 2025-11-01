@@ -5,9 +5,6 @@ import JenisPelanggaran from "../models/JenisPelanggaranModel.js";
 import { Op } from "sequelize";
 import sequelize from "../config/database.js";
 
-/**
- * Get pelanggaran trend per month (already exists, enhanced)
- */
 export const getPelanggaranTrendPerBulan = async (req, res) => {
   try {
     const { year = new Date().getFullYear(), kelasId } = req.query;
@@ -21,7 +18,6 @@ export const getPelanggaranTrendPerBulan = async (req, res) => {
       },
     };
 
-    // Filter by kelas if provided
     let include = [];
     if (kelasId) {
       include.push({
@@ -47,7 +43,6 @@ export const getPelanggaranTrendPerBulan = async (req, res) => {
       raw: true,
     });
 
-    // Fill missing months with 0
     const monthlyData = [];
     for (let i = 1; i <= 12; i++) {
       const monthStr = `${year}-${String(i).padStart(2, "0")}`;
@@ -76,9 +71,6 @@ export const getPelanggaranTrendPerBulan = async (req, res) => {
   }
 };
 
-/**
- * Get comparison between classes (perbandingan antar kelas)
- */
 export const getKelasComparison = async (req, res) => {
   try {
     const { startDate, endDate, year = new Date().getFullYear() } = req.query;
@@ -91,7 +83,7 @@ export const getKelasComparison = async (req, res) => {
         },
       };
     } else {
-      // Default: current year
+      
       dateFilter = {
         tanggal_pelanggaran: {
           [Op.between]: [
@@ -136,7 +128,6 @@ export const getKelasComparison = async (req, res) => {
       raw: true,
     });
 
-    // Calculate average per student
     const enrichedData = kelasData.map((kelas) => {
       const totalPelanggaran = parseInt(kelas.total_pelanggaran) || 0;
       const totalSiswa = parseInt(kelas.total_siswa) || 0;
@@ -165,9 +156,6 @@ export const getKelasComparison = async (req, res) => {
   }
 };
 
-/**
- * Get pelanggaran by category comparison
- */
 export const getCategoryComparison = async (req, res) => {
   try {
     const { startDate, endDate, year = new Date().getFullYear(), kelasId } = req.query;
@@ -245,9 +233,6 @@ export const getCategoryComparison = async (req, res) => {
   }
 };
 
-/**
- * Get top violators (siswa dengan pelanggaran terbanyak)
- */
 export const getTopViolators = async (req, res) => {
   try {
     const { limit = 10, startDate, endDate, year = new Date().getFullYear() } = req.query;

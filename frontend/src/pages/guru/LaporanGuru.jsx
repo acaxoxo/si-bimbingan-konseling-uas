@@ -11,9 +11,9 @@ export default function LaporanGuru() {
 
   const fetchLaporan = async () => {
     try {
-      // Ambil data langsung dari daftar pelanggaran siswa agar sesuai dengan kolom tabel
+      
       const res = await api.get("/pelanggaran-siswa");
-      // Extract data from paginated response
+      
       const dataArray = res.data?.data || res.data || [];
       setLaporan(Array.isArray(dataArray) ? dataArray : []);
     } catch (err) {
@@ -27,7 +27,7 @@ export default function LaporanGuru() {
   }, []);
 
   const handleExport = () => {
-    // Format data for Excel export
+    
     const headerRows = [
       ["LAPORAN PELANGGARAN SISWA"],
       ["SMK Negeri 1 Kupang"],
@@ -59,20 +59,20 @@ export default function LaporanGuru() {
       columns,
       ...dataRows
     ]);
-    // Style header rows (bold)
+    
     worksheet["A1"].s = { font: { bold: true, sz: 16 } };
     worksheet["A2"].s = { font: { bold: true, sz: 14 } };
     worksheet["A3"].s = { font: { italic: true, sz: 12 } };
-    // Set column widths
+    
     worksheet['!cols'] = [
-      { wch: 5 },   // No
-      { wch: 25 },  // Nama Siswa
-      { wch: 20 },  // Kelas
-      { wch: 20 },  // Jenis Pelanggaran
-      { wch: 12 },  // Kategori
-      { wch: 8 },   // Poin
-      { wch: 14 },  // Tanggal
-      { wch: 20 }   // Tindakan
+      { wch: 5 },   
+      { wch: 25 },  
+      { wch: 20 },  
+      { wch: 20 },  
+      { wch: 12 },  
+      { wch: 8 },   
+      { wch: 14 },  
+      { wch: 20 }   
     ];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Pelanggaran");
@@ -94,7 +94,7 @@ export default function LaporanGuru() {
 
   return (
     <div className="container mt-4">
-      {/* Breadcrumbs */}
+      {}
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb">
           <li className="breadcrumb-item">

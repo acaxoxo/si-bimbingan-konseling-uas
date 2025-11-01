@@ -1,7 +1,4 @@
-/**
- * Pagination Helper
- * Utility untuk standarisasi pagination response
- */
+
 
 export const getPaginationParams = (req) => {
   const page = parseInt(req.query.page) || 1;

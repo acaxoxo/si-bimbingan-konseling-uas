@@ -1,8 +1,5 @@
-// middleware/authErrorHandler.js
 
-/**
- * Middleware khusus menangani error autentikasi dan otorisasi
- */
+
 export const authErrorHandler = (err, req, res, next) => {
   if (err.name === "JsonWebTokenError") {
     return res.status(401).json({

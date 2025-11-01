@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
 import db from "./config/database.js";
-import "./models/associations.js"; // Import associations
+import "./models/associations.js"; 
 
 dotenv.config();
 import GuruRoute from "./routes/GuruRoute.js";
@@ -33,18 +33,16 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// CORS configuration
-// Development CORS settings
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'http://localhost:5173',  // Vite default
-      'http://localhost:3000',  // Alternative development port
-      process.env.FRONTEND_URL  // Production URL
-    ].filter(Boolean); // Remove undefined/null values
+      'http://localhost:5173',  
+      'http://localhost:3000',  
+      process.env.FRONTEND_URL  
+    ].filter(Boolean); 
     
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
       callback(null, true);
@@ -60,35 +58,26 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Request parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
-// Serve static files (uploaded files)
 app.use('/uploads', express.static('uploads'));
 
-// Apply rate limiting to all API routes
 app.use("/api/", apiLimiter);
 
 (async () => {
   try {
     await db.authenticate();
     console.log("Database connected successfully.");
-  // Sync models to DB. Use plain sync without `alter` to avoid unexpected
-  // ALTER TABLE statements during dev that can fail on complex schemas.
-  // If you need to alter schema in development, run targeted migrations or
-  // enable `alter` manually for a short period.
+
   await db.sync();
     console.log("Semua model berhasil disinkronisasi.");
-    
-    // Initialize Socket.io
+
     initSocket(server);
-    
-    // Verify email configuration (non-blocking)
+
     verifyEmailConfig();
-    
-    // Schedule automatic backups (every day at 2 AM by default)
+
     if (process.env.ENABLE_AUTO_BACKUP !== "false") {
       scheduleAutomaticBackups();
     }
@@ -126,6 +115,6 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`🔌 WebSocket ready on ws://localhost:${PORT}`);
+  console.log(` Server running on http://localhost:${PORT}`);
+  console.log(` WebSocket ready on ws://localhost:${PORT}`);
 });

@@ -6,9 +6,6 @@ import {
   deleteBackup,
 } from "../services/backupService.js";
 
-/**
- * Create manual database backup
- */
 export const createBackup = async (req, res) => {
   try {
     const result = await createDatabaseBackup();
@@ -26,9 +23,6 @@ export const createBackup = async (req, res) => {
   }
 };
 
-/**
- * Restore database from backup
- */
 export const restoreBackup = async (req, res) => {
   try {
     const { fileName } = req.body;
@@ -59,9 +53,6 @@ export const restoreBackup = async (req, res) => {
   }
 };
 
-/**
- * List all available backups
- */
 export const listAllBackups = async (req, res) => {
   try {
     const backups = await listBackups();
@@ -79,9 +70,6 @@ export const listAllBackups = async (req, res) => {
   }
 };
 
-/**
- * Download backup file
- */
 export const downloadBackup = async (req, res) => {
   try {
     const { fileName } = req.params;
@@ -110,12 +98,6 @@ export const downloadBackup = async (req, res) => {
   }
 };
 
-/**
- * Delete specific backup
- */
-/**
- * Delete a backup file
- */
 export const deleteBackupFile = async (req, res) => {
   try {
     const { fileName } = req.params;
@@ -135,9 +117,6 @@ export const deleteBackupFile = async (req, res) => {
   }
 };
 
-/**
- * Cleanup old backups
- */
 export const cleanupBackups = async (req, res) => {
   try {
     const result = await cleanupOldBackups();

@@ -7,29 +7,22 @@ import archiver from "archiver";
 import util from "util";
 const execPromise = util.promisify(exec);
 
-// Backup configuration
 const BACKUP_DIR = path.join(process.cwd(), "backups");
-const BACKUP_RETENTION_DAYS = 7; // Keep backups for 7 days
+const BACKUP_RETENTION_DAYS = 7; 
 const DB_HOST = process.env.DB_HOST || "localhost";
 const DB_USER = process.env.DB_USER || "root";
 const DB_PASSWORD = process.env.DB_PASSWORD || "";
 const DB_NAME = process.env.DB_NAME || "db_konseling";
 
-/**
- * Ensure backup directory exists
- */
 const ensureBackupDir = async () => {
   try {
     await fsPromises.access(BACKUP_DIR);
   } catch {
     await fsPromises.mkdir(BACKUP_DIR, { recursive: true });
-    console.log(`📁 Created backup directory: ${BACKUP_DIR}`);
+    console.log(` Created backup directory: ${BACKUP_DIR}`);
   }
 };
 
-/**
- * Create database backup using mysqldump
- */
 const createDatabaseBackup = async () => {
   try {
     await ensureBackupDir();
@@ -38,22 +31,19 @@ const createDatabaseBackup = async () => {
     const backupFileName = `backup_${DB_NAME}_${timestamp}.sql`;
     const backupFilePath = path.join(BACKUP_DIR, backupFileName);
 
-    // Build mysqldump command
     const mysqldumpCmd = `mysqldump -h ${DB_HOST} -u ${DB_USER} ${
       DB_PASSWORD ? `-p${DB_PASSWORD}` : ""
     } ${DB_NAME} > "${backupFilePath}"`;
 
-    console.log(`⏳ Starting database backup: ${backupFileName}...`);
+    console.log(` Starting database backup: ${backupFileName}...`);
     
     await execPromise(mysqldumpCmd);
 
-    // Get file stats
     const stats = await fsPromises.stat(backupFilePath);
     const fileSizeMB = (stats.size / (1024 * 1024)).toFixed(2);
 
-    console.log(`✅ Database backup created successfully: ${backupFileName} (${fileSizeMB} MB)`);
+    console.log(` Database backup created successfully: ${backupFileName} (${fileSizeMB} MB)`);
 
-    // Optionally compress the backup
     const zipFilePath = await compressBackup(backupFilePath);
 
     return {
@@ -65,14 +55,11 @@ const createDatabaseBackup = async () => {
       timestamp: new Date(),
     };
   } catch (error) {
-    console.error("❌ Error creating database backup:", error.message);
+    console.error(" Error creating database backup:", error.message);
     throw error;
   }
 };
 
-/**
- * Compress backup file to .zip
- */
 const compressBackup = async (sqlFilePath) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -82,9 +69,8 @@ const compressBackup = async (sqlFilePath) => {
 
       output.on("close", () => {
         const sizeMB = (archive.pointer() / (1024 * 1024)).toFixed(2);
-        console.log(`🗜️  Compressed backup: ${path.basename(zipFilePath)} (${sizeMB} MB)`);
-        
-        // Delete original SQL file after compression
+        console.log(`  Compressed backup: ${path.basename(zipFilePath)} (${sizeMB} MB)`);
+
         fsPromises.unlink(sqlFilePath).catch(() => {});
         
         resolve(zipFilePath);
@@ -103,32 +89,26 @@ const compressBackup = async (sqlFilePath) => {
   });
 };
 
-/**
- * Restore database from backup file
- */
 const restoreDatabaseBackup = async (backupFilePath) => {
   try {
-    // Check if file exists
+    
     await fsPromises.access(backupFilePath);
 
-    console.log(`⏳ Restoring database from: ${path.basename(backupFilePath)}...`);
+    console.log(` Restoring database from: ${path.basename(backupFilePath)}...`);
 
-    // If it's a zip file, extract it first
     let sqlFilePath = backupFilePath;
     if (backupFilePath.endsWith(".zip")) {
       sqlFilePath = await extractBackup(backupFilePath);
     }
 
-    // Build mysql restore command
     const mysqlCmd = `mysql -h ${DB_HOST} -u ${DB_USER} ${
       DB_PASSWORD ? `-p${DB_PASSWORD}` : ""
     } ${DB_NAME} < "${sqlFilePath}"`;
 
     await execPromise(mysqlCmd);
 
-    console.log(`✅ Database restored successfully from: ${path.basename(backupFilePath)}`);
+    console.log(` Database restored successfully from: ${path.basename(backupFilePath)}`);
 
-    // Clean up extracted SQL file if it was from zip
     if (backupFilePath.endsWith(".zip") && sqlFilePath !== backupFilePath) {
       await fsPromises.unlink(sqlFilePath).catch(() => {});
     }
@@ -139,14 +119,11 @@ const restoreDatabaseBackup = async (backupFilePath) => {
       restoredAt: new Date(),
     };
   } catch (error) {
-    console.error("❌ Error restoring database:", error.message);
+    console.error(" Error restoring database:", error.message);
     throw error;
   }
 };
 
-/**
- * Extract zip backup file
- */
 const extractBackup = async (zipFilePath) => {
   return new Promise((resolve, reject) => {
     const extract = require("extract-zip");
@@ -156,16 +133,13 @@ const extractBackup = async (zipFilePath) => {
       .then(() => {
         const sqlFileName = path.basename(zipFilePath).replace(".zip", ".sql");
         const sqlFilePath = path.join(outputDir, sqlFileName);
-        console.log(`📦 Extracted backup: ${sqlFileName}`);
+        console.log(` Extracted backup: ${sqlFileName}`);
         resolve(sqlFilePath);
       })
       .catch(reject);
   });
 };
 
-/**
- * List all available backups
- */
 const listBackups = async () => {
   try {
     await ensureBackupDir();
@@ -191,7 +165,6 @@ const listBackups = async () => {
       })
     );
 
-    // Sort by creation date (newest first)
     backupList.sort((a, b) => b.createdAt - a.createdAt);
 
     return backupList;
@@ -201,9 +174,6 @@ const listBackups = async () => {
   }
 };
 
-/**
- * Delete old backups (cleanup)
- */
 const cleanupOldBackups = async () => {
   try {
     const backups = await listBackups();
@@ -215,15 +185,15 @@ const cleanupOldBackups = async () => {
     for (const backup of backups) {
       if (backup.createdAt < cutoffDate) {
         await fsPromises.unlink(backup.filePath);
-        console.log(`🗑️  Deleted old backup: ${backup.fileName}`);
+        console.log(`  Deleted old backup: ${backup.fileName}`);
         deletedCount++;
       }
     }
 
     if (deletedCount > 0) {
-      console.log(`✅ Cleanup completed: ${deletedCount} old backup(s) deleted`);
+      console.log(` Cleanup completed: ${deletedCount} old backup(s) deleted`);
     } else {
-      console.log(`ℹ️  No old backups to delete (retention: ${BACKUP_RETENTION_DAYS} days)`);
+      console.log(`ℹ  No old backups to delete (retention: ${BACKUP_RETENTION_DAYS} days)`);
     }
 
     return { deletedCount, retentionDays: BACKUP_RETENTION_DAYS };
@@ -233,14 +203,11 @@ const cleanupOldBackups = async () => {
   }
 };
 
-/**
- * Delete specific backup
- */
 const deleteBackup = async (fileName) => {
   try {
     const filePath = path.join(BACKUP_DIR, fileName);
     await fsPromises.unlink(filePath);
-    console.log(`🗑️  Deleted backup: ${fileName}`);
+    console.log(`  Deleted backup: ${fileName}`);
     return { success: true, fileName };
   } catch (error) {
     console.error(`Error deleting backup ${fileName}:`, error.message);
@@ -248,20 +215,16 @@ const deleteBackup = async (fileName) => {
   }
 };
 
-/**
- * Schedule automatic backups using cron
- * Default: Every day at 2 AM
- */
 const scheduleAutomaticBackups = () => {
   const cronSchedule = process.env.BACKUP_CRON_SCHEDULE || "0 2 * * *";
 
   cron.schedule(cronSchedule, async () => {
-    console.log("🕒 Scheduled backup started...");
+    console.log(" Scheduled backup started...");
     try {
       await createDatabaseBackup();
       await cleanupOldBackups();
     } catch (error) {
-      console.error("❌ Scheduled backup failed:", error.message);
+      console.error(" Scheduled backup failed:", error.message);
     }
   });
 

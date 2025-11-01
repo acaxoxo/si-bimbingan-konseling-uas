@@ -43,7 +43,6 @@ export const createJenisPelanggaran = async (req, res) => {
       poin_pelanggaran,
     } = req.body;
 
-    // Validasi required fields
     if (!nama_jenis_pelanggaran) {
       return res.status(400).json({ 
         message: "Nama jenis pelanggaran wajib diisi" 
@@ -56,7 +55,6 @@ export const createJenisPelanggaran = async (req, res) => {
       });
     }
 
-    // Validasi kategori pelanggaran
     const validKategori = ["Ringan", "Sedang", "Berat"];
     if (!validKategori.includes(kategori_pelanggaran)) {
       return res.status(400).json({ 
@@ -64,7 +62,6 @@ export const createJenisPelanggaran = async (req, res) => {
       });
     }
 
-    // Validasi poin pelanggaran
     if (poin_pelanggaran !== undefined && poin_pelanggaran !== null) {
       if (typeof poin_pelanggaran !== 'number' || poin_pelanggaran < 0) {
         return res.status(400).json({ 
@@ -73,7 +70,6 @@ export const createJenisPelanggaran = async (req, res) => {
       }
     }
 
-    // Validasi unique nama jenis pelanggaran
     const existingPelanggaran = await JenisPelanggaran.findOne({ 
       where: { nama_jenis_pelanggaran } 
     });
@@ -83,7 +79,6 @@ export const createJenisPelanggaran = async (req, res) => {
       });
     }
 
-    // Get admin_id from authenticated user
     const admin_id = req.user?.id || null;
 
     console.log("=== Debug Create Jenis Pelanggaran ===");
@@ -126,14 +121,12 @@ export const updateJenisPelanggaran = async (req, res) => {
 
     const { nama_jenis_pelanggaran, kategori_pelanggaran, poin_pelanggaran } = req.body;
 
-    // Validasi nama tidak boleh kosong
     if (nama_jenis_pelanggaran !== undefined && !nama_jenis_pelanggaran) {
       return res.status(400).json({ 
         message: "Nama jenis pelanggaran tidak boleh kosong" 
       });
     }
 
-    // Validasi unique nama jenis pelanggaran jika diubah
     if (nama_jenis_pelanggaran && nama_jenis_pelanggaran !== pelanggaran.nama_jenis_pelanggaran) {
       const existingPelanggaran = await JenisPelanggaran.findOne({ 
         where: { nama_jenis_pelanggaran } 
@@ -145,7 +138,6 @@ export const updateJenisPelanggaran = async (req, res) => {
       }
     }
 
-    // Validasi kategori pelanggaran jika diubah
     if (kategori_pelanggaran && kategori_pelanggaran !== pelanggaran.kategori_pelanggaran) {
       const validKategori = ["Ringan", "Sedang", "Berat"];
       if (!validKategori.includes(kategori_pelanggaran)) {
@@ -155,7 +147,6 @@ export const updateJenisPelanggaran = async (req, res) => {
       }
     }
 
-    // Validasi poin pelanggaran jika diubah
     if (poin_pelanggaran !== undefined && poin_pelanggaran !== null) {
       if (typeof poin_pelanggaran !== 'number' || poin_pelanggaran < 0) {
         return res.status(400).json({ 

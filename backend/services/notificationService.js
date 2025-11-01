@@ -2,9 +2,6 @@ import Notification from "../models/NotificationModel.js";
 import { emitToUser, emitToRole } from "./socketService.js";
 import { sendEmail } from "./emailService.js";
 
-/**
- * Create notification dan kirim via WebSocket + Email (optional)
- */
 export const createNotification = async ({
   userId,
   userRole,
@@ -17,7 +14,7 @@ export const createNotification = async ({
   userEmail = null,
 }) => {
   try {
-    // 1. Simpan ke database
+    
     const notification = await Notification.create({
       user_id: userId,
       user_role: userRole,
@@ -30,7 +27,6 @@ export const createNotification = async ({
       is_sent_email: false,
     });
 
-    // 2. Emit via WebSocket (real-time)
     emitToUser(userId, "new_notification", {
       id: notification.id_notification,
       title: notification.title,
@@ -42,7 +38,6 @@ export const createNotification = async ({
       isRead: false,
     });
 
-    // 3. Kirim email jika diminta dan email tersedia
     if (sendEmailNotification && userEmail) {
       try {
         await sendEmail({
@@ -51,15 +46,14 @@ export const createNotification = async ({
           html: generateEmailTemplate(title, message, type),
         });
 
-        // Update status email terkirim
         await notification.update({ is_sent_email: true });
-        console.log(`📧 Email notification sent to ${userEmail}`);
+        console.log(` Email notification sent to ${userEmail}`);
       } catch (emailError) {
         console.error("Error sending email notification:", emailError.message);
       }
     }
 
-    console.log(`🔔 Notification created for user ${userId}: ${title}`);
+    console.log(` Notification created for user ${userId}: ${title}`);
     
     return notification;
   } catch (error) {
@@ -68,9 +62,6 @@ export const createNotification = async ({
   }
 };
 
-/**
- * Notify parent tentang pelanggaran baru
- */
 export const notifyParentAboutPelanggaran = async (pelanggaranData, orangTuaData, siswaData) => {
   try {
     const message = `Anak Anda, ${siswaData.nama_siswa} (${siswaData.nis}), melakukan pelanggaran: ${pelanggaranData.deskripsi_pelanggaran}. Tanggal: ${new Date(pelanggaranData.tanggal_pelanggaran).toLocaleDateString("id-ID")}.`;
@@ -87,15 +78,12 @@ export const notifyParentAboutPelanggaran = async (pelanggaranData, orangTuaData
       userEmail: orangTuaData.email_orang_tua,
     });
 
-    console.log(`📬 Parent notified about pelanggaran: ${orangTuaData.email_orang_tua}`);
+    console.log(` Parent notified about pelanggaran: ${orangTuaData.email_orang_tua}`);
   } catch (error) {
     console.error("Error notifying parent:", error);
   }
 };
 
-/**
- * Notify guru tentang tanggapan orang tua
- */
 export const notifyGuruAboutTanggapan = async (tanggapanData, guruData) => {
   try {
     const message = `Orang tua telah memberikan tanggapan untuk laporan pelanggaran. Tanggapan: "${tanggapanData.isi_tanggapan}".`;
@@ -112,15 +100,12 @@ export const notifyGuruAboutTanggapan = async (tanggapanData, guruData) => {
       userEmail: guruData.email_guru,
     });
 
-    console.log(`📬 Guru notified about tanggapan: ${guruData.email_guru}`);
+    console.log(` Guru notified about tanggapan: ${guruData.email_guru}`);
   } catch (error) {
     console.error("Error notifying guru:", error);
   }
 };
 
-/**
- * Notify admin dan guru tentang tindakan sekolah
- */
 export const notifyAboutTindakanSekolah = async (tindakanData, recipients) => {
   try {
     const message = `Tindakan sekolah baru: ${tindakanData.jenis_tindakan}. Keterangan: ${tindakanData.keterangan_tindakan || "-"}`;
@@ -134,20 +119,17 @@ export const notifyAboutTindakanSekolah = async (tindakanData, recipients) => {
         type: "tindakan_sekolah",
         referenceId: tindakanData.id_tindakan,
         referenceType: "tindakan_sekolah",
-        sendEmailNotification: false, // Optional untuk admin/guru
+        sendEmailNotification: false, 
         userEmail: recipient.email,
       });
     }
 
-    console.log(`📬 Notified ${recipients.length} recipients about tindakan sekolah`);
+    console.log(` Notified ${recipients.length} recipients about tindakan sekolah`);
   } catch (error) {
     console.error("Error notifying about tindakan:", error);
   }
 };
 
-/**
- * Generate HTML template untuk email
- */
 const generateEmailTemplate = (title, message, type) => {
   const typeColors = {
     pelanggaran_baru: "#ef4444",
@@ -176,7 +158,7 @@ const generateEmailTemplate = (title, message, type) => {
               <tr>
                 <td style="background-color: ${color}; padding: 30px; text-align: center;">
                   <h1 style="margin: 0; color: #ffffff; font-size: 24px;">
-                    🔔 Sistem Bimbingan Konseling
+                     Sistem Bimbingan Konseling
                   </h1>
                 </td>
               </tr>
@@ -218,4 +200,3 @@ const generateEmailTemplate = (title, message, type) => {
   `;
 };
 
-// No need for module.exports anymore - using named exports

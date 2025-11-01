@@ -45,7 +45,7 @@ export default function EditSiswa() {
           alamat: siswa.alamat || "",
           no_telepon: siswa.no_telepon || "",
           email_siswa: siswa.email_siswa || "",
-          password: "", // Kosongkan password untuk edit
+          password: "", 
         });
 
         setOrangTuaData(orangTuaRes.data);
@@ -68,7 +68,7 @@ export default function EditSiswa() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Hanya kirim password jika diisi (untuk update password)
+      
       const payload = { ...form };
       if (!payload.password) {
         delete payload.password;

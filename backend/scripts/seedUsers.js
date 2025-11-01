@@ -6,11 +6,7 @@ import Guru from "../models/GuruModel.js";
 import Siswa from "../models/SiswaModel.js";
 import OrangTua from "../models/OrangTuaModel.js";
 import Kelas from "../models/KelasModel.js";
-// NOTE: We used to call register(), but register expects fewer fields and some models
-// require many NOT NULL columns. To reliably create test users for development,
-// we create model instances directly with sensible defaults.
 
-// Helper to simulate express req/res
 const run = async () => {
   try {
     console.log("Connecting to database...");
@@ -18,14 +14,12 @@ const run = async () => {
     console.log("Database connected.");
     await db.sync({ alter: false });
 
-    // Ensure there's at least one kelas for siswa
     let kelas = await Kelas.findOne();
     if (!kelas) {
       kelas = await Kelas.create({ nama_kelas: "Kelas A" });
       console.log("Created default kelas:", kelas.nama_kelas);
     }
 
-    // Admin
     const adminEmail = "admin123@gmail.com";
     const existingAdmin = await Admin.findOne({ where: { email_admin: adminEmail } });
     if (existingAdmin) {
@@ -35,13 +29,12 @@ const run = async () => {
       console.log(`Created admin ${adminEmail}`);
     }
 
-    // Siswa
     const siswaEmail = "siswa123@gmail.com";
     const existingSiswa = await Siswa.findOne({ where: { email_siswa: siswaEmail } });
     if (existingSiswa) {
       console.log(`Siswa ${siswaEmail} already exists, skipping.`);
     } else {
-      // Don't hash here - let the model beforeCreate hook handle it
+      
       await Siswa.create({
         nama_siswa: "Siswa Seed",
         nis: "SISWA123",
@@ -56,13 +49,12 @@ const run = async () => {
       console.log(`Created siswa ${siswaEmail}`);
     }
 
-    // Orang Tua
     const ortuEmail = "ortu123@gmail.com";
     const existingOrtu = await OrangTua.findOne({ where: { email_ayah: ortuEmail } });
     if (existingOrtu) {
       console.log(`OrangTua ${ortuEmail} already exists, skipping.`);
     } else {
-      // Don't hash here - let the model beforeCreate hook handle it
+      
       await OrangTua.create({
         nama_ayah: "Bapak Seed",
         nama_ibu: "Ibu Seed",
@@ -72,13 +64,12 @@ const run = async () => {
       console.log(`Created orangtua ${ortuEmail}`);
     }
 
-    // Guru
     const guruEmail = "guru123@gmail.com";
     const existingGuru = await Guru.findOne({ where: { email_guru: guruEmail } });
     if (existingGuru) {
       console.log(`Guru ${guruEmail} already exists, skipping.`);
     } else {
-      // Don't hash here - let the model beforeCreate hook handle it
+      
       await Guru.create({
         nama_guru: "Guru Seed",
         nik: "GURU123",

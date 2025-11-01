@@ -20,31 +20,27 @@ export default function DashboardGuru() {
       try {
         setLoading(true);
         setError("");
-        // Fetch all pelanggaran siswa and tanggapan
+        
         const [pelRes, tanggapanRes] = await Promise.all([
           api.get("/pelanggaran-siswa"),
           api.get("/tanggapan").catch(() => ({ data: { data: [] } })),
         ]);
-        // Extract data from paginated response: { data: [...], pagination: {...} }
+        
         const pelanggaran = pelRes.data?.data || pelRes.data || [];
         const tanggapan = tanggapanRes.data?.data || tanggapanRes.data || [];
-        
-        // Current month/year
+
         const now = new Date();
         const month = now.getMonth() + 1;
         const year = now.getFullYear();
 
-        // Pelanggaran bulan ini
         const pelanggaranBulanIni = pelanggaran.filter(p => {
           if (!p.tanggal_pelanggaran) return false;
           const tgl = new Date(p.tanggal_pelanggaran);
           return tgl.getMonth() + 1 === month && tgl.getFullYear() === year;
         }).length;
 
-        // Laporan dibuat oleh guru ini
         const laporanDibuat = pelanggaran.filter(p => p.guruId === user?.id).length;
-        
-        // Tanggapan orang tua untuk pelanggaran yang dibuat oleh guru ini
+
         const tanggapanUntukGuruIni = Array.isArray(tanggapan)
           ? tanggapan.filter(t => t?.pelanggaran_siswa?.guruId === user?.id).length
           : 0;
@@ -57,7 +53,7 @@ export default function DashboardGuru() {
         setLoading(false);
       } catch (err) {
         setError(formatAxiosError(err));
-        // fallback: show zeroes
+        
         setStats({
           pelanggaranBulanIni: 0,
           tanggapanOrangTua: 0,
@@ -105,7 +101,7 @@ export default function DashboardGuru() {
 
   return (
     <div className="container mt-5 mb-5 pb-4">
-      {/* Welcome Card */}
+      {}
       <div className="card border-0 shadow-sm mb-4" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-light)' }}>
         <div className="card-body">
           <h3 className="fw-bold mb-0" style={{ color: 'var(--text-primary)' }}>Selamat Datang, {user?.name || "Guru BK"}</h3>
@@ -123,14 +119,14 @@ export default function DashboardGuru() {
         <Loading label="Memuat ringkasan dashboard..." />
       ) : (
         <>
-          {/* Top metrics - single responsive row */}
+          {}
           <div className="dashboard-grid-top mb-4">
             <TopMetric title="Pelanggaran Bulan Ini" value={stats.pelanggaranBulanIni} color="#ef4444" />
             <TopMetric title="Tanggapan Orang Tua" value={stats.tanggapanOrangTua} color="#667eea" />
             <TopMetric title="Laporan Dibuat" value={stats.laporanDibuat} color="#10b981" />
           </div>
 
-          {/* Action cards: guru-specific tools */}
+          {}
           <h5 className="fw-bold mb-3" style={{ color: 'var(--text-primary)' }}><i className="fa-solid fa-briefcase me-2"></i>Menu Aksi</h5>
           <div className="dashboard-grid-secondary mb-4">
             {actionCards.map((card, idx) => (

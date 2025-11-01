@@ -51,7 +51,6 @@ router.get("/laporan",
   getLaporanSekolah
 );
 
-// Laporan khusus orang tua untuk anak yang terhubung dengan akun tersebut
 router.get("/anak",
   verifyToken,
   authorizeRoles("orangtua"),
@@ -59,14 +58,12 @@ router.get("/anak",
   getLaporanAnak
 );
 
-  // Dashboard statistics
   router.get("/dashboard-stats",
     verifyToken,
     authorizeRoles("admin"),
     getDashboardStats
   );
 
-  // Get laporan with filters
   router.get("/pelanggaran",
     verifyToken,
     authorizeRoles("admin", "guru"),
@@ -81,7 +78,6 @@ router.get("/anak",
     getLaporanPelanggaran
   );
 
-  // Analisis poin per siswa
   router.get("/analisis-siswa",
     verifyToken,
     authorizeRoles("admin", "guru"),
@@ -92,7 +88,6 @@ router.get("/anak",
     getAnalisisPoinPerSiswa
   );
 
-  // Analisis poin per kelas
   router.get("/analisis-kelas",
     verifyToken,
     authorizeRoles("admin", "guru"),

@@ -63,7 +63,7 @@ export const login = async (req, res) => {
         break;
 
       case "orangtua":
-        // Allow parent to login using either father's or mother's email
+        
         user = await OrangTua.findOne({ 
           where: { [Op.or]: [{ email_ayah: email }, { email_ibu: email }] }
         });
@@ -93,7 +93,6 @@ export const login = async (req, res) => {
       { expiresIn: "2h" }
     );
 
-    // Log login activity
     await ActivityLogger.login(req, userId, role);
 
     res.status(200).json({
@@ -112,10 +111,9 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    // Log logout activity
-    await ActivityLogger.logout(req);
     
-    // Since JWT is stateless, we just need to tell the client to remove the token
+    await ActivityLogger.logout(req);
+
     res.status(200).json({ message: "Logout berhasil." });
   } catch (error) {
     console.error("Logout error:", error);
@@ -126,7 +124,6 @@ export const logout = async (req, res) => {
   }
 };
 
-// Issue a new access token based on an existing (possibly expired) token in the Authorization header
 export const refresh = async (req, res) => {
   try {
     const authHeader = req.headers["authorization"] || req.headers["Authorization"]; 
@@ -138,7 +135,7 @@ export const refresh = async (req, res) => {
     let payload;
 
     try {
-      // Verify signature but ignore expiry so we can refresh expired tokens
+      
       payload = jwt.verify(oldToken, process.env.JWT_SECRET, { ignoreExpiration: true });
     } catch (err) {
       return res.status(401).json({ message: "Token tidak valid" });
@@ -149,7 +146,6 @@ export const refresh = async (req, res) => {
       return res.status(400).json({ message: "Payload token tidak lengkap" });
     }
 
-    // Optionally: ensure user still exists (basic check by role)
     try {
       let exists = null;
       switch ((role || "").toLowerCase()) {
@@ -172,7 +168,7 @@ export const refresh = async (req, res) => {
         return res.status(401).json({ message: "Pengguna tidak ditemukan" });
       }
     } catch (e) {
-      // If DB check fails, still prevent issuing a token
+      
       return res.status(500).json({ message: "Gagal memvalidasi pengguna" });
     }
 
@@ -195,7 +191,6 @@ export const register = async (req, res) => {
       });
     }
 
-    // Validasi format email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
@@ -203,7 +198,6 @@ export const register = async (req, res) => {
       });
     }
 
-    // Validasi password strength
     if (password.length < 8) {
       return res.status(400).json({
         message: "Password minimal 8 karakter.",

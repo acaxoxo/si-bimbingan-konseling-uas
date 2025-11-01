@@ -18,7 +18,7 @@ export default function OrangTuaList() {
         setLoading(true);
         setError("");
         const res = await api.get("/orang-tua");
-        // Backend returns paginated response: { data: [...], pagination: {...} }
+        
         const dataArray = res.data.data || res.data;
         setOrangTuaData(Array.isArray(dataArray) ? dataArray : []);
       } catch (err) {
