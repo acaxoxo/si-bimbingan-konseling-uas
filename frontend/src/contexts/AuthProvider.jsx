@@ -54,9 +54,7 @@ export const AuthProvider = ({ children }) => {
         
         localStorage.removeItem("token");
         window.location.pathname = "/login";
-      } catch {
-        
-      }
+      } catch { /* empty */ }
     };
 
     const handler = () => navigate();
@@ -72,16 +70,18 @@ export const AuthProvider = ({ children }) => {
 
       if (!token) {
         console.error("Login response tidak berisi token:", res?.data);
-        setError("Login gagal: token tidak ditemukan pada respon server");
-        return null;
+        const errorMsg = "Login gagal: token tidak ditemukan pada respon server";
+        setError(errorMsg);
+        throw new Error(errorMsg);
       }
 
       localStorage.setItem("token", token);
       const decoded = decodeToken(token);
 
       if (!decoded) {
-        setError("Login gagal: token tidak valid");
-        return null;
+        const errorMsg = "Login gagal: token tidak valid";
+        setError(errorMsg);
+        throw new Error(errorMsg);
       }
 
       setUser({
@@ -93,15 +93,17 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       return decoded;
     } catch (err) {
-      
       console.error("Login gagal:", err);
       console.error("Login response data:", err.response?.data);
       console.error("Login request payload:", { email, password });
 
       const serverMessage =
         err.response?.data?.message || err.response?.data?.error || null;
-      setError(serverMessage || "Email atau password salah");
-      return null;
+      const errorMsg = serverMessage || err.message || "Email atau password salah";
+      setError(errorMsg);
+      
+      // Lempar error agar bisa ditangkap di komponen Login
+      throw err;
     }
   }, []);
 

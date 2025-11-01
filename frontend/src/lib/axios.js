@@ -18,8 +18,9 @@ api.interceptors.request.use(
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
       }
-    } catch {
-      
+    } catch (err) {
+      // Ignore errors reading localStorage (e.g., in private mode) and log for debugging
+      console.warn("Could not access localStorage to retrieve token:", err);
     }
     return config;
   },
@@ -30,8 +31,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error?.response?.status;
+    const requestUrl = error?.config?.url || "";
     
-    if (status === 401) {
+    // Jangan trigger unauthorized event jika error dari endpoint login
+    // Karena login dengan kredensial salah akan return 401, tapi itu bukan unauthorized session
+    if (status === 401 && !requestUrl.includes("/auth/login")) {
       window.dispatchEvent(
         new CustomEvent("app:unauthorized", { detail: { source: "axios-401" } })
       );
