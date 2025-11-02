@@ -11,17 +11,19 @@ export default function LaporanPelanggaran() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [periodeMode, setPeriodeMode] = useState("rentang"); 
+  // Filters
+  const [periodeMode, setPeriodeMode] = useState("rentang"); // rentang | bulanan | semester | tahunan
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [kelasId, setKelasId] = useState("");
   const [kategori, setKategori] = useState("");
 
+  // Dropdown data
   const [kelasList, setKelasList] = useState([]);
   const [kategoriList, setKategoriList] = useState([]);
 
   useEffect(() => {
-    
+    // preload kelas + kategori once
     (async () => {
       try {
         const [kelasRes, jenisRes] = await Promise.all([
@@ -34,12 +36,12 @@ export default function LaporanPelanggaran() {
         );
         setKategoriList(uniqueKategori);
       } catch {
-        
+        // ignore preload failures
       }
     })();
-    
+    // initial load
     handleFetch();
-    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const buildQuery = () => {
@@ -129,7 +131,7 @@ export default function LaporanPelanggaran() {
         </div>
       </div>
 
-      {}
+      {/* Filters */}
       <div className="card shadow-sm mb-3">
         <div className="card-body">
           <div className="row g-2 align-items-end">

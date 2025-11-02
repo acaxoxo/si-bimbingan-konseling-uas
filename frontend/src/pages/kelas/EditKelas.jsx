@@ -14,35 +14,35 @@ export default function EditKelas() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchKelas = async () => {
+      try {
+        const res = await api.get(`/kelas/${id}`);
+        const data = res.data;
+        setForm({
+          nama_kelas: data.nama_kelas || "",
+          kelas_kejuruan: data.kelas_kejuruan || "",
+          guruId: data.guruId || "",
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error("Gagal ambil data:", err);
+        alert("Gagal memuat data");
+        setLoading(false);
+      }
+    };
+
+    const fetchGuru = async () => {
+      try {
+        const res = await api.get("/guru");
+        setGuruList(res.data);
+      } catch (err) {
+        console.error("Gagal ambil data guru:", err);
+      }
+    };
+
     fetchKelas();
     fetchGuru();
   }, [id]);
-
-  const fetchKelas = async () => {
-    try {
-      const res = await api.get(`/kelas/${id}`);
-      const data = res.data;
-      setForm({
-        nama_kelas: data.nama_kelas || "",
-        kelas_kejuruan: data.kelas_kejuruan || "",
-        guruId: data.guruId || "",
-      });
-      setLoading(false);
-    } catch (err) {
-      console.error("Gagal ambil data:", err);
-      alert("Gagal memuat data");
-      setLoading(false);
-    }
-  };
-
-  const fetchGuru = async () => {
-    try {
-      const res = await api.get("/guru");
-      setGuruList(res.data);
-    } catch (err) {
-      console.error("Gagal ambil data guru:", err);
-    }
-  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

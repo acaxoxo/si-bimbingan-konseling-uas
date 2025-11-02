@@ -22,49 +22,51 @@ export default function EditPelanggaranSiswa() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchSiswa();
-    fetchJenisPelanggaran();
-    fetchPelanggaranData();
+    let isMounted = true;
+
+    const fetchAll = async () => {
+      try {
+        const [pelRes, siswaRes, jenisRes] = await Promise.all([
+          api.get(`/pelanggaran-siswa/${id}`),
+          api.get("/siswa"),
+          api.get("/jenis-pelanggaran"),
+        ]);
+
+        const data = pelRes.data;
+
+        if (!isMounted) return;
+
+        setForm({
+          siswaId: data.siswaId || "",
+          jenisPelanggaranId: data.jenisPelanggaranId || "",
+          catatan_konseling: data.catatan_konseling || "",
+          tanggal_pelanggaran: data.tanggal_pelanggaran || "",
+          status_konseling: data.status_konseling || "Belum",
+          tindak_lanjut: data.tindak_lanjut || "",
+          guruId: data.guruId || "",
+        });
+
+        setSiswaData(siswaRes.data);
+        setJenisPelanggaranData(jenisRes.data);
+      } catch (err) {
+        console.error("Gagal ambil data:", err);
+        alert("Gagal memuat data");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchAll();
+    } else {
+      // if no id, ensure loading is false to avoid infinite loading state
+      setLoading(false);
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
-
-  const fetchPelanggaranData = async () => {
-    try {
-      const res = await api.get(`/pelanggaran-siswa/${id}`);
-      const data = res.data;
-      setForm({
-        siswaId: data.siswaId || "",
-        jenisPelanggaranId: data.jenisPelanggaranId || "",
-        catatan_konseling: data.catatan_konseling || "",
-        tanggal_pelanggaran: data.tanggal_pelanggaran || "",
-        status_konseling: data.status_konseling || "Belum",
-        tindak_lanjut: data.tindak_lanjut || "",
-        guruId: data.guruId || "",
-      });
-      setLoading(false);
-    } catch (err) {
-      console.error("Gagal ambil data pelanggaran:", err);
-      alert("Gagal memuat data");
-      setLoading(false);
-    }
-  };
-
-  const fetchSiswa = async () => {
-    try {
-      const res = await api.get("/siswa");
-      setSiswaData(res.data);
-    } catch (err) {
-      console.error("Gagal ambil data siswa:", err);
-    }
-  };
-
-  const fetchJenisPelanggaran = async () => {
-    try {
-      const res = await api.get("/jenis-pelanggaran");
-      setJenisPelanggaranData(res.data);
-    } catch (err) {
-      console.error("Gagal ambil data jenis pelanggaran:", err);
-    }
-  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

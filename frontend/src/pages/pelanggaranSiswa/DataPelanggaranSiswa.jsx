@@ -38,9 +38,7 @@ export default function PelanggaranSiswaList() {
         const res = await api.get("/jenis-pelanggaran");
         const uniqueKategori = Array.from(new Set((res.data || []).map(j => j.kategori_pelanggaran).filter(Boolean)));
         setKategoriList(uniqueKategori);
-      } catch {
-        
-      }
+      } catch { /* empty */ }
     })();
   }, []);
 
