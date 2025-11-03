@@ -244,7 +244,8 @@ export const register = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Password akan di-hash otomatis oleh Model hooks (beforeCreate)
+    // Tidak perlu hash manual di sini untuk menghindari double hashing
     let newUser;
     let userId;
 
@@ -256,7 +257,7 @@ export const register = async (req, res) => {
         newUser = await Admin.create({
           nama_admin: "Admin Baru",
           email_admin: email,
-          password: hashedPassword,
+          password: password, // Raw password, akan di-hash oleh hook
         });
         userId = newUser.id_admin;
         break;
@@ -268,7 +269,7 @@ export const register = async (req, res) => {
         newUser = await Guru.create({
           nama_guru: "Guru Baru",
           email_guru: email,
-          password: hashedPassword,
+          password: password, // Raw password, akan di-hash oleh hook
           status_aktif: "Aktif",
         });
         userId = newUser.id_guru;
@@ -281,7 +282,7 @@ export const register = async (req, res) => {
         newUser = await Siswa.create({
           nama_siswa: "Siswa Baru",
           email_siswa: email,
-          password: hashedPassword,
+          password: password, // Raw password, akan di-hash oleh hook
         });
         userId = newUser.id_siswa;
         break;
@@ -293,7 +294,7 @@ export const register = async (req, res) => {
         newUser = await OrangTua.create({
           nama_ayah: "Orang Tua Baru",
           email_ayah: email,
-          password: hashedPassword,
+          password: password, // Raw password, akan di-hash oleh hook
         });
         userId = newUser.id_orang_tua;
         break;

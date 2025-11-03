@@ -26,6 +26,7 @@ const validate = (req, res, next) => {
   next();
 };
 
+// Base path is mounted at /api/tanggapan
 router.get("/", getAllTanggapan);
 
 router.get(

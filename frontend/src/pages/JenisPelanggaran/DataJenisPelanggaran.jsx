@@ -13,21 +13,58 @@ export default function JenisPelanggaranList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        setError("");
-        const res = await api.get("/jenis-pelanggaran");
-        
-        const dataArray = res.data.data || res.data;
-        setPelanggaranData(Array.isArray(dataArray) ? dataArray : []);
-      } catch (err) {
-        setError(formatAxiosError(err));
-      } finally {
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      console.log('[DataJenisPelanggaran] Fetching data...');
+      // Add cache-busting to force fresh data from server
+      const res = await api.get(`/jenis-pelanggaran?_t=${Date.now()}`);
+
+      console.log('[DataJenisPelanggaran] Raw response:', res.data);
+      const dataArray = res.data.data || res.data;
+      console.log('[DataJenisPelanggaran] Parsed array:', dataArray);
+      console.log('[DataJenisPelanggaran] Received data:', Array.isArray(dataArray) ? dataArray.length : 'NOT AN ARRAY', 'items');
+      
+      if (Array.isArray(dataArray)) {
+        console.log('[DataJenisPelanggaran] First 3 items:', dataArray.slice(0, 3));
+        setPelanggaranData(dataArray);
+      } else {
+        console.error('[DataJenisPelanggaran] Data is not an array!');
+        setPelanggaranData([]);
       }
-    })();
+    } catch (err) {
+      console.error('[DataJenisPelanggaran] Fetch error:', err);
+      setError(formatAxiosError(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const onCreated = (e) => {
+      console.log('[DataJenisPelanggaran] jenis:created event received', e.detail);
+      setCurrentPage(1); // Reset to page 1 to show new item
+      fetchData();
+    };
+    const onUpdated = (e) => {
+      console.log('[DataJenisPelanggaran] jenis:updated event received', e.detail);
+      fetchData();
+    };
+    
+    window.addEventListener('jenis:created', onCreated);
+    window.addEventListener('jenis:updated', onUpdated);
+    console.log('[DataJenisPelanggaran] Event listeners registered');
+
+    return () => {
+      console.log('[DataJenisPelanggaran] Cleanup: removing event listeners');
+      window.removeEventListener('jenis:created', onCreated);
+      window.removeEventListener('jenis:updated', onUpdated);
+    };
   }, []);
 
   const handleDelete = async (id) => {
@@ -134,6 +171,9 @@ export default function JenisPelanggaranList() {
                       <td className="text-center">{p.poin_pelanggaran}</td>
                       <td className="text-center">
                         <div className="btn-group" role="group">
+                          <Link to={`/admin/data/jenis-pelanggaran/${p.id_jenis_pelanggaran}`} className="btn btn-outline-primary btn-sm">
+                            <i className="fa-regular fa-eye"></i>
+                          </Link>
                           <Link to={`/admin/data/jenis-pelanggaran/edit/${p.id_jenis_pelanggaran}`} className="btn btn-outline-warning btn-sm">
                             <i className="fa-regular fa-pen-to-square"></i>
                           </Link>

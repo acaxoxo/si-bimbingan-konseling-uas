@@ -14,7 +14,10 @@ export default function PelanggaranSaya() {
       try {
         setLoading(true);
         const res = await api.get("/pelanggaran-siswa");
-        setData(res.data || []);
+        // Normalize response - handle paginated or direct array responses
+        const payload = res?.data;
+        const list = Array.isArray(payload) ? payload : payload?.data ?? [];
+        setData(list);
       } catch (err) {
         console.error("Gagal ambil data pelanggaran:", err?.response?.data || err);
         setData([]);

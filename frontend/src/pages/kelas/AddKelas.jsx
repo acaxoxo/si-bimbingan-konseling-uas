@@ -17,7 +17,15 @@ export default function AddKelas() {
     
     api
       .get("/guru")
-      .then((res) => setGuruList(res.data))
+      .then((res) => {
+        // API returns a paginated object { data: [...], pagination: {...} }
+        // but some endpoints might return the array directly. Normalize to an array.
+        const payload = res?.data;
+        const list = Array.isArray(payload)
+          ? payload
+          : payload?.data ?? [];
+        setGuruList(list);
+      })
       .catch(() => setGuruList([]));
   }, []);
 

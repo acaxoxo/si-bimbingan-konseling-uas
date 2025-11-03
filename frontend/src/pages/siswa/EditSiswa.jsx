@@ -48,8 +48,19 @@ export default function EditSiswa() {
           password: "", 
         });
 
-        setOrangTuaData(orangTuaRes.data);
-        setKelasData(kelasRes.data);
+        // Ensure we're setting arrays, handle different response structures
+        const orangTuaArray = Array.isArray(orangTuaRes.data) 
+          ? orangTuaRes.data 
+          : (orangTuaRes.data?.data || []);
+        const kelasArray = Array.isArray(kelasRes.data) 
+          ? kelasRes.data 
+          : (kelasRes.data?.data || []);
+
+        console.log("[EditSiswa] Orang Tua data:", orangTuaArray);
+        console.log("[EditSiswa] Kelas data:", kelasArray);
+
+        setOrangTuaData(orangTuaArray);
+        setKelasData(kelasArray);
         setLoading(false);
       } catch (err) {
         console.error("Gagal ambil data:", err);
@@ -154,7 +165,7 @@ export default function EditSiswa() {
               required
             >
               <option value="">Pilih Orang Tua</option>
-              {orangTuaData.map((orangTua) => (
+              {Array.isArray(orangTuaData) && orangTuaData.map((orangTua) => (
                 <option key={orangTua.id_orang_tua} value={orangTua.id_orang_tua}>
                   {`${orangTua.nama_ayah || "-"} & ${orangTua.nama_ibu || "-"}`}
                 </option>
@@ -187,7 +198,7 @@ export default function EditSiswa() {
               required
             >
               <option value="">Pilih Kelas</option>
-              {kelasData.map((kelas) => (
+              {Array.isArray(kelasData) && kelasData.map((kelas) => (
                 <option key={kelas.id_kelas} value={kelas.id_kelas}>
                   {kelas.nama_kelas} | {kelas.kelas_kejuruan}
                 </option>

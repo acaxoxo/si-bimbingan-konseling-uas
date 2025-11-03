@@ -9,7 +9,7 @@ export default function DashboardSiswa() {
     pelanggaran: 0,
     kelasLabel: "-",
     guruAktif: 0,
-    peringatan: "-",
+    peringatan: 0,
   });
 
   useEffect(() => {
@@ -38,17 +38,18 @@ export default function DashboardSiswa() {
           const siswa = pel?.siswa || pel?.Siswa;
           return siswa?.id_siswa === user?.id || pel?.siswaId === user?.id;
         });
-        const lastTindakan = tindSiswa[0];
-        const lastStatus = lastTindakan?.status_tindakan || lastTindakan?.jenis_tindakan || "-";
+        
+        // Hitung total tindakan yang diterima siswa
+        const totalTindakan = tindSiswa.length;
 
         setStats({
           pelanggaran: myPelanggaran.length,
           kelasLabel,
           guruAktif,
-          peringatan: lastStatus || "-",
+          peringatan: totalTindakan,
         });
       } catch {
-        setStats({ pelanggaran: 0, kelasLabel: "-", guruAktif: 0, peringatan: "-" });
+        setStats({ pelanggaran: 0, kelasLabel: "-", guruAktif: 0, peringatan: 0 });
       }
     };
     if (user?.id) load();
@@ -80,7 +81,7 @@ export default function DashboardSiswa() {
         <TopMetric title="Pelanggaran Saya" value={stats.pelanggaran} color="#dc3545" />
         <TopMetric title="Kelas Aktif" value={stats.kelasLabel} color="#28a745" />
         <TopMetric title="Guru Mengajar" value={stats.guruAktif} color="#007bff" />
-        <TopMetric title="Status Tindakan" value={stats.peringatan} color="#ffc107" />
+        <TopMetric title="Total Tindakan" value={stats.peringatan} color="#ffc107" />
       </div>
 
       {}

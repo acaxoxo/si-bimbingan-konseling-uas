@@ -34,7 +34,9 @@ export default function EditKelas() {
     const fetchGuru = async () => {
       try {
         const res = await api.get("/guru");
-        setGuruList(res.data);
+        const payload = res?.data;
+        const list = Array.isArray(payload) ? payload : payload?.data ?? [];
+        setGuruList(list);
       } catch (err) {
         console.error("Gagal ambil data guru:", err);
       }

@@ -65,15 +65,19 @@ export const getSiswaById = async (req, res) => {
 
 export const createSiswa = async (req, res) => {
   try {
+    console.log("[createSiswa] Received request body:", req.body);
+    
     const { nama_siswa, nis, email_siswa, no_telepon, jenis_kelamin } = req.body;
 
     if (!nama_siswa || !nis) {
+      console.log("[createSiswa] Validation failed: Missing nama_siswa or nis");
       return res.status(400).json({ 
         message: "Nama siswa dan NIS wajib diisi" 
       });
     }
 
     if (!/^\d{10}$/.test(nis)) {
+      console.log("[createSiswa] Validation failed: Invalid NIS format:", nis);
       return res.status(400).json({ 
         message: "NIS harus 10 digit angka" 
       });
@@ -81,6 +85,7 @@ export const createSiswa = async (req, res) => {
 
     const existingNIS = await Siswa.findOne({ where: { nis } });
     if (existingNIS) {
+      console.log("[createSiswa] Validation failed: NIS already exists:", nis);
       return res.status(400).json({ 
         message: "NIS sudah terdaftar" 
       });
@@ -89,6 +94,7 @@ export const createSiswa = async (req, res) => {
     if (email_siswa) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email_siswa)) {
+        console.log("[createSiswa] Validation failed: Invalid email format:", email_siswa);
         return res.status(400).json({ 
           message: "Format email tidak valid" 
         });
@@ -96,6 +102,7 @@ export const createSiswa = async (req, res) => {
 
       const existingEmail = await Siswa.findOne({ where: { email_siswa } });
       if (existingEmail) {
+        console.log("[createSiswa] Validation failed: Email already exists:", email_siswa);
         return res.status(400).json({ 
           message: "Email sudah terdaftar" 
         });
@@ -103,20 +110,63 @@ export const createSiswa = async (req, res) => {
     }
 
     if (no_telepon && !/^(\+62|62|0)[0-9]{9,12}$/.test(no_telepon.replace(/[\s-]/g, ''))) {
+      console.log("[createSiswa] Validation failed: Invalid phone format:", no_telepon);
       return res.status(400).json({ 
         message: "Format nomor telepon tidak valid" 
       });
     }
 
     if (jenis_kelamin && !['Laki-laki', 'Perempuan'].includes(jenis_kelamin)) {
+      console.log("[createSiswa] Validation failed: Invalid jenis_kelamin:", jenis_kelamin);
       return res.status(400).json({ 
         message: "Jenis kelamin harus Laki-laki atau Perempuan" 
       });
     }
 
+    console.log("[createSiswa] All validations passed, creating siswa...");
     const siswa = await Siswa.create(req.body);
+    console.log("[createSiswa] Successfully created siswa:", siswa.id_siswa);
     res.status(201).json(siswa);
   } catch (error) {
+    console.error("[createSiswa] Unexpected error:", error);
+    console.error("[createSiswa] Error details:", error.message);
+    if (error.errors) {
+      console.error("[createSiswa] Sequelize errors:", error.errors);
+    }
+    
+    // Handle Sequelize unique constraint violations
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      const field = error.errors[0]?.path;
+      const value = error.errors[0]?.value;
+      
+      if (field === 'email_siswa') {
+        return res.status(409).json({ 
+          message: `Email ${value} sudah terdaftar`,
+          field: 'email_siswa'
+        });
+      }
+      if (field === 'nis') {
+        return res.status(409).json({ 
+          message: `NIS ${value} sudah terdaftar`,
+          field: 'nis'
+        });
+      }
+      
+      return res.status(409).json({ 
+        message: `Data sudah terdaftar: ${field}`,
+        field: field
+      });
+    }
+    
+    // Handle other Sequelize validation errors
+    if (error.name === 'SequelizeValidationError') {
+      const messages = error.errors.map(e => e.message).join(', ');
+      return res.status(400).json({ 
+        message: `Validation error: ${messages}`,
+        errors: error.errors 
+      });
+    }
+    
     res.status(400).json({ message: error.message });
   }
 };

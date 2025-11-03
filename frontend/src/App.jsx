@@ -22,6 +22,7 @@ import DetailOrangTua from "./pages/orangTua/DetailOrangTua";
 import DataKelas from "./pages/kelas/DataKelas";
 import DetailKelas from "./pages/kelas/DetailKelas";
 import DataJenisPelanggaran from "./pages/JenisPelanggaran/DataJenisPelanggaran";
+import DetailJenisPelanggaran from "./pages/JenisPelanggaran/DetailJenisPelanggaran";
 import AddAdmin from "./pages/admin/AddAdmin";
 import EditAdmin from "./pages/admin/EditAdmin";
 import AddSiswa from "./pages/siswa/AddSiswa";
@@ -156,6 +157,14 @@ function App() {
               element={
                 <ProtectedRoute roles={["admin"]}>
                   <DataJenisPelanggaran />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/data/jenis-pelanggaran/:id"
+              element={
+                <ProtectedRoute roles={["admin"]}>
+                  <DetailJenisPelanggaran />
                 </ProtectedRoute>
               }
             />
