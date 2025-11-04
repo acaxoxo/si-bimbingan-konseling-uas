@@ -416,10 +416,7 @@ si-bimbingan-konseling/
 │   └── README.md                    # Frontend docs
 │
 ├── 📄 README.md                     # Main documentation (this file)
-├── 📄 DEBUG_REPORT.md               # Bug fixes & improvements
-├── 📄 QUICK_FIXES.md                # Troubleshooting guide
 ├── 📄 start-dev.bat                 # Windows auto-start script
-└── 📄 debug-check.sh                # Linux/Mac debug script
 ```
 
 ### Statistics
@@ -440,14 +437,14 @@ si-bimbingan-konseling/
 - Secure password hashing (bcrypt)
 - Session management
 
-### 📊 Dashboard & Analytics
+### Dashboard & Analytics
 - Real-time statistics per role
 - Interactive charts & graphs (Recharts)
 - Violation trends visualization
 - Student performance metrics
 - Class-based analytics
 
-### 👥 Data Management (CRUD)
+### Data Management (CRUD)
 - **Admin Management** - Kelola admin sistem
 - **Guru BK Management** - Data guru bimbingan konseling
 - **Siswa Management** - Data siswa lengkap dengan kelas
@@ -463,20 +460,20 @@ si-bimbingan-konseling/
 - **Tanggapan Orang Tua** - Orang tua beri tanggapan
 - **Tindakan Sekolah** - Guru BK tentukan tindak lanjut
 
-### 📄 Reporting & Export
+### Reporting & Export
 - **Export to Excel** - Download laporan dalam format .xlsx
 - **Export to PDF** - Generate PDF reports
 - **Filter & Search** - Filter berdasarkan berbagai kriteria
 - **Saved Filters** - Simpan filter yang sering digunakan
 - **Date Range Filter** - Filter berdasarkan periode
 
-### 🔔 Notifications
+### Notifications
 - **Real-time Notifications** - Socket.io untuk notif instant
 - **Email Notifications** - Kirim email ke orang tua
 - **Toast Notifications** - Feedback visual untuk aksi user
 - **Activity Logging** - Log semua aktivitas penting
 
-### 🎨 User Experience
+### User Experience
 - **Dark/Light Mode** - Toggle tema dengan persistence
 - **Responsive Design** - Mobile, tablet, desktop friendly
 - **Loading States** - Feedback saat loading data
@@ -484,7 +481,7 @@ si-bimbingan-konseling/
 - **Form Validation** - Client & server side validation
 - **Pagination** - Navigasi data yang besar
 
-### 🔒 Security Features
+### Security Features
 - **JWT Authentication** - Secure token-based auth
 - **Password Hashing** - bcrypt dengan 10 rounds
 - **Role-Based Access Control (RBAC)** - Akses sesuai role
@@ -493,12 +490,12 @@ si-bimbingan-konseling/
 - **Rate Limiting** - Cegah brute force attacks
 - **SQL Injection Prevention** - Menggunakan Sequelize ORM
 
-### 💾 Backup & Recovery
+### Backup & Recovery
 - **Automated Backups** - Backup database otomatis (cron)
 - **Manual Backup** - Admin bisa backup manual
 - **Database Export** - Export database ke file
 
-### 🌐 Additional Features
+### Additional Features
 - **WebSocket Support** - Real-time communication
 - **File Upload** - Upload dokumen & foto profil
 - **Search Functionality** - Pencarian di semua tabel
@@ -509,27 +506,27 @@ si-bimbingan-konseling/
 
 ## Security Features
 
-### 🔐 Authentication
+### Authentication
 - **JWT (JSON Web Token)** - Stateless authentication
   - Access token expires in 2 hours
   - Refresh token mechanism
   - Token stored in localStorage
   - Auto logout on token expiration
 
-### 🔒 Password Security
+### Password Security
 - **bcrypt Hashing** - Industry standard password hashing
   - 10 salt rounds
   - One-way encryption
   - Rainbow table resistant
 
-### 🛡️ Authorization
+### Authorization
 - **Role-Based Access Control (RBAC)**
   - 4 distinct roles: Admin, Guru, Siswa, Orang Tua
   - Route-level protection
   - API endpoint protection with middleware
   - Granular permissions per feature
 
-### 🚫 Attack Prevention
+### Attack Prevention
 - **SQL Injection** - Prevented by Sequelize ORM parameterized queries
 - **XSS (Cross-Site Scripting)** - Input sanitization & validation
 - **CSRF** - CORS configuration & token validation
@@ -538,14 +535,14 @@ si-bimbingan-konseling/
   - Register: 3 attempts per 15 minutes
   - API: 100 requests per 15 minutes
 
-### 🌐 Network Security
+### Network Security
 - **CORS (Cross-Origin Resource Sharing)**
   - Whitelist allowed origins
   - Credentials support
   - Specific headers allowed
   - Development & production modes
 
-### 📝 Input Validation
+### Input Validation
 - **express-validator** - Server-side validation
   - Email format validation
   - Required field checks
@@ -556,14 +553,14 @@ si-bimbingan-konseling/
   - Error messages per field
   - Prevent invalid submissions
 
-### 🔍 Audit & Logging
+### Audit & Logging
 - **Activity Logger** - Track all user actions
   - Login/logout timestamps
   - CRUD operations
   - User IP & user agent
   - Failed login attempts
 
-### 🗄️ Database Security
+### Database Security
 - **Connection Pooling** - Prevent connection exhaustion
   - Max 5 connections
   - Connection timeout: 60s
@@ -571,7 +568,7 @@ si-bimbingan-konseling/
 - **Prepared Statements** - Sequelize ORM prevents SQL injection
 - **Environment Variables** - Sensitive data in .env file
 
-### 🚨 Error Handling
+### Error Handling
 - **Global Error Handler** - Catch all errors
 - **Auth Error Handler** - Specific auth errors
 - **Error Boundary** - React error boundary
@@ -649,7 +646,7 @@ Database sudah include seed data untuk testing:
 
 ## Troubleshooting
 
-### 🔴 Backend Issues
+### Backend Issues
 
 #### Port 3000 Already in Use
 ```bash
@@ -754,7 +751,7 @@ kill -9 <PID>
 
 ---
 
-### 🟡 Authentication Issues
+### Authentication Issues
 
 #### Token Expired
 **Symptoms:** Automatically logged out or `401 Unauthorized`
@@ -787,7 +784,7 @@ kill -9 <PID>
 
 ---
 
-### 🟢 Database Issues
+### Database Issues
 
 #### Tables Not Created
 **Symptoms:** `Table 'db_konseling.admins' doesn't exist`
@@ -813,7 +810,7 @@ kill -9 <PID>
 
 ---
 
-### 🟣 Development Issues
+### Development Issues
 
 #### ESLint Errors
 ```bash
@@ -837,14 +834,14 @@ npm run dev
 
 ---
 
-### 📚 Need More Help?
+### Need More Help?
 
 1. **Frontend Docs** - Check `frontend/README.md` for component details
 2. **Browser Console** - Open DevTools (F12) to see errors
 3. **Backend Logs** - Check terminal running backend
 4. **Network Tab** - Check API requests/responses in browser
 
-### 🆘 Still Stuck?
+### Still Stuck?
 
 Create an issue on GitHub with:
 - Error message (full text)
@@ -858,7 +855,7 @@ Create an issue on GitHub with:
 
 ## Development Notes
 
-### 🚀 Development Workflow
+### Development Workflow
 
 #### Starting Development
 ```bash
@@ -893,7 +890,7 @@ npm run lint         # Run ESLint
 
 ---
 
-### 📝 Adding New Features
+### Adding New Features
 
 #### 1. Add New Model (Database Table)
 ```javascript
@@ -989,7 +986,7 @@ export default function NewPage() {
 
 ---
 
-### 🗄️ Database Management
+### Database Management
 
 #### Create Database
 ```sql
@@ -1072,7 +1069,7 @@ VITE_APP_SCHOOL=SMK Negeri 1 Kupang
 
 ---
 
-### 🧪 Testing Checklist
+### Testing Checklist
 
 - [ ] Login dengan semua role (Admin, Guru, Siswa, Orang Tua)
 - [ ] Create, Read, Update, Delete pada semua entitas
@@ -1089,7 +1086,7 @@ VITE_APP_SCHOOL=SMK Negeri 1 Kupang
 
 ---
 
-### 🚀 Production Deployment
+### Production Deployment
 
 #### 1. Prepare Backend
 ```bash
@@ -1133,7 +1130,7 @@ npm run build
 
 ---
 
-### 📚 Code Style Guide
+### Code Style Guide
 
 #### JavaScript/React
 - Use ES6+ syntax
@@ -1156,7 +1153,7 @@ npm run build
 
 ---
 
-### 🐛 Debugging Tips
+### Debugging Tips
 
 1. **Backend Debugging:**
    - Check console logs in terminal
@@ -1179,7 +1176,7 @@ npm run build
 
 ---
 
-### 📖 Resources
+### Resources
 
 - [Express.js Docs](https://expressjs.com/)
 - [Sequelize Docs](https://sequelize.org/)
@@ -1235,7 +1232,7 @@ This project is developed for educational purposes at **SMK Negeri 1 Kupang**.
 ## Contact & Support
 
 ### For Technical Support
-- 📧 Email: admin@smk1kupang.sch.id
+- 📧 Email: asmaraninada16@gmail.com
 - 🐛 Issues: [GitHub Issues](https://github.com/acaxoxo/si-bimbingan-konseling-uas/issues)
 - 📖 Docs: Check `DEBUG_REPORT.md` and `QUICK_FIXES.md`
 
@@ -1258,7 +1255,7 @@ Please include:
 ## Version History
 
 ### v1.0.0 (Latest) - November 2, 2025
-#### ✨ New Features
+#### New Features
 - Complete authentication system with 4 roles
 - Dashboard with real-time analytics
 - Full CRUD for all entities
@@ -1270,7 +1267,7 @@ Please include:
 - Real-time notifications
 - File upload support
 
-#### 🐛 Bug Fixes
+#### Bug Fixes
 - Fixed login page reload on error
 - Fixed toast notifications not showing
 - Fixed axios interceptor causing unwanted redirects
@@ -1280,7 +1277,7 @@ Please include:
 - Improved database connection pooling
 - Enhanced error handling across the app
 
-#### 🔧 Improvements
+#### Improvements
 - Better code organization
 - Comprehensive documentation
 - Environment variable configuration
@@ -1391,4 +1388,3 @@ npm run build
 - `window.confirm(...)` dialogs were intentionally left in place (confirmation flows). Replacing confirmations with a modal/confirm component is available as a separate task if desired.
 
 *Notes for developers:* perform a final `grep -R "alert(" frontend/src || true` to verify no `alert` calls remain in source before building the production bundle.
-

@@ -137,7 +137,7 @@ Sistem Informasi Bimbingan Konseling adalah aplikasi berbasis web untuk mengelol
 ### 5. Kelas
 - `id_kelas` (PK)
 - `nama_kelas` (contoh: X, XI, XII)
-- `kelas_kejuruan` (contoh: RPL, TKJ, MM)
+- `kelas_kejuruan` (contoh: UPW, TKJ, BDP, AKL)
 - `created_at`
 - `updated_at`
 
@@ -451,5 +451,3 @@ npm run build
 - `window.confirm(...)` calls (confirmation dialogs) were intentionally left as-is. If you want them replaced with a custom modal/confirm component, open an issue or request the change and I can implement it separately.
 
 *Last updated: 2025-11-04*
-
-
