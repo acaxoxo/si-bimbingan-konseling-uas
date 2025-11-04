@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -28,11 +29,11 @@ export default function AddGuru() {
     e.preventDefault();
     try {
       await api.post("/guru", form);
-      alert("Data guru berhasil disimpan!");
+      toast.success("Data guru berhasil disimpan!");
       navigate("/admin/data/guru");
     } catch (err) {
       console.error(err);
-      alert("Gagal menyimpan data guru");
+      toast.error("Gagal menyimpan data guru");
     }
   };
 

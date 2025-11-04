@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -26,7 +27,7 @@ export default function EditAdmin() {
         setLoading(false);
       } catch (err) {
         console.error("Gagal load data admin:", err);
-        alert("Gagal memuat data administrator");
+        toast.error("Gagal memuat data administrator");
         navigate("/admin/data/admin");
       }
     };
@@ -47,11 +48,11 @@ export default function EditAdmin() {
       }
       
       await api.put(`/admin/${id}`, payload);
-      alert("Data administrator berhasil diperbarui!");
+      toast.success("Data administrator berhasil diperbarui!");
       navigate("/admin/data/admin");
     } catch (err) {
       console.error(err);
-      alert("Gagal memperbarui data administrator");
+      toast.error("Gagal memperbarui data administrator");
     }
   };
 

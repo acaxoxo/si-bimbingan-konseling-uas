@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -26,8 +27,8 @@ export default function EditKelas() {
         setLoading(false);
       } catch (err) {
         console.error("Gagal ambil data:", err);
-        alert("Gagal memuat data");
-        setLoading(false);
+          toast.error("Gagal memuat data");
+          setLoading(false);
       }
     };
 
@@ -59,11 +60,11 @@ export default function EditKelas() {
         guruId: form.guruId ? parseInt(form.guruId) : null,
       };
       await api.put(`/kelas/${id}`, payload);
-      alert("Data kelas berhasil diperbarui!");
+      toast.success("Data kelas berhasil diperbarui!");
       navigate("/admin/data/kelas");
     } catch (err) {
       console.error("Gagal update:", err);
-      alert(`Gagal update data: ${err.response?.data?.message || err.message}`);
+      toast.error(`Gagal update data: ${err.response?.data?.message || err.message}`);
     }
   };
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -43,7 +44,7 @@ export default function EditGuru() {
         setLoading(false);
       } catch (err) {
         console.error("Gagal ambil data:", err);
-        alert("Gagal memuat data");
+        toast.error("Gagal memuat data");
         setLoading(false);
       }
     };
@@ -63,11 +64,11 @@ export default function EditGuru() {
         delete payload.password;
       }
       await api.put(`/guru/${id}`, payload);
-      alert("Data guru berhasil diperbarui!");
+      toast.success("Data guru berhasil diperbarui!");
       navigate("/admin/data/guru");
     } catch (err) {
       console.error("Gagal update:", err);
-      alert(`Gagal update data: ${err.response?.data?.message || err.message}`);
+      toast.error(`Gagal update data: ${err.response?.data?.message || err.message}`);
     }
   };
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import api from "../../lib/axios";
 import Loading from "../../components/Loading";
@@ -49,9 +50,9 @@ export default function PelanggaranSiswaList() {
     try {
       await api.delete(`/pelanggaran-siswa/${id}`);
       setPelanggaranData(prev => prev.filter(p => p.id_pelanggaran_siswa !== id));
-      alert("Data berhasil dihapus!");
+      toast.success("Data berhasil dihapus!");
     } catch (err) {
-      alert(toMessage(err));
+      toast.error(toMessage(err));
     }
   };
 

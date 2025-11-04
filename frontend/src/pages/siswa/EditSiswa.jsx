@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -64,7 +65,7 @@ export default function EditSiswa() {
         setLoading(false);
       } catch (err) {
         console.error("Gagal ambil data:", err);
-        alert("Gagal memuat data siswa");
+        toast.error("Gagal memuat data siswa");
         setLoading(false);
       }
     };
@@ -86,11 +87,11 @@ export default function EditSiswa() {
       }
 
       await api.put(`/siswa/${id}`, payload);
-      alert("Data siswa berhasil diperbarui!");
+      toast.success("Data siswa berhasil diperbarui!");
       navigate("/admin/data/siswa");
     } catch (err) {
       console.error("Gagal update data:", err);
-      alert("Gagal memperbarui data siswa");
+      toast.error("Gagal memperbarui data siswa");
     }
   };
 

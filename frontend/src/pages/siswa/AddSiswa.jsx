@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import api from "../../lib/axios";
 
 export default function AddSiswa() {
@@ -160,8 +161,8 @@ export default function AddSiswa() {
 
       console.log("[AddSiswa] Submitting payload:", payload);
 
-      await api.post("/siswa", payload);
-      alert("Data siswa berhasil disimpan!");
+  await api.post("/siswa", payload);
+  toast.success("Data siswa berhasil disimpan!");
       setForm({
         nama_siswa: "",
         nis: "",
@@ -191,7 +192,7 @@ export default function AddSiswa() {
         setFormErrors(server.fields);
         const firstMsg = Object.values(server.fields)[0];
         setError(firstMsg);
-        alert(`Gagal menyimpan data: ${firstMsg}`);
+        toast.error(`Gagal menyimpan data: ${firstMsg}`);
         return;
       }
       
@@ -224,7 +225,7 @@ export default function AddSiswa() {
       }
       
       setError(errorMsg);
-      alert(`${errorMsg}`);
+      toast.error(`${errorMsg}`);
     } finally {
       setIsSubmitting(false);
     }

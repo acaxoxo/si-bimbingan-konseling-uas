@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Link, useParams } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -15,7 +16,7 @@ export default function DetailSiswa() {
         setSiswa(res.data);
       } catch (err) {
         console.error("Gagal fetch detail siswa:", err);
-        alert("Gagal memuat data siswa");
+        toast.error("Gagal memuat data siswa");
       } finally {
         setLoading(false);
       }

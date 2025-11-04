@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import api from "../../lib/axios";
 import Loading from "../../components/Loading";
@@ -34,10 +35,10 @@ export default function OrangTuaList() {
     try {
       await api.delete(`/orang-tua/${id}`);
       setOrangTuaData(orangTuaData.filter((o) => o.id_orang_tua !== id));
-      alert("Data berhasil dihapus!");
+      toast.success("Data berhasil dihapus!");
     } catch (err) {
       console.error("Gagal hapus data:", err);
-      alert(err?.response?.data?.message || err?.message || "Gagal hapus data");
+      toast.error(err?.response?.data?.message || err?.message || "Gagal hapus data");
     }
   };
 

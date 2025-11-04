@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -36,11 +37,11 @@ export default function AddOrangTua() {
     e.preventDefault();
     try {
       await api.post("/orang-tua", form);
-      alert("Data orang tua berhasil disimpan!");
+      toast.success("Data orang tua berhasil disimpan!");
       navigate("/admin/data/orang-tua");
     } catch (err) {
       console.error("Gagal tambah data:", err);
-      alert("Gagal menyimpan data");
+      toast.error("Gagal menyimpan data");
     }
   };
 

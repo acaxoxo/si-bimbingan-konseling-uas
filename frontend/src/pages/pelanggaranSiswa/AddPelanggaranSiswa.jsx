@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../lib/axios";
 import { useAuth } from "../../hooks/useAuth";
@@ -68,12 +69,12 @@ export default function AddPelanggaranSiswa() {
       console.log("Submitting form data:", payload);
       const response = await api.post("/pelanggaran-siswa", payload);
       console.log("Response:", response);
-      alert("Data berhasil ditambahkan!");
+      toast.success("Data berhasil ditambahkan!");
       navigate("/guru/data/pelanggaran-siswa");
     } catch (err) {
       console.error("Gagal submit:", err);
       console.error("Error response:", err.response?.data);
-      alert(`Gagal tambah data: ${err.response?.data?.message || err.message}`);
+      toast.error(`Gagal tambah data: ${err.response?.data?.message || err.message}`);
     }
   };
 

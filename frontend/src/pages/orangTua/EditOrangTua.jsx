@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -55,8 +56,8 @@ export default function EditOrangTua() {
         setLoading(false);
       } catch (err) {
         console.error("Gagal memuat data:", err);
-        alert("Gagal memuat data orang tua");
-        navigate("/admin/data/orang-tua");
+          toast.error("Gagal memuat data orang tua");
+          navigate("/admin/data/orang-tua");
       }
     };
 
@@ -80,11 +81,11 @@ export default function EditOrangTua() {
       }
       
       await api.put(`/orang-tua/${id}`, payload);
-      alert("Data orang tua berhasil diperbarui!");
+      toast.success("Data orang tua berhasil diperbarui!");
       navigate("/admin/data/orang-tua");
     } catch (err) {
       console.error("Gagal update data:", err);
-      alert("Gagal memperbarui data");
+      toast.error("Gagal memperbarui data");
     }
   };
 

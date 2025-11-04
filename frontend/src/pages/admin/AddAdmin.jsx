@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -19,11 +20,11 @@ export default function AddAdmin() {
     e.preventDefault();
     try {
       await api.post("/admin", form);
-      alert("Data administrator berhasil disimpan!");
+      toast.success("Data administrator berhasil disimpan!");
       navigate("/admin/data/admin");
     } catch (err) {
       console.error(err);
-      alert("Gagal menyimpan data administrator");
+      toast.error("Gagal menyimpan data administrator");
     }
   };
 

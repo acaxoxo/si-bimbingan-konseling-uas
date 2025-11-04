@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import api from "../../lib/axios";
 import Loading from "../../components/Loading";
@@ -34,11 +35,11 @@ export default function GuruList() {
     if (window.confirm("Yakin ingin menghapus data ini?")) {
       try {
         await api.delete(`/guru/${id}`);
-        alert("Data guru berhasil dihapus!");
+        toast.success("Data guru berhasil dihapus!");
         setGuruData((prev) => prev.filter((g) => g.id_guru !== id));
       } catch (err) {
         console.error("Gagal hapus data:", err);
-        alert(formatAxiosError(err, "Gagal menghapus data"));
+        toast.error(formatAxiosError(err, "Gagal menghapus data"));
       }
     }
   };

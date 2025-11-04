@@ -435,4 +435,21 @@ Backend API tersedia di folder `backend/` dengan teknologi:
 **Developed for SMK Negeri 1 Kupang**
 © 2025 All Rights Reserved
 
+---
+
+## Notable Recent Changes (2025-11-04)
+
+- All browser `alert(...)` calls in the frontend source have been replaced with `react-toastify` toasts for consistent, non-blocking user notifications.
+- `ToastContainer` is already configured once in `src/App.jsx` and `react-toastify` is listed in `frontend/package.json` dependencies.
+- If you still see `alert(...)` strings in `frontend/dist/` those are from a previous build — do not edit `dist` manually. Rebuild the frontend to regenerate the production bundle:
+
+```bash
+cd frontend
+npm run build
+```
+
+- `window.confirm(...)` calls (confirmation dialogs) were intentionally left as-is. If you want them replaced with a custom modal/confirm component, open an issue or request the change and I can implement it separately.
+
+*Last updated: 2025-11-04*
+
 

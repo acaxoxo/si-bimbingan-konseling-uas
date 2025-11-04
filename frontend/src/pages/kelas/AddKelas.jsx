@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -46,11 +47,11 @@ export default function AddKelas() {
         guruId: form.guruId ? Number(form.guruId) : null,
       };
       await api.post("/kelas", payload);
-      alert("Data kelas berhasil disimpan!");
+      toast.success("Data kelas berhasil disimpan!");
       navigate("/admin/data/kelas");
     } catch (err) {
       console.error("Gagal tambah data:", err);
-      alert("Gagal menyimpan data");
+      toast.error("Gagal menyimpan data");
     }
   };
 

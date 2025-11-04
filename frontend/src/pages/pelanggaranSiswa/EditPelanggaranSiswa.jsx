@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import api from "../../lib/axios";
 import { useAuth } from "../../hooks/useAuth";
@@ -49,8 +50,8 @@ export default function EditPelanggaranSiswa() {
         setSiswaData(siswaRes.data);
         setJenisPelanggaranData(jenisRes.data);
       } catch (err) {
-        console.error("Gagal ambil data:", err);
-        alert("Gagal memuat data");
+  console.error("Gagal ambil data:", err);
+  toast.error("Gagal memuat data");
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -86,12 +87,12 @@ export default function EditPelanggaranSiswa() {
       };
 
       await api.put(`/pelanggaran-siswa/${id}`, payload);
-      alert("Data berhasil diperbarui!");
+      toast.success("Data berhasil diperbarui!");
       navigate("/guru/data/pelanggaran-siswa");
     } catch (err) {
       console.error("Gagal update:", err);
       console.error("Error response:", err.response?.data);
-      alert(`Gagal update data: ${err.response?.data?.message || err.message}`);
+      toast.error(`Gagal update data: ${err.response?.data?.message || err.message}`);
     }
   };
 

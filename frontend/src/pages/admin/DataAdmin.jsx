@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import api from "../../lib/axios";
 
@@ -26,10 +27,10 @@ export default function DataAdmin() {
     try {
       await api.delete(`/admin/${id}`);
       setAdminData(adminData.filter((a) => a.id_admin !== id));
-      alert("Data berhasil dihapus!");
+      toast.success("Data berhasil dihapus!");
     } catch (err) {
       console.error("Gagal hapus admin:", err);
-      alert("Gagal hapus data");
+      toast.error("Gagal hapus data");
     }
   };
 

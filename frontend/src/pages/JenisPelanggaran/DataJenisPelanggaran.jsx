@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import api from "../../lib/axios";
 import Loading from "../../components/Loading";
@@ -71,11 +72,11 @@ export default function JenisPelanggaranList() {
     if (!window.confirm("Yakin ingin menghapus data ini?")) return;
     try {
       await api.delete(`/jenis-pelanggaran/${id}`);
-      alert("Data berhasil dihapus!");
+      toast.success("Data berhasil dihapus!");
       setPelanggaranData((prev) => prev.filter((p) => p.id_jenis_pelanggaran !== id));
     } catch (err) {
       console.error("Gagal hapus data:", err);
-      alert(formatAxiosError(err, "Gagal menghapus data"));
+      toast.error(formatAxiosError(err, "Gagal menghapus data"));
     }
   };
 
