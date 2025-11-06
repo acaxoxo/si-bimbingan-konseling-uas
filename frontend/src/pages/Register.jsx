@@ -79,7 +79,6 @@ export default function Register() {
     <div 
       className="auth-page d-flex flex-column justify-content-center align-items-center" 
       style={{ 
-        minHeight: '100vh', 
         width: '100%',
         background: 'var(--bg-secondary)',
         padding: '2rem 1rem',

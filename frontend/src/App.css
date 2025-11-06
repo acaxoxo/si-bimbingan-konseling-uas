@@ -49,3 +49,15 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+/* Layout helpers (fallbacks for Tailwind-like utilities or to ensure consistent flex behavior) */
+.min-h-screen { min-height: 100vh; }
+.min-h-0 { min-height: 0; }
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-1, .flex-fill { flex: 1 1 auto; min-height: 0; }
+.overflow-auto { overflow: auto; }
+.w-100 { width: 100% !important; }
+
+/* Ensure footer is not positioned absolute/fixed by mistake */
+footer { position: relative; }
+

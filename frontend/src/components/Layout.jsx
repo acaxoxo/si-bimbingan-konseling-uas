@@ -4,11 +4,20 @@ import { Outlet } from "react-router-dom";
 
 export default function Layout() {
   return (
-    <div style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+  // Root: using Bootstrap utilities (d-flex, flex-column, min-vh-100)
+  // so footer can be pushed to bottom when content is short.
+  <div className="d-flex flex-column min-vh-100">
       <Header />
-      <main style={{ flex: 1, width: '100%', backgroundColor: 'var(--bg-secondary)' }}>
-        <Outlet /> 
+
+      {/*
+        Main should take remaining space. Use an inner flex container so that
+        if a page renders a sidebar + content, they can live inside this area
+        and the footer will still stay below.
+      */}
+      <main className="flex-fill pb-4" style={{ backgroundColor: 'var(--bg-secondary)' }} role="main">
+        <Outlet />
       </main>
+
       <Footer />
     </div>
   );
