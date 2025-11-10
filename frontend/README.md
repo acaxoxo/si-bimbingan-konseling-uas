@@ -263,90 +263,434 @@ PelanggaranSiswa (1)  receives  (*) TindakanSekolah
 
 ## Desain Struktural Sistem
 
-### ERD (Entity Relationship Diagram) - Konsep
-```
-              
-   ADMIN                  GURU                  SISWA     
-              
- id_admin PK         id_guru PK              id_siswa PK  
- nama_admin          nama_guru               nama_siswa   
- email               nik                     nis          
- password            email                   nisn         
-        password                id_kelas FK  
-                              id_ortu FK   
-                                                
-                                                       
-                                                       
-                      
-                            PELANGGARAN SISWA              
-                      
-                       id_pelanggaran_siswa PK             
-                       id_siswa FK                         
-                       id_jenis_pelanggaran FK             
-                       id_guru FK                          
-                       tanggal_pelanggaran                 
-                       kronologi                           
-                      
-                                 
-                 
-                                               
-            
-         TANGGAPAN        TINDAKAN       LAPORAN  
-         ORANG TUA        SEKOLAH                 
-            
-```
+### 📊 Entity Relationship Diagram (ERD)
 
-### DFD Level 0 (Context Diagram)
-```
+**File Lengkap:** [`backend/ERD.puml`](../backend/ERD.puml) - Buka untuk diagram detail dengan PlantUML
 
-  ADMIN  
-     
-                
-  
- GURU BK    SISTEM BIMBINGAN       
-        KONSELING           
-             
-                  
-  SISWA               
-                   
-                              
-                  
- ORANG TUA
+#### Entitas Utama (14 Tabel)
 
 ```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        CORE ENTITIES                                    │
+└─────────────────────────────────────────────────────────────────────────┘
 
-### DFD Level 1
+┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+│    ADMIN     │       │     GURU     │       │    KELAS     │
+├──────────────┤       ├──────────────┤       ├──────────────┤
+│ id_admin PK  │       │ id_guru PK   │───┐   │ id_kelas PK  │
+│ nama_admin   │       │ nama_guru    │   │   │ nama_kelas   │
+│ email_admin  │       │ nik          │   │   │ kejuruan     │
+│ password     │       │ email_guru   │   └──▶│ guruId FK    │
+│ createdAt    │       │ password     │       │ createdAt    │
+│ updatedAt    │       │ tempat_lahir │       │ updatedAt    │
+│ deletedAt    │       │ tanggal_lahir│       │ deletedAt    │
+└──────┬───────┘       │ jenis_kelamin│       └──────┬───────┘
+       │               │ no_telepon   │              │
+       │               │ createdAt    │              │
+       │               │ updatedAt    │              │
+       │               │ deletedAt    │              │
+       │               └──────┬───────┘              │
+       │                      │                      │
+       │                      │                      │
+       ▼                      ▼                      ▼
+┌──────────────────┐   ┌─────────────────────────────────┐
+│ JENIS_PELANGGARAN│   │          SISWA                  │
+├──────────────────┤   ├─────────────────────────────────┤
+│ id_jenis_pel. PK │   │ id_siswa PK                     │
+│ nama_jenis       │   │ nama_siswa                      │
+│ kategori ●       │   │ nis (unique)                    │
+│ poin_pelanggaran │   │ nisn (unique)                   │
+│ deskripsi        │   │ email_siswa                     │
+│ tindakan_sekolah │   │ password                        │
+│ admin_id FK ─────┼───┤ kelas_id FK ────────────────────┤
+│ createdAt        │   │ orangTuaId FK                   │
+│ updatedAt        │   │ jenis_kelamin                   │
+│ deletedAt        │   │ tempat_lahir, tanggal_lahir     │
+└──────┬───────────┘   │ alamat, no_telepon              │
+       │               │ foto_profil                     │
+       │               │ createdAt, updatedAt, deletedAt │
+       │               └────────┬────────────────────┬───┘
+       │                        │                    │
+       │                        │                    │
+       ▼                        ▼                    ▼
+┌───────────────────────────────────────┐    ┌──────────────┐
+│      PELANGGARAN_SISWA ●●●            │    │  ORANG_TUA   │
+├───────────────────────────────────────┤    ├──────────────┤
+│ id_pelanggaran_siswa PK               │    │ id_ortu PK   │
+│ siswaId FK ───────────────────────────┼────│ nama_ayah    │
+│ jenisPelanggaranId FK ────────────────┤    │ nama_ibu     │
+│ guruId FK (pelapor)                   │    │ nik_ayah     │
+│ tanggal_pelanggaran                   │    │ nik_ibu      │
+│ tempat_kejadian                       │    │ email_ayah   │
+│ kronologi                             │    │ email_ibu    │
+│ catatan_konseling                     │    │ password     │
+│ tindak_lanjut                         │    │ no_telepon   │
+│ status_konseling                      │    │ pekerjaan    │
+│ bukti_pelanggaran                     │    │ alamat       │
+│ createdAt, updatedAt, deletedAt       │    │ pendidikan   │
+└───────┬────────────────────┬──────────┘    │ penghasilan  │
+        │                    │               │ createdAt    │
+        │                    │               │ updatedAt    │
+        ▼                    ▼               │ deletedAt    │
+┌──────────────────┐  ┌──────────────────┐  └──────────────┘
+│ TANGGAPAN_ORTU   │  │ TINDAKAN_SEKOLAH │
+├──────────────────┤  ├──────────────────┤
+│ id_tanggapan PK  │  │ id_tindakan PK   │
+│ pelanggaranId FK │  │ pelanggaranId FK │
+│ orangTuaId FK    │  │ guruId FK        │
+│ tanggal_tanggapan│  │ tanggal_tindakan │
+│ isi_tanggapan    │  │ jenis_tindakan ● │
+│ tindakan_rumah   │  │ deskripsi        │
+│ createdAt        │  │ hasil_tindakan   │
+│ updatedAt        │  │ status_tindakan ●│
+│ deletedAt        │  │ createdAt        │
+└──────────────────┘  │ updatedAt        │
+                      │ deletedAt        │
+                      └──────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     SUPPORTING ENTITIES                                 │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+│   NOTIFICATION   │  │  ACTIVITY_LOG    │  │  SAVED_FILTER    │
+├──────────────────┤  ├──────────────────┤  ├──────────────────┤
+│ id_notif PK      │  │ id_log PK        │  │ id_filter PK     │
+│ userId FK        │  │ userId FK        │  │ userId FK        │
+│ userType         │  │ userType         │  │ userType         │
+│ title            │  │ action           │  │ filterName       │
+│ message          │  │ target           │  │ filterType       │
+│ type             │  │ targetId         │  │ filterData (JSON)│
+│ isRead           │  │ details (JSON)   │  │ isDefault        │
+│ relatedId        │  │ ipAddress        │  │ createdAt        │
+│ relatedType      │  │ userAgent        │  │ updatedAt        │
+│ createdAt        │  │ createdAt        │  └──────────────────┘
+│ updatedAt        │  └──────────────────┘
+└──────────────────┘
+
+┌──────────────────┐  ┌──────────────────┐
+│   FILE_UPLOAD    │  │     LAPORAN      │
+├──────────────────┤  ├──────────────────┤
+│ id_file PK       │  │ id_laporan PK    │
+│ originalName     │  │ periode_awal     │
+│ fileName         │  │ periode_akhir    │
+│ filePath         │  │ total_pelanggaran│
+│ fileType         │  │ total_tindakan   │
+│ fileSize         │  │ total_poin       │
+│ uploadedBy FK    │  │ jenis_laporan    │
+│ uploaderType     │  │ guru_id FK       │
+│ createdAt        │  │ tanggal_generate │
+│ updatedAt        │  │ createdAt        │
+└──────────────────┘  │ updatedAt        │
+                      │ deletedAt        │
+                      └──────────────────┘
+
+● = ENUM values
+●●● = Entitas utama/inti sistem
+FK = Foreign Key
+PK = Primary Key
 ```
-                    
-           1.0 Manajemen    Admin
-                         User        
-                   
-         
-   [D1: Users]
-         
-                   
-           2.0 Pencatatan   Guru BK
-                       Pelanggaran    
-                    
-                              
-                              
-                    [D2: Pelanggaran]
-                              
-                    
-                                       
-           
-           3.0 Tanggapan       4.0 Tindakan    
-            Orang Tua            Sekolah       
-           
-                                        
-                                        
-            Orang Tua              Guru BK
-                  
-         
-           5.0 Laporan &    Semua User
-             Dashboard     
-         
+
+#### Relasi Kunci
+
+| From | Cardinality | To | Description |
+|------|-------------|-----|-------------|
+| Admin | 1 : M | JenisPelanggaran | Admin membuat kategori pelanggaran |
+| Guru | 1 : M | Kelas | Guru sebagai wali kelas |
+| Kelas | 1 : M | Siswa | Kelas memiliki banyak siswa |
+| OrangTua | 1 : M | Siswa | Orang tua memiliki anak (siswa) |
+| Siswa | 1 : M | PelanggaranSiswa | Siswa melakukan pelanggaran |
+| Guru | 1 : M | PelanggaranSiswa | Guru mencatat pelanggaran |
+| JenisPelanggaran | 1 : M | PelanggaranSiswa | Kategori pelanggaran |
+| PelanggaranSiswa | 1 : M | TanggapanOrangTua | Pelanggaran mendapat tanggapan |
+| PelanggaranSiswa | 1 : M | TindakanSekolah | Pelanggaran mendapat tindakan |
+| OrangTua | 1 : M | TanggapanOrangTua | Orang tua memberi tanggapan |
+| Guru | 1 : M | TindakanSekolah | Guru memberikan tindakan |
+| Guru | 1 : M | Laporan | Guru membuat laporan |
+
+#### Kategori Pelanggaran & Poin
+
+| Kategori | Rentang Poin | Contoh |
+|----------|--------------|---------|
+| **Ringan** | 1 - 25 | Terlambat, tidak berseragam lengkap |
+| **Sedang** | 26 - 50 | Bolos, tidak mengerjakan tugas |
+| **Berat** | 51 - 100 | Berkelahi, merokok, narkoba |
+
+---
+
+### 🔄 Data Flow Diagram (DFD)
+
+**File Lengkap:** [`backend/DFD.puml`](../backend/DFD.puml) - Buka untuk diagram detail dengan PlantUML
+
+#### Level 0: Context Diagram
+
 ```
+                    ┌─────────────────────┐
+       ┌───────────▶│       ADMIN         │
+       │            │ • Login             │
+       │            │ • Kelola Data Master│
+       │            └──────────┬──────────┘
+       │                       │
+       │                       ▼
+       │            ┌──────────────────────────────┐
+       │            │   SISTEM BIMBINGAN KONSELING │
+       │            │      SMK N 1 Kupang          │
+       │   ┌────────┤                              ├────────┐
+       │   │        │  • Autentikasi               │        │
+       │   │        │  • Data Management           │        │
+       │   │        │  • Pelanggaran Recording     │        │
+       │   │        │  • Reporting & Analytics     │        │
+       │   │        │  • Real-time Notification    │        │
+       │   │        └──────────────────────────────┘        │
+       │   │                       ▲                         │
+       │   ▼                       │                         ▼
+┌──────────────┐           ┌──────────────┐         ┌──────────────┐
+│   GURU BK    │           │    SISWA     │         │  ORANG TUA   │
+├──────────────┤           ├──────────────┤         ├──────────────┤
+│ • Login      │           │ • Login      │         │ • Login      │
+│ • Input      │◀──────────┤ • Lihat      │         │ • Lihat      │
+│   Pelanggaran│   Data    │   Riwayat    │         │   Laporan    │
+│ • Beri       │   Siswa   │   Pelanggaran│         │   Anak       │
+│   Tindakan   │           │ • Lihat Poin │         │ • Beri       │
+│ • Lihat      │           │              │         │   Tanggapan  │
+│   Tanggapan  │           │              │         │              │
+└──────────────┘           └──────────────┘         └──────────────┘
+       ▲                                                     │
+       │                                                     │
+       └─────────────────────────────────────────────────────┘
+                    Notifikasi & Laporan
+```
+
+#### Level 1: Main Processes
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      DATA STORES                                │
+├─────────────────────────────────────────────────────────────────┤
+│ [D1] Users (admin, guru, siswa, orang_tua)                      │
+│ [D2] Master Data (kelas, jenis_pelanggaran)                     │
+│ [D3] Pelanggaran (pelanggaran_siswa)                            │
+│ [D4] Tanggapan & Tindakan (tanggapan, tindakan_sekolah)         │
+│ [D5] Laporan (laporan, reports_cache)                           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌──────────┐
+│  Admin   │───┐
+│  Guru    │   │
+│  Siswa   │   │ Credentials
+│ Orang Tua│   │
+└──────────┘   │
+               ▼
+        ┌──────────────────┐
+        │  1.0 Manajemen   │
+        │   Autentikasi    │◀──────▶ [D1: Users]
+        │                  │
+        │ • Login          │
+        │ • Logout         │         Access Token
+        │ • JWT Token      │─────────────────────┐
+        │ • Session Mgmt   │                     │
+        └──────────────────┘                     │
+                                                 │
+┌──────────┐                                     │
+│  Admin   │──▶ CRUD Data                        │
+└──────────┘                                     │
+               ▼                                 ▼
+        ┌──────────────────┐            ┌──────────────────┐
+        │  2.0 Manajemen   │            │  3.0 Pencatatan  │
+        │   Data Master    │◀──────▶ [D2]│   Pelanggaran    │
+        │                  │            │                  │
+        │ • Guru           │            │ • Input Form     │
+        │ • Siswa          │            │ • Validasi Data  │
+        │ • Kelas          │            │ • Hitung Poin    │
+        │ • Jenis          │            │ • Update Total   │
+        │   Pelanggaran    │            │   Poin Siswa     │
+        └──────────────────┘            └────────┬─────────┘
+                                                 │
+                                                 ▼
+                                        [D3: Pelanggaran]
+                                                 │
+                  ┌──────────────────────────────┼─────────────┐
+                  │                              │             │
+                  ▼                              ▼             ▼
+        ┌──────────────────┐            ┌──────────────────┐  │
+        │  4.0 Manajemen   │            │  6.0 Notifikasi  │  │
+        │   Tanggapan &    │◀──────▶ [D4]│   Real-time      │  │
+        │   Tindakan       │            │                  │  │
+        │                  │            │ • Detect Event   │  │
+        │ • Tanggapan Ortu │            │ • Push Notif     │  │
+        │ • Tindakan       │            │ • Email Notif    │  │
+        │   Sekolah        │            │ • WebSocket      │  │
+        │ • Update Status  │            └──────────────────┘  │
+        └──────────────────┘                     │            │
+                                                 ▼            │
+                                         ┌──────────────┐     │
+                                         │ Orang Tua    │     │
+                                         │ Guru BK      │     │
+                                         │ Siswa        │     │
+                                         └──────────────┘     │
+                                                              │
+┌──────────┐                                                  │
+│ All Users│──▶ Request Laporan                              │
+└──────────┘                                                  │
+               ▼                                              │
+        ┌──────────────────┐                                 │
+        │  5.0 Pelaporan   │◀────────────────────────────────┘
+        │   & Analitik     │
+        │                  │◀──────▶ [D5: Laporan]
+        │ • Filter Data    │
+        │ • Aggregate      │
+        │ • Generate       │
+        │ • Export Excel   │
+        │ • Dashboard      │
+        └──────────────────┘
+                │
+                ▼
+         Excel/PDF File
+```
+
+#### Level 2: Detail Process - Pencatatan Pelanggaran (3.0)
+
+```
+Guru BK
+   │
+   │ Input Form Pelanggaran
+   ▼
+┌────────────────────┐
+│ 3.1 Input Data     │
+│     Pelanggaran    │
+└─────────┬──────────┘
+          │
+          │ Raw Data
+          ▼
+┌────────────────────┐        ┌─────────────┐
+│ 3.2 Validasi Data  │◀──────▶│ [D2] Master │
+│                    │        │     Data    │
+│ • Cek Siswa Valid  │        └─────────────┘
+│ • Cek Jenis        │
+│   Pelanggaran      │
+└─────────┬──────────┘
+          │
+          │ Validated Data + Poin
+          ▼
+┌────────────────────┐
+│ 3.3 Hitung Poin    │
+│                    │
+│ • Get Poin dari    │
+│   Jenis Pelanggaran│
+│ • Calculate Total  │
+└─────────┬──────────┘
+          │
+          │ Data + Total Poin
+          ▼
+┌────────────────────┐        ┌─────────────┐
+│ 3.4 Simpan         │───────▶│ [D3]        │
+│     Pelanggaran    │        │ Pelanggaran │
+└─────────┬──────────┘        └─────────────┘
+          │
+          │ Update Signal
+          ▼
+┌────────────────────┐        ┌─────────────┐
+│ 3.5 Update Total   │───────▶│ [D2] Siswa  │
+│     Poin Siswa     │        │             │
+└─────────┬──────────┘        └─────────────┘
+          │
+          │ Success + Notification Trigger
+          ├─────────────────┐
+          ▼                 ▼
+        Guru BK      [6.0 Notifikasi]
+    (Confirmation)         │
+                          ▼
+                     Orang Tua
+                   (Real-time Alert)
+```
+
+#### Level 2: Detail Process - Tanggapan & Tindakan (4.0)
+
+```
+Orang Tua                    Guru BK
+    │                           │
+    │ Isi Tanggapan            │ Isi Tindakan
+    ▼                           ▼
+┌───────────────┐         ┌───────────────┐
+│ 4.1 Beri      │         │ 4.2 Beri      │
+│     Tanggapan │         │     Tindakan  │
+│     Orang Tua │         │     Sekolah   │
+└───────┬───────┘         └───────┬───────┘
+        │                         │
+        │ Tanggapan Data         │ Tindakan Data
+        └──────────┬──────────────┘
+                   ▼
+         ┌────────────────────┐        ┌──────────────┐
+         │ 4.4 Validasi &     │◀──────▶│ [D3]         │
+         │     Simpan         │        │ Pelanggaran  │
+         │                    │        └──────────────┘
+         │ • Cek Pelanggaran  │
+         │   Valid            │        ┌──────────────┐
+         │ • Store Tanggapan  │───────▶│ [D4]         │
+         │ • Store Tindakan   │        │ Tanggapan    │
+         └─────────┬──────────┘        └──────────────┘
+                   │
+                   │ Update Signal    ┌──────────────┐
+                   │                  │ [D4]         │
+                   │                  │ Tindakan     │
+                   │                  └──────────────┘
+                   ▼
+         ┌────────────────────┐        ┌──────────────┐
+         │ 4.3 Update Status  │───────▶│ [D3]         │
+         │     Konseling      │        │ Pelanggaran  │
+         └─────────┬──────────┘        └──────────────┘
+                   │
+                   │ Confirmation
+                   ├─────────────┐
+                   ▼             ▼
+              Orang Tua       Guru BK
+            (Success Msg)   (Success Msg)
+```
+
+#### Aliran Data Kritikal
+
+**Flow 1: Guru → Input Pelanggaran → Notifikasi Orang Tua**
+```
+Guru Input → Validasi → Hitung Poin → Simpan → Update Siswa → Trigger Notif → Orang Tua
+```
+
+**Flow 2: Orang Tua → Tanggapan → Notifikasi Guru**
+```
+Orang Tua Input → Validasi → Simpan Tanggapan → Update Status → Notif Guru
+```
+
+**Flow 3: Generate Laporan**
+```
+User Request → Filter Data → Aggregate → Generate Report → Export Excel/PDF
+```
+
+---
+
+### 📁 Cara Melihat Diagram Lengkap
+
+#### Option 1: PlantUML Online
+1. Buka http://www.plantuml.com/plantuml/uml/
+2. Copy paste isi file `backend/ERD.puml` atau `backend/DFD.puml`
+3. Klik "Submit" untuk melihat diagram
+
+#### Option 2: Generate Image Lokal
+```bash
+# Install PlantUML
+choco install plantuml  # Windows
+brew install plantuml   # Mac
+
+# Generate diagrams
+cd backend
+plantuml ERD.puml    # → ERD.png
+plantuml DFD.puml    # → DFD_001.png, DFD_002.png, ...
+```
+
+#### Option 3: VS Code Extension
+1. Install extension: "PlantUML" by jebbs
+2. Buka file `.puml`
+3. Press `Alt+D` untuk preview
+
+---
 
 ## Teknologi
 - **Frontend**: React 18 + Vite

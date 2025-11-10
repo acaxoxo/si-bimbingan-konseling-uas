@@ -1,0 +1,338 @@
+@startuml System_Architecture
+' =============================================================================
+' SISTEM INFORMASI BIMBINGAN KONSELING - SYSTEM ARCHITECTURE
+' SMK Negeri 1 Kupang
+' =============================================================================
+
+!theme plain
+skinparam backgroundColor #FEFEFE
+
+' =============================================================================
+' CLIENT LAYER
+' =============================================================================
+
+package "Client Layer (Presentation)" {
+  
+  package "Web Browser" {
+    [React Application] as react
+    [Vite Dev Server\n(Port 5173)] as vite
+    [Bootstrap UI] as bootstrap
+    [React Router] as router
+    [Axios HTTP Client] as axios
+    [Socket.io Client] as socketclient
+  }
+  
+  package "User Devices" {
+    [Desktop] as desktop
+    [Tablet] as tablet
+    [Mobile] as mobile
+  }
+}
+
+' =============================================================================
+' APPLICATION LAYER
+' =============================================================================
+
+package "Application Layer (Backend)" {
+  
+  package "Express.js Server (Port 3000)" {
+    
+    package "Middleware Stack" {
+      [CORS] as cors
+      [Rate Limiter] as ratelimit
+      [Logger] as logger
+      [Error Handler] as errorhandler
+      [verifyToken (JWT)] as jwt
+      [authorizeRoles (RBAC)] as rbac
+      [Multer (Upload)] as multer
+    }
+    
+    package "Routes (API Endpoints)" {
+      [/api/auth] as authroute
+      [/api/admin] as adminroute
+      [/api/guru] as gururoute
+      [/api/siswa] as siswaroute
+      [/api/orang-tua] as ortuoute
+      [/api/kelas] as kelasroute
+      [/api/jenis-pelanggaran] as jenisroute
+      [/api/pelanggaran-siswa] as pelanggaranroute
+      [/api/tanggapan] as tanggapanroute
+      [/api/tindakan] as tindakanroute
+      [/api/laporan] as laporanroute
+      [/api/notifications] as notifroute
+      [/api/visualization] as vizroute
+      [/api/backup] as backuproute
+    }
+    
+    package "Controllers (Business Logic)" {
+      [AuthController] as authctrl
+      [AdminController] as adminctrl
+      [GuruController] as guructrl
+      [SiswaController] as siswactrl
+      [PelanggaranController] as pelanggaranctrl
+      [TanggapanController] as tanggapanctrl
+      [TindakanController] as tindakanctrl
+      [LaporanController] as laporanctrl
+      [NotificationController] as notifctrl
+      [VisualizationController] as vizctrl
+      [BackupController] as backupctrl
+    }
+    
+    package "Services (Business Services)" {
+      [notificationService] as notifservice
+      [emailService] as emailservice
+      [backupService] as backupservice
+      [socketService] as socketservice
+    }
+    
+    package "Models (ORM - Sequelize)" {
+      [Admin Model] as adminmodel
+      [Guru Model] as gurumodel
+      [Siswa Model] as siswamodel
+      [OrangTua Model] as ortumodel
+      [Kelas Model] as kelasmodel
+      [JenisPelanggaran Model] as jenismodel
+      [PelanggaranSiswa Model] as pelanggaranmodel
+      [TanggapanOrangTua Model] as tanggapanmodel
+      [TindakanSekolah Model] as tindakanmodel
+      [Laporan Model] as laporanmodel
+      [Notification Model] as notifmodel
+      [ActivityLog Model] as logmodel
+    }
+  }
+  
+  package "WebSocket Server" {
+    [Socket.io Server\n(Port 3000)] as socketserver
+  }
+}
+
+' =============================================================================
+' DATA LAYER
+' =============================================================================
+
+package "Data Layer (Persistence)" {
+  
+  database "MySQL Database\n(Port 3306)" {
+    folder "Core Tables" {
+      [admins] as admintable
+      [gurus] as gurutable
+      [siswas] as siswatable
+      [orang_tuas] as ortutable
+      [kelas] as kelastable
+      [jenis_pelanggarans] as jenistable
+      [pelanggaran_siswas] as pelangggarantable
+      [tanggapan_orang_tuas] as tanggapantable
+      [tindakan_sekolahs] as tindakantable
+      [laporans] as laporantable
+    }
+    
+    folder "Supporting Tables" {
+      [notifications] as notiftable
+      [activity_logs] as logtable
+      [saved_filters] as filtertable
+      [file_uploads] as filetable
+    }
+  }
+  
+  folder "File Storage" {
+    [uploads/profiles/] as profiles
+    [uploads/documents/] as documents
+    [uploads/backups/] as backups
+  }
+}
+
+' =============================================================================
+' EXTERNAL SERVICES
+' =============================================================================
+
+cloud "External Services" {
+  [SMTP Server\n(Gmail)] as smtp
+  [Backup Storage] as backupstorage
+}
+
+' =============================================================================
+' RELATIONSHIPS
+' =============================================================================
+
+' Client Layer
+desktop --> react
+tablet --> react
+mobile --> react
+react --> vite : "Development"
+react --> bootstrap : "UI Components"
+react --> router : "Navigation"
+react --> axios : "HTTP Requests"
+react --> socketclient : "Real-time"
+
+' Client to Server
+axios --> cors : "REST API"
+socketclient --> socketserver : "WebSocket"
+
+' Middleware Flow
+cors --> ratelimit
+ratelimit --> logger
+logger --> jwt
+jwt --> rbac
+rbac --> authroute : "Routes"
+
+' Routes to Controllers
+authroute --> authctrl
+adminroute --> adminctrl
+gururoute --> guructrl
+siswaroute --> siswactrl
+pelanggaranroute --> pelanggaranctrl
+tanggapanroute --> tanggapanctrl
+tindakanroute --> tindakanctrl
+laporanroute --> laporanctrl
+notifroute --> notifctrl
+vizroute --> vizctrl
+backuproute --> backupctrl
+
+' Controllers to Services
+pelanggaranctrl --> notifservice : "Trigger Notification"
+notifservice --> emailservice : "Send Email"
+notifservice --> socketservice : "Push Notification"
+backupctrl --> backupservice : "Create Backup"
+
+' Services to External
+emailservice --> smtp : "Send Email"
+backupservice --> backupstorage : "Store Backup"
+socketservice --> socketserver : "Emit Events"
+
+' Controllers to Models
+authctrl --> adminmodel
+authctrl --> gurumodel
+authctrl --> siswamodel
+authctrl --> ortumodel
+adminctrl --> adminmodel
+guructrl --> gurumodel
+siswactrl --> siswamodel
+siswactrl --> kelasmodel
+pelanggaranctrl --> pelanggaranmodel
+pelanggaranctrl --> jenismodel
+tanggapanctrl --> tanggapanmodel
+tindakanctrl --> tindakanmodel
+laporanctrl --> laporanmodel
+notifctrl --> notifmodel
+
+' Models to Database
+adminmodel --> admintable : "Sequelize ORM"
+gurumodel --> gurutable
+siswamodel --> siswatable
+ortumodel --> ortutable
+kelasmodel --> kelastable
+jenismodel --> jenistable
+pelanggaranmodel --> pelangggarantable
+tanggapanmodel --> tanggapantable
+tindakanmodel --> tindakantable
+laporanmodel --> laporantable
+notifmodel --> notiftable
+logmodel --> logtable
+
+' File Uploads
+multer --> profiles : "Upload Profile Pic"
+multer --> documents : "Upload Documents"
+backupservice --> backups : "Store Backups"
+
+' =============================================================================
+' NOTES
+' =============================================================================
+
+note right of react
+  **Frontend Stack:**
+  • React 19.1.1
+  • Vite 7.1.7
+  • Bootstrap 5.3.8
+  • Axios 1.12.2
+  • Socket.io-client 4.8.1
+  
+  **Features:**
+  • SPA (Single Page Application)
+  • Dark/Light Mode
+  • Responsive Design
+  • Real-time Updates
+end note
+
+note right of cors
+  **Security Middleware:**
+  • CORS - Origin validation
+  • Rate Limiter - DDoS protection
+  • JWT - Token authentication
+  • RBAC - Role-based access
+  • Multer - File validation
+  
+  **Rate Limits:**
+  • Login: 5/15min
+  • Register: 3/15min
+  • API: 100/15min
+end note
+
+note right of authctrl
+  **Controller Layer:**
+  • Business logic
+  • Input validation
+  • Response formatting
+  • Error handling
+  • Transaction management
+  
+  **15 Controllers Total**
+  covering all entities
+end note
+
+note right of notifservice
+  **Service Layer:**
+  • Notification Service
+  • Email Service (Nodemailer)
+  • Backup Service (Cron)
+  • Socket Service (WebSocket)
+  
+  **Decoupled from controllers**
+  for reusability
+end note
+
+note right of adminmodel
+  **ORM Layer:**
+  • Sequelize v6.37.7
+  • Model associations
+  • Soft delete support
+  • Timestamps auto-managed
+  • Query builder
+  
+  **14 Models Total**
+  with relationships
+end note
+
+note right of admintable
+  **Database:**
+  • MySQL 8.0+
+  • 14 Tables
+  • ACID Compliant
+  • Indexed FKs
+  • Connection Pooling
+  
+  **Features:**
+  • Soft Delete
+  • Audit Trail
+  • UTF8MB4 Encoding
+end note
+
+legend right
+  **ARCHITECTURE PATTERN:**
+  MVC with Service Layer
+  
+  **COMMUNICATION:**
+  • REST API (HTTP/HTTPS)
+  • WebSocket (Socket.io)
+  • Email (SMTP)
+  
+  **DEPLOYMENT:**
+  • Development: localhost
+  • Production: Cloud/VPS
+  
+  **SCALABILITY:**
+  • Horizontal: Load balancer
+  • Vertical: Resource upgrade
+  • Database: Replication
+end legend
+
+@enduml

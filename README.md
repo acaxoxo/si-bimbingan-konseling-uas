@@ -24,9 +24,13 @@
 - [Akun Login Testing](#akun-login-testing)
 - [Peran dan Fitur](#peran-dan-fitur)
 - [Database Schema](#database-schema)
+- [Desain Struktural Sistem](#desain-struktural-sistem)
+  - [Entity Relationship Diagram (ERD)](#entity-relationship-diagram-erd)
+  - [Data Flow Diagram (DFD)](#data-flow-diagram-dfd)
 - [Use Case Skenario](#use-case-skenario)
 - [Teknologi](#teknologi)
 - [Struktur Project](#struktur-project)
+- [Backend Architecture](#backend-architecture)
 - [Fitur Utama](#fitur-utama)
 - [Security Features](#security-features)
 - [API Endpoints](#api-endpoints)
@@ -240,6 +244,180 @@ JenisPelanggaran (1)  categorizes  (*) PelanggaranSiswa
 PelanggaranSiswa (1)  receives  (*) TanggapanOrangTua
 PelanggaranSiswa (1)  receives  (*) TindakanSekolah
 ```
+
+---
+
+## Desain Struktural Sistem
+
+### Entity Relationship Diagram (ERD)
+
+**Lokasi File:** `backend/ERD.puml`
+
+ERD menggambarkan struktur database lengkap dengan 14 entitas utama dan pendukung:
+
+#### Entitas Utama (Core Tables)
+1. **Admin** - Administrator sistem
+2. **Guru** - Guru Bimbingan Konseling
+3. **Siswa** - Data siswa dengan NIS/NISN
+4. **Orang Tua** - Data orang tua/wali siswa
+5. **Kelas** - Data kelas dan kejuruan
+6. **Jenis Pelanggaran** - Kategori pelanggaran dengan poin
+7. **Pelanggaran Siswa** - Record pelanggaran (entity utama)
+8. **Tanggapan Orang Tua** - Respon orang tua terhadap pelanggaran
+9. **Tindakan Sekolah** - Tindak lanjut sekolah
+10. **Laporan** - Laporan periodik
+
+#### Entitas Pendukung (Supporting Tables)
+11. **Notification** - Sistem notifikasi real-time
+12. **Activity Log** - Audit trail semua aktivitas
+13. **Saved Filter** - Filter tersimpan per user
+14. **File Upload** - Metadata file upload
+
+#### Relasi Utama (Key Relationships)
+```
+Admin (1) ──creates──> (*) JenisPelanggaran
+Guru (1) ──wali_kelas──> (*) Kelas
+Kelas (1) ──has──> (*) Siswa
+OrangTua (1) ──has──> (*) Siswa
+Siswa (1) ──commits──> (*) PelanggaranSiswa
+Guru (1) ──reports──> (*) PelanggaranSiswa
+JenisPelanggaran (1) ──categorizes──> (*) PelanggaranSiswa
+PelanggaranSiswa (1) ──receives──> (*) TanggapanOrangTua
+PelanggaranSiswa (1) ──receives──> (*) TindakanSekolah
+OrangTua (1) ──gives──> (*) TanggapanOrangTua
+Guru (1) ──executes──> (*) TindakanSekolah
+Guru (1) ──generates──> (*) Laporan
+```
+
+#### Fitur Database
+- **Primary Keys:** Auto-increment integer
+- **Foreign Keys:** Indexed untuk performance
+- **Unique Constraints:** Email, NIS, NISN, NIK
+- **Soft Delete:** `deletedAt` timestamp untuk audit
+- **Timestamps:** `createdAt`, `updatedAt` otomatis
+- **Data Types:** VARCHAR, TEXT, INT, DATE, TIMESTAMP, ENUM, JSON, DECIMAL
+
+#### Cara Melihat ERD
+```bash
+# Install PlantUML (jika belum)
+# Windows: choco install plantuml
+# Mac: brew install plantuml
+# Linux: sudo apt install plantuml
+
+# Generate diagram
+cd backend
+plantuml ERD.puml
+
+# Output: ERD.png
+```
+
+**Online Viewer:**  
+Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) dan paste isi `ERD.puml`
+
+---
+
+### Data Flow Diagram (DFD)
+
+**Lokasi File:** `backend/DFD.puml`
+
+DFD menggambarkan aliran data dalam sistem dengan 3 level detail:
+
+#### Level 0: Context Diagram
+Menampilkan sistem secara keseluruhan dengan 4 external entities:
+- **Admin** → Kelola data master, lihat laporan
+- **Guru BK** → Input pelanggaran, beri tindakan
+- **Siswa** → Lihat riwayat pelanggaran
+- **Orang Tua** → Beri tanggapan, terima notifikasi
+
+#### Level 1: Main Processes
+6 proses utama dengan data stores:
+
+**Processes:**
+1. **1.0 Manajemen Autentikasi** - Login, logout, JWT token
+2. **2.0 Manajemen Data Master** - CRUD Admin, Guru, Siswa, Kelas, dll.
+3. **3.0 Pencatatan Pelanggaran** - Input dan tracking pelanggaran
+4. **4.0 Manajemen Tanggapan & Tindakan** - Respon ortu & tindak lanjut
+5. **5.0 Pelaporan & Analitik** - Generate laporan & statistik
+6. **6.0 Notifikasi Real-time** - WebSocket & email notifications
+
+**Data Stores:**
+- **D1:** User Database (admin, guru, siswa, orang_tua)
+- **D2:** Master Data (kelas, jenis_pelanggaran)
+- **D3:** Pelanggaran (pelanggaran_siswa)
+- **D4:** Tanggapan & Tindakan (tanggapan_orang_tua, tindakan_sekolah)
+- **D5:** Laporan (laporan)
+
+#### Level 2: Detailed Processes
+
+**2.1 Authentication Process (1.0)**
+```
+1.1 Validasi Credentials → 1.2 Verifikasi Password
+   → 1.3 Generate JWT Token → 1.4 Create Session
+```
+
+**2.2 Violation Recording (3.0)**
+```
+3.1 Input Data Pelanggaran → 3.2 Validasi Data
+   → 3.3 Hitung Poin → 3.4 Simpan Pelanggaran
+   → 3.5 Update Total Poin Siswa
+```
+
+**2.3 Response & Action (4.0)**
+```
+4.1 Beri Tanggapan Orang Tua ──┐
+4.2 Beri Tindakan Sekolah ──────┼→ 4.4 Validasi & Simpan
+                                 │      → 4.3 Update Status
+```
+
+**2.4 Reporting (5.0)**
+```
+5.1 Terima Request → 5.2 Filter & Kumpulkan Data
+   → 5.3 Proses Analitik → 5.4 Generate Report
+   → 5.5 Export (Excel/PDF)
+```
+
+**2.5 Notification (6.0)**
+```
+6.1 Detect Event → 6.2 Identify Recipients
+   → 6.3 Create Notification ──┬→ 6.4 Send Email
+                                └→ 6.5 Send WebSocket
+```
+
+#### Aliran Data Kritikal
+
+**Flow 1: Guru Mencatat Pelanggaran**
+```
+Guru → [3.1 Input Data] → [3.2 Validasi] → [D2 Master Data]
+    → [3.3 Hitung Poin] → [3.4 Simpan] → [D3 Pelanggaran]
+    → [3.5 Update Poin] → [D2 Siswa]
+    → [6.0 Notifikasi] → Orang Tua
+```
+
+**Flow 2: Orang Tua Beri Tanggapan**
+```
+Orang Tua → [4.1 Beri Tanggapan] → [4.4 Validasi & Simpan]
+    → [D4 Tanggapan] → [4.3 Update Status] → [D3 Pelanggaran]
+    → [6.0 Notifikasi] → Guru BK
+```
+
+**Flow 3: Generate Laporan**
+```
+User → [5.1 Request] → [5.2 Filter Data] → [D3, D4, D5]
+    → [5.3 Analitik] → [5.4 Generate] → [5.5 Export]
+    → Excel/PDF → User
+```
+
+#### Cara Melihat DFD
+```bash
+# Generate diagram
+cd backend
+plantuml DFD.puml
+
+# Output: Multiple pages (DFD_001.png, DFD_002.png, ...)
+```
+
+**Online Viewer:**  
+Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) dan paste isi `DFD.puml`
 
 ---
 
@@ -576,49 +754,618 @@ si-bimbingan-konseling/
 
 ---
 
+## Backend Architecture
+
+### Technology Stack
+
+#### Core Framework
+- **Node.js v18+** - JavaScript runtime environment
+- **Express.js v5.1.0** - Fast, minimalist web framework
+- **MySQL 8.0+** - Relational database management system
+- **Sequelize v6.37.7** - Promise-based ORM for Node.js
+
+#### Security & Authentication
+- **JWT (jsonwebtoken v9.0.2)** - Stateless authentication
+- **bcrypt v6.0.0** - Password hashing with salt rounds
+- **express-validator v7.2.1** - Input validation & sanitization
+- **express-rate-limit v8.1.0** - Rate limiting middleware
+- **CORS v2.8.5** - Cross-Origin Resource Sharing
+
+#### File Handling & Storage
+- **Multer v2.0.2** - File upload middleware
+- **Archiver v7.0.1** - Backup creation (zip files)
+- **extract-zip v2.0.1** - Backup restoration
+
+#### Real-time & Notifications
+- **Socket.io v4.8.1** - WebSocket for real-time features
+- **Nodemailer v7.0.10** - Email notifications
+- **node-cron v4.2.1** - Task scheduling (automated backups)
+
+### Architecture Pattern
+
+**MVC (Model-View-Controller) with Service Layer**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      Client Request                      │
+└─────────────────────┬───────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│                   Middleware Layer                       │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ • CORS       • Rate Limiter   • Logger          │   │
+│  │ • Auth       • Error Handler  • Upload          │   │
+│  └─────────────────────────────────────────────────┘   │
+└─────────────────────┬───────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│                     Routes Layer                         │
+│  /api/auth  /api/admin  /api/guru  /api/siswa  ...      │
+└─────────────────────┬───────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│                  Controllers Layer                       │
+│  Business logic, Request validation, Response formatting │
+└─────────────────────┬───────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│                   Services Layer                         │
+│  • Notification Service  • Email Service                 │
+│  • Backup Service        • Socket Service                │
+└─────────────────────┬───────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│                    Models Layer                          │
+│  Sequelize ORM Models with Associations                  │
+└─────────────────────┬───────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│                  MySQL Database                          │
+│  14 Tables with Relationships                            │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Directory Structure Explained
+
+```
+backend/
+├── 📁 config/
+│   └── database.js              # MySQL connection with pooling
+│
+├── 📁 models/                   # Sequelize Models (ORM)
+│   ├── AdminModel.js            # Admin table schema
+│   ├── GuruModel.js             # Teacher table schema
+│   ├── SiswaModel.js            # Student table schema
+│   ├── OrangTuaModel.js         # Parent table schema
+│   ├── KelasModel.js            # Class table schema
+│   ├── JenisPelanggaranModel.js # Violation type schema
+│   ├── PelanggaranSiswaModel.js # Student violation schema
+│   ├── TanggapanOrangTuaModel.js # Parent response schema
+│   ├── TindakanSekolahModel.js  # School action schema
+│   ├── LaporanModel.js          # Report schema
+│   ├── NotificationModel.js     # Notification schema
+│   ├── ActivityLogModel.js      # Activity log schema
+│   ├── SavedFilterModel.js      # Saved filter schema
+│   ├── FileUploadModel.js       # File metadata schema
+│   └── associations.js          # Model relationships
+│
+├── 📁 controllers/              # Business Logic
+│   ├── AuthController.js        # Login, register, JWT refresh
+│   ├── AdminController.js       # Admin CRUD operations
+│   ├── GuruController.js        # Teacher CRUD operations
+│   ├── SiswaController.js       # Student CRUD operations
+│   ├── OrangTuaController.js    # Parent CRUD operations
+│   ├── KelasController.js       # Class CRUD operations
+│   ├── JenisPelanggaranController.js  # Violation type CRUD
+│   ├── PelanggaranSiswaController.js  # Violation CRUD
+│   ├── TanggapanOrangTuaController.js # Response CRUD
+│   ├── TindakanSekolahController.js   # Action CRUD
+│   ├── LaporanController.js     # Reports & analytics
+│   ├── NotificationController.js # Notification management
+│   ├── VisualizationController.js # Charts & graphs data
+│   ├── BackupController.js      # Database backup/restore
+│   ├── SavedFilterController.js # Saved filters
+│   ├── ActivityLogController.js # Activity logging
+│   └── FileUploadController.js  # File uploads
+│
+├── 📁 routes/                   # API Routes
+│   ├── AuthRoute.js             # /api/auth/*
+│   ├── AdminRoute.js            # /api/admin/*
+│   ├── GuruRoute.js             # /api/guru/*
+│   ├── SiswaRoute.js            # /api/siswa/*
+│   ├── OrangTuaRoute.js         # /api/orang-tua/*
+│   ├── KelasRoute.js            # /api/kelas/*
+│   ├── JenisPelanggaranRoute.js # /api/jenis-pelanggaran/*
+│   ├── PelanggaranSiswaRoute.js # /api/pelanggaran-siswa/*
+│   ├── TanggapanOrangTuaRoute.js # /api/tanggapan/*
+│   ├── TindakanSekolahRoute.js  # /api/tindakan/*
+│   ├── LaporanRoute.js          # /api/laporan/*
+│   ├── NotificationRoute.js     # /api/notifications/*
+│   ├── VisualizationRoute.js    # /api/visualization/*
+│   ├── BackupRoute.js           # /api/backup/*
+│   ├── SavedFilterRoute.js      # /api/saved-filters/*
+│   ├── ActivityLogRoute.js      # /api/activity-logs/*
+│   └── FileUploadRoute.js       # /api/file-upload/*
+│
+├── 📁 middleware/               # Custom Middleware
+│   ├── verifyToken.js           # JWT verification
+│   ├── authErrorHandler.js      # Auth-specific errors
+│   ├── errorHandler.js          # Global error handler
+│   ├── logger.js                # Request logging
+│   ├── rateLimiter.js           # Rate limiting config
+│   ├── upload.js                # Multer configuration
+│   ├── activityLogger.js        # Log user activities
+│   └── middleware.js            # Helper middleware
+│
+├── 📁 services/                 # Business Services
+│   ├── backupService.js         # Auto backup scheduler
+│   ├── emailService.js          # Email notifications
+│   ├── notificationService.js   # Push notifications
+│   └── socketService.js         # WebSocket handlers
+│
+├── 📁 scripts/                  # Utility Scripts
+│   ├── seedUsers.js             # Seed test data
+│   ├── resetPasswords.js        # Reset all passwords
+│   ├── fixAdminPassword.js      # Fix admin password
+│   ├── testLogin.js             # Test login endpoint
+│   ├── testRegister.js          # Test register endpoint
+│   ├── verifyLogin.js           # Verify login works
+│   ├── add_timestamps.js        # Add timestamps to tables
+│   ├── check_active_data.js     # Check soft delete status
+│   └── check_tindakan_sekolah.js # Check tindakan data
+│
+├── 📁 migrations/               # Database Migrations
+│   ├── add_tindakan_sekolah_column.js
+│   ├── addUniqueConstraints.js
+│   └── update_unique_indexes_soft_delete.js
+│
+├── 📁 uploads/                  # File Storage
+│   ├── documents/               # Document files
+│   └── profiles/                # Profile pictures
+│
+├── 📁 utils/                    # Utilities
+│   └── pagination.js            # Pagination helper
+│
+├── server.js                    # Main server entry point
+├── .env                         # Environment variables
+├── .env.example                 # Environment template
+├── package.json                 # Dependencies & scripts
+└── ERD.puml                     # Database diagram (PlantUML)
+```
+
+### Key Features Implementation
+
+#### 1. Authentication Flow
+```javascript
+// JWT-based authentication with refresh token
+1. User submits credentials → AuthController.login
+2. Verify credentials with bcrypt
+3. Generate access token (2h expiry)
+4. Return token + user data
+5. Frontend stores token in localStorage
+6. Each request includes: Authorization: Bearer <token>
+7. verifyToken middleware validates token
+8. Expired? → Use refresh endpoint
+```
+
+#### 2. Authorization (RBAC)
+```javascript
+// Role-Based Access Control
+Roles: ['admin', 'guru', 'siswa', 'orang_tua']
+
+// Middleware checks
+verifyToken → authorizeRoles(['admin', 'guru'])
+
+// Example: Only admin can create jenis pelanggaran
+POST /api/jenis-pelanggaran
+  → verifyToken
+  → authorizeRoles(['admin'])
+  → JenisPelanggaranController.create
+```
+
+#### 3. Database Connection Pooling
+```javascript
+// config/database.js
+const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
+  host: DB_HOST,
+  dialect: 'mysql',
+  pool: {
+    max: 5,          // Maximum connections
+    min: 0,          // Minimum connections
+    acquire: 60000,  // Max time to get connection
+    idle: 10000      // Max idle time
+  }
+});
+```
+
+#### 4. Input Validation
+```javascript
+// Using express-validator
+POST /api/admin
+  → Validation rules:
+    - email: must be valid email
+    - nama_admin: required, min 3 chars
+    - password: required, min 6 chars
+  → Validation errors? → 400 Bad Request
+  → Valid? → Continue to controller
+```
+
+#### 5. Error Handling
+```javascript
+// Three-layer error handling
+1. Try-catch in controllers
+2. authErrorHandler - Auth-specific errors
+3. errorHandler - Global error handler
+
+// Production mode: Hide sensitive details
+// Development mode: Show full stack trace
+```
+
+#### 6. Real-time Notifications
+```javascript
+// Socket.io implementation
+1. Client connects → socketService.js
+2. Join room by userId
+3. Event occurs (new violation)
+   → notificationService.createNotification()
+   → Emit to specific user's room
+4. Client receives real-time update
+```
+
+#### 7. File Upload
+```javascript
+// Multer configuration
+1. Client uploads file → /api/file-upload/upload
+2. Multer middleware validates:
+   - File size < 5MB
+   - File type (images, PDF, docs)
+3. Store in uploads/ with unique filename
+4. Save metadata to database
+5. Return file URL
+```
+
+#### 8. Automated Backups
+```javascript
+// node-cron scheduler
+1. Cron job runs daily at 2 AM
+2. backupService.createBackup()
+3. Export database to .sql file
+4. Compress to .zip
+5. Store in uploads/backups/
+6. Delete backups older than 30 days
+```
+
+### API Response Standards
+
+#### Success Response
+```javascript
+{
+  success: true,
+  data: { ... },
+  message: "Operation successful",
+  pagination: {      // For list endpoints
+    currentPage: 1,
+    totalPages: 10,
+    totalItems: 100,
+    itemsPerPage: 10
+  }
+}
+```
+
+#### Error Response
+```javascript
+{
+  success: false,
+  message: "Error message",
+  errors: [...],     // Validation errors
+  stack: "..."       // Only in development
+}
+```
+
+### Security Measures
+
+#### 1. Password Security
+- Hashed with bcrypt (10 salt rounds)
+- Never stored in plain text
+- Never returned in API responses
+
+#### 2. SQL Injection Prevention
+- Sequelize ORM with parameterized queries
+- Input validation before database operations
+
+#### 3. XSS Prevention
+- express-validator sanitization
+- Content Security Policy headers
+
+#### 4. CSRF Protection
+- CORS whitelist
+- Token-based authentication
+
+#### 5. Rate Limiting
+```javascript
+Login:    5 attempts / 15 min
+Register: 3 attempts / 15 min
+API:      100 requests / 15 min
+```
+
+#### 6. Soft Delete
+- Records never truly deleted
+- `deletedAt` timestamp for recovery
+- Exclude soft-deleted in queries
+
+### Performance Optimizations
+
+#### 1. Database Indexing
+- Primary keys auto-indexed
+- Foreign keys indexed
+- Unique constraints on email, NIS, NIK
+
+#### 2. Eager Loading
+```javascript
+// Load related data in one query
+PelanggaranSiswa.findAll({
+  include: [
+    { model: Siswa },
+    { model: JenisPelanggaran },
+    { model: Guru }
+  ]
+});
+```
+
+#### 3. Pagination
+- Default: 10 items per page
+- Prevents loading large datasets
+- Improves response time
+
+#### 4. Connection Pooling
+- Reuse database connections
+- Reduces connection overhead
+- Max 5 concurrent connections
+
+### Monitoring & Logging
+
+#### Activity Logs
+```javascript
+// All CRUD operations logged
+{
+  userId: 123,
+  userType: 'guru',
+  action: 'CREATE',
+  target: 'pelanggaran_siswa',
+  targetId: 456,
+  details: {...},
+  ipAddress: '192.168.1.1',
+  userAgent: 'Mozilla/5.0...',
+  timestamp: '2025-11-11 10:00:00'
+}
+```
+
+#### Request Logs
+```javascript
+// All API requests logged
+[2025-11-11 10:00:00] GET /api/siswa?page=1&limit=10
+[2025-11-11 10:00:01] POST /api/pelanggaran-siswa
+[2025-11-11 10:00:02] PUT /api/guru/123
+```
+
+---
+
 ## API Endpoints
 
-### Authentication
+> **Base URL:** `http://localhost:3000/api`  
+> **Authentication:** Most endpoints require JWT token in Authorization header: `Bearer <token>`
+
+### Authentication & Authorization
 ```
-POST   /api/auth/login          # Login
+POST   /api/auth/register       # Register new user (rate limited)
+POST   /api/auth/login          # Login (rate limited)
 POST   /api/auth/logout         # Logout
-GET    /api/auth/me             # Get current user
+POST   /api/auth/refresh        # Refresh JWT token
 ```
 
 ### Admin Management
 ```
 GET    /api/admin               # Get all admins (paginated)
-POST   /api/admin               # Create admin
-PUT    /api/admin/:id           # Update admin
-DELETE /api/admin/:id           # Delete admin
+GET    /api/admin/:id           # Get admin by ID
+POST   /api/admin               # Create new admin (admin only)
+PUT    /api/admin/:id           # Update admin (admin only)
+DELETE /api/admin/:id           # Delete admin (soft delete)
 ```
 
-### Guru BK
+### Guru BK Management
 ```
-GET    /api/guru                # Get all guru
-POST   /api/guru                # Create guru
-PUT    /api/guru/:id            # Update guru
-DELETE /api/guru/:id            # Delete guru
+GET    /api/guru                # Get all guru (paginated, searchable)
+GET    /api/guru/:id            # Get guru by ID with relations
+POST   /api/guru                # Create new guru (admin only)
+PUT    /api/guru/:id            # Update guru (admin/guru)
+DELETE /api/guru/:id            # Delete guru (soft delete)
 ```
 
-### Siswa
+### Siswa Management
 ```
-GET    /api/siswa               # Get all siswa
-POST   /api/siswa               # Create siswa
-PUT    /api/siswa/:id           # Update siswa
-DELETE /api/siswa/:id           # Delete siswa
+GET    /api/siswa               # Get all siswa (paginated, filterable)
+GET    /api/siswa/:id           # Get siswa detail with kelas & orang tua
+POST   /api/siswa               # Create new siswa (admin/guru)
+PUT    /api/siswa/:id           # Update siswa (admin/guru)
+DELETE /api/siswa/:id           # Delete siswa (soft delete)
+```
+
+### Orang Tua Management
+```
+GET    /api/orang-tua           # Get all orang tua (paginated)
+GET    /api/orang-tua/:id       # Get orang tua detail with children
+POST   /api/orang-tua           # Create new orang tua (admin/guru)
+PUT    /api/orang-tua/:id       # Update orang tua
+DELETE /api/orang-tua/:id       # Delete orang tua (soft delete)
+```
+
+### Kelas Management
+```
+GET    /api/kelas               # Get all kelas
+GET    /api/kelas/:id           # Get kelas detail with siswa
+GET    /api/kelas/:id/siswa     # Get all siswa in a kelas
+POST   /api/kelas               # Create new kelas (admin only)
+PUT    /api/kelas/:id           # Update kelas (admin/guru)
+DELETE /api/kelas/:id           # Delete kelas (soft delete)
+```
+
+### Jenis Pelanggaran
+```
+GET    /api/jenis-pelanggaran   # Get all jenis pelanggaran
+GET    /api/jenis-pelanggaran/:id  # Get detail
+POST   /api/jenis-pelanggaran   # Create (admin only)
+PUT    /api/jenis-pelanggaran/:id  # Update (admin only)
+DELETE /api/jenis-pelanggaran/:id  # Delete (admin only)
 ```
 
 ### Pelanggaran Siswa
 ```
-GET    /api/pelanggaran-siswa   # Get all pelanggaran
-POST   /api/pelanggaran-siswa   # Create pelanggaran
-GET    /api/pelanggaran-siswa/:id  # Get detail
-PUT    /api/pelanggaran-siswa/:id  # Update
-DELETE /api/pelanggaran-siswa/:id  # Delete
+GET    /api/pelanggaran-siswa   # Get all pelanggaran (filterable by date, siswa, kelas)
+GET    /api/pelanggaran-siswa/:id  # Get detail with all relations
+POST   /api/pelanggaran-siswa   # Create pelanggaran (guru only)
+PUT    /api/pelanggaran-siswa/:id  # Update pelanggaran (guru only)
+DELETE /api/pelanggaran-siswa/:id  # Delete pelanggaran (soft delete)
 ```
 
-*Dan 6 endpoint group lainnya...*
+### Tanggapan Orang Tua
+```
+GET    /api/tanggapan           # Get all tanggapan
+GET    /api/tanggapan/:id       # Get tanggapan detail
+POST   /api/tanggapan           # Create tanggapan (orang tua only)
+PUT    /api/tanggapan/:id       # Update tanggapan (orang tua only)
+DELETE /api/tanggapan/:id       # Delete tanggapan
+```
+
+### Tindakan Sekolah
+```
+GET    /api/tindakan/tindakan   # Get all tindakan
+GET    /api/tindakan/:id        # Get tindakan detail
+POST   /api/tindakan            # Create tindakan (guru only)
+PUT    /api/tindakan/:id        # Update tindakan (guru only)
+DELETE /api/tindakan/:id        # Delete tindakan
+```
+
+### Laporan & Analytics
+```
+GET    /api/laporan/laporan              # Get laporan pelanggaran (filterable)
+GET    /api/laporan/anak                 # Laporan untuk orang tua (by child)
+GET    /api/laporan/dashboard-stats      # Dashboard statistics
+GET    /api/laporan/pelanggaran          # Pelanggaran reports with filters
+GET    /api/laporan/analisis-siswa       # Student analysis report
+GET    /api/laporan/analisis-kelas       # Class analysis report
+```
+
+### Visualization & Charts
+```
+GET    /api/visualization/trend-monthly      # Monthly violation trends
+GET    /api/visualization/kelas-comparison   # Class comparison chart
+GET    /api/visualization/category-comparison  # Category comparison
+GET    /api/visualization/top-violators      # Top violators list
+```
+
+### Notifications
+```
+GET    /api/notifications              # Get user notifications
+GET    /api/notifications/unread-count # Get unread count
+GET    /api/notifications/stats        # Notification statistics
+PATCH  /api/notifications/:id/read     # Mark as read
+PATCH  /api/notifications/read-all     # Mark all as read
+DELETE /api/notifications/:id          # Delete notification
+DELETE /api/notifications/read/all     # Delete all read notifications
+POST   /api/notifications/test         # Send test notification
+```
+
+### Saved Filters
+```
+POST   /api/saved-filters              # Save a filter
+GET    /api/saved-filters              # Get user's saved filters
+GET    /api/saved-filters/:id          # Get specific filter
+PUT    /api/saved-filters/:id          # Update filter
+DELETE /api/saved-filters/:id          # Delete filter
+PATCH  /api/saved-filters/:id/set-default  # Set as default
+```
+
+### File Upload
+```
+POST   /api/file-upload/upload          # Upload single file
+POST   /api/file-upload/upload-multiple # Upload multiple files
+GET    /api/file-upload                 # Get all uploaded files
+GET    /api/file-upload/:id             # Get file metadata
+GET    /api/file-upload/:id/download    # Download file
+DELETE /api/file-upload/:id             # Delete file
+```
+
+### Backup & Restore
+```
+POST   /api/backup/create               # Create manual backup (admin)
+POST   /api/backup/restore              # Restore from backup (admin)
+GET    /api/backup/list                 # List all backups (admin)
+GET    /api/backup/download/:fileName   # Download backup file (admin)
+DELETE /api/backup/:fileName            # Delete backup file (admin)
+POST   /api/backup/cleanup              # Cleanup old backups (admin)
+```
+
+### Activity Logs
+```
+GET    /api/activity-logs               # Get all activity logs (admin)
+GET    /api/activity-logs/stats         # Activity statistics (admin)
+GET    /api/activity-logs/:id           # Get specific log (admin)
+DELETE /api/activity-logs/cleanup       # Delete old logs (admin)
+```
+
+### Query Parameters (Common)
+
+**Pagination:**
+- `page` - Page number (default: 1)
+- `limit` - Items per page (default: 10)
+
+**Search & Filter:**
+- `search` - Search keyword
+- `kelasId` - Filter by class
+- `startDate` - Start date filter (YYYY-MM-DD)
+- `endDate` - End date filter (YYYY-MM-DD)
+- `kategori` - Filter by category
+
+**Sorting:**
+- `sort` - Field to sort by
+- `order` - Sort order (ASC/DESC)
+
+### Response Format
+
+**Success Response:**
+```json
+{
+  "success": true,
+  "data": { ... },
+  "message": "Operation successful",
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 10,
+    "totalItems": 100,
+    "itemsPerPage": 10
+  }
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "message": "Error message",
+  "errors": [...]
+}
+```
+
+### Rate Limiting
+- **Login:** 5 attempts per 15 minutes per IP
+- **Register:** 3 attempts per 15 minutes per IP
+- **General API:** 100 requests per 15 minutes per IP
 
 ---
 
@@ -1356,9 +2103,36 @@ Please include:
 
 | Document | Description | Link |
 |----------|-------------|------|
-| **README.md** | Main documentation | You're here! |
+| **README.md** | Main documentation (complete guide) | You're here! |
 | **Frontend README** | React components & structure | [frontend/README.md](./frontend/README.md) |
-| **ERD Diagram** | Database schema diagram | [backend/ERD.puml](./backend/ERD.puml) |
+| **ERD Diagram** | Database schema & relationships | [backend/ERD.puml](./backend/ERD.puml) |
+| **DFD Diagram** | Data flow & system processes | [backend/DFD.puml](./backend/DFD.puml) |
+| **System Architecture** | System architecture diagram | [backend/ARCHITECTURE.puml](./backend/ARCHITECTURE.puml) |
+
+### Viewing PlantUML Diagrams
+
+**Option 1: Generate Images**
+```bash
+# Install PlantUML
+# Windows: choco install plantuml
+# Mac: brew install plantuml
+# Linux: sudo apt install plantuml
+
+# Generate PNG images
+cd backend
+plantuml ERD.puml    # Creates ERD.png
+plantuml DFD.puml    # Creates DFD_001.png, DFD_002.png, etc.
+```
+
+**Option 2: Online Viewer**
+1. Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/)
+2. Copy paste isi file `.puml`
+3. Klik "Submit"
+
+**Option 3: VS Code Extension**
+1. Install extension: "PlantUML" by jebbs
+2. Buka file `.puml`
+3. Press `Alt+D` untuk preview
 
 ---
 
@@ -1374,8 +2148,25 @@ If you find this project helpful, please star this repository!
 
 ---
 
-## Notable Recent Changes (2025-11-04)
+## Notable Recent Changes
 
+### 2025-11-11: Major Documentation Update
+- ✅ Added comprehensive **Backend Architecture** section with detailed technology stack
+- ✅ Added complete **API Endpoints** documentation (100+ endpoints documented)
+- ✅ Improved **ERD (Entity Relationship Diagram)** with complete schema details
+  - 14 entities fully documented with all attributes
+  - All relationships clearly mapped
+  - Added notes for critical entities
+  - Enhanced styling and readability
+- ✅ Created new **DFD (Data Flow Diagram)** with 3 levels:
+  - Level 0: Context Diagram
+  - Level 1: Main Processes (6 processes)
+  - Level 2: Detailed Processes (5 detailed flows)
+- ✅ Added **Desain Struktural Sistem** section in README
+- ✅ Updated Table of Contents with new sections
+- ✅ Added viewing instructions for PlantUML diagrams
+
+### 2025-11-04: Frontend Notification Improvements
 - Frontend migration: all browser `alert(...)` calls in the `frontend/src` codebase have been replaced with `react-toastify` toasts for non-blocking, consistent in-app notifications. The change is implemented across page components and forms.
 - `ToastContainer` is already configured once in `frontend/src/App.jsx`. `react-toastify` is present in `frontend/package.json` dependencies (version ~11.x).
 - The production bundle in `frontend/dist/` may still contain `alert(...)` strings generated by older builds — do not edit files inside `dist` manually. To refresh the production bundle run:
