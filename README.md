@@ -14,7 +14,7 @@
 
 > **Mulai dari mana?**
 > - Baru mulai? → Lihat [Quick Start](#quick-start)
-> - Developer frontend? → Buka [Frontend Documentation](./frontend/README.md)
+> - Developer frontend? → Lihat [Struktur Project](#struktur-project) dan [Frontend Stack](#teknologi)
 > - Ada masalah? → Cek [Troubleshooting](#troubleshooting)
 > - Butuh API docs? → Lihat [API Endpoints](#api-endpoints)
 
@@ -1753,7 +1753,7 @@ npm run dev
 
 ### Need More Help?
 
-1. **Frontend Docs** - Check `frontend/README.md` for component details
+1. **Component Structure** - Check [Struktur Project](#struktur-project) untuk detail komponen
 2. **Browser Console** - Open DevTools (F12) to see errors
 3. **Backend Logs** - Check terminal running backend
 4. **Network Tab** - Check API requests/responses in browser
@@ -2273,8 +2273,7 @@ Please include:
 
 | Document | Description | Link |
 |----------|-------------|------|
-| **README.md** | Main documentation (complete guide) | You're here! |
-| **Frontend README** | React components & structure | [frontend/README.md](./frontend/README.md) |
+| **README.md** | Complete documentation (all-in-one) | You're here! |
 | **ERD Diagram** | Database schema & relationships | [backend/ERD.puml](./backend/ERD.puml) |
 | **DFD Diagram** | Data flow & system processes | [backend/DFD.puml](./backend/DFD.puml) |
 | **System Architecture** | System architecture diagram | [backend/ARCHITECTURE.puml](./backend/ARCHITECTURE.puml) |
