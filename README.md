@@ -197,53 +197,239 @@ Untuk testing tanpa seed data, Anda bisa register akun baru melalui halaman `/re
 ### Entitas Utama
 
 **1. Admin**
-- id_admin, nama_admin, email, password
+- **Primary Key:** id_admin (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - nama_admin (VARCHAR(100), NOT NULL)
+  - email_admin (VARCHAR(100), UNIQUE, NOT NULL)
+  - password (VARCHAR(255), NOT NULL)
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
-**2. Guru** 
-- id_guru, nama_guru, nik, email, password, telepon, alamat
+**2. Guru (Guru BK)**
+- **Primary Key:** id_guru (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - nama_guru (VARCHAR(100), NOT NULL)
+  - nik (VARCHAR(20), UNIQUE, NOT NULL)
+  - tempat_lahir (VARCHAR(50))
+  - tanggal_lahir (DATE)
+  - jenis_kelamin (ENUM: 'L', 'P')
+  - pendidikan_terakhir (VARCHAR(50))
+  - jurusan (VARCHAR(50))
+  - jabatan (VARCHAR(50))
+  - status_aktif (ENUM: 'Aktif', 'Tidak Aktif')
+  - no_telepon (VARCHAR(15))
+  - email_guru (VARCHAR(100), UNIQUE)
+  - password (VARCHAR(255), NOT NULL)
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
 **3. Siswa**
-- id_siswa, nama_siswa, nis, nisn, email, password
-- id_kelas (FK), id_orang_tua (FK)
+- **Primary Key:** id_siswa (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - nama_siswa (VARCHAR(100), NOT NULL)
+  - nis (VARCHAR(20), UNIQUE, NOT NULL)
+  - nisn (VARCHAR(20), UNIQUE)
+  - jenis_kelamin (ENUM: 'L', 'P')
+  - tempat_lahir (VARCHAR(50))
+  - tanggal_lahir (DATE)
+  - alamat (TEXT)
+  - no_telepon (VARCHAR(15))
+  - email_siswa (VARCHAR(100), UNIQUE)
+  - password (VARCHAR(255), NOT NULL)
+  - foto_profil (VARCHAR(255))
+- **Foreign Keys:**
+  - kelas_id (INT) → Kelas
+  - orangTuaId (INT) → OrangTua
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
 **4. Orang Tua**
-- id_orang_tua, nama_orang_tua, nik, email, password, pekerjaan
+- **Primary Key:** id_orang_tua (INT, AUTO_INCREMENT)
+- **Attributes (Ayah):**
+  - nama_ayah (VARCHAR(100))
+  - nik_ayah (VARCHAR(20), UNIQUE)
+  - email_ayah (VARCHAR(100))
+  - no_telepon_ayah (VARCHAR(15))
+  - pekerjaan_ayah (VARCHAR(50))
+  - alamat_ayah (TEXT)
+  - pendidikan_ayah (VARCHAR(50))
+  - penghasilan_ayah (DECIMAL(15,2))
+- **Attributes (Ibu):**
+  - nama_ibu (VARCHAR(100))
+  - nik_ibu (VARCHAR(20), UNIQUE)
+  - email_ibu (VARCHAR(100))
+  - no_telepon_ibu (VARCHAR(15))
+  - pekerjaan_ibu (VARCHAR(50))
+  - alamat_ibu (TEXT)
+  - pendidikan_ibu (VARCHAR(50))
+  - penghasilan_ibu (DECIMAL(15,2))
+- **Authentication:**
+  - password (VARCHAR(255), NOT NULL)
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
 **5. Kelas**
-- id_kelas, nama_kelas, kelas_kejuruan
+- **Primary Key:** id_kelas (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - nama_kelas (VARCHAR(20), NOT NULL)
+  - kelas_kejuruan (VARCHAR(50))
+- **Foreign Keys:**
+  - guruId (INT) → Guru (Wali Kelas)
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
 **6. Jenis Pelanggaran**
-- id_jenis_pelanggaran, nama_jenis_pelanggaran
-- kategori_pelanggaran (Ringan/Sedang/Berat)
-- poin_pelanggaran
+- **Primary Key:** id_jenis_pelanggaran (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - nama_jenis_pelanggaran (VARCHAR(100), NOT NULL)
+  - kategori_pelanggaran (ENUM: 'Ringan', 'Sedang', 'Berat')
+  - deskripsi (TEXT)
+  - tindakan_sekolah (TEXT)
+  - poin_pelanggaran (INT, NOT NULL)
+- **Foreign Keys:**
+  - admin_id (INT) → Admin
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
-**7. Pelanggaran Siswa**
-- id_pelanggaran_siswa
-- id_siswa (FK), id_jenis_pelanggaran (FK), id_guru (FK)
-- tanggal_pelanggaran, kronologi, tindak_lanjut
+**7. Pelanggaran Siswa** *(Entitas Utama Sistem)*
+- **Primary Key:** id_pelanggaran_siswa (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - tanggal_pelanggaran (DATE, NOT NULL)
+  - tempat_kejadian (VARCHAR(100))
+  - kronologi (TEXT)
+  - catatan_konseling (TEXT)
+  - tindak_lanjut (TEXT)
+  - status_konseling (ENUM: 'Pending', 'Proses', 'Selesai')
+  - bukti_pelanggaran (VARCHAR(255))
+- **Foreign Keys:**
+  - siswaId (INT, NOT NULL) → Siswa
+  - jenisPelanggaranId (INT, NOT NULL) → JenisPelanggaran
+  - guruId (INT) → Guru
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
 **8. Tanggapan Orang Tua**
-- id_tanggapan, id_pelanggaran_siswa (FK)
-- id_orang_tua (FK), tanggapan
+- **Primary Key:** id_tanggapan (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - tanggal_tanggapan (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+  - isi_tanggapan (TEXT, NOT NULL)
+  - tindakan_rumah (VARCHAR(255))
+- **Foreign Keys:**
+  - orangTuaId (INT, NOT NULL) → OrangTua
+  - pelanggaranSiswaId (INT, NOT NULL) → PelanggaranSiswa
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
 **9. Tindakan Sekolah**
-- id_tindakan, id_pelanggaran_siswa (FK)
-- jenis_tindakan, deskripsi_tindakan
+- **Primary Key:** id_tindakan (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - tanggal_tindakan (DATE, NOT NULL)
+  - jenis_tindakan (ENUM: 'Teguran', 'Peringatan', 'Skorsing', 'Lainnya')
+  - deskripsi_tindakan (TEXT)
+  - hasil_tindakan (TEXT)
+  - status_tindakan (ENUM: 'Direncanakan', 'Dilaksanakan', 'Selesai')
+- **Foreign Keys:**
+  - pelanggaranSiswaId (INT, NOT NULL) → PelanggaranSiswa
+  - guruId (INT, NOT NULL) → Guru
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
 **10. Laporan**
-- id_laporan, id_pelanggaran_siswa (FK)
-- tanggal_laporan, status_laporan
+- **Primary Key:** id_laporan (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - periode_awal (DATE)
+  - periode_akhir (DATE)
+  - total_pelanggaran (INT)
+  - total_tindakan (INT)
+  - total_poin (INT)
+  - tanggal_generate (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+  - jenis_laporan (ENUM: 'Bulanan', 'Semester', 'Tahunan')
+- **Foreign Keys:**
+  - guru_id (INT) → Guru
+- **Timestamps:** createdAt, updatedAt, deletedAt (soft delete)
 
-### Relasi
+### Entitas Pendukung
+
+**11. Notification**
+- **Primary Key:** id_notification (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - title (VARCHAR(255), NOT NULL)
+  - message (TEXT, NOT NULL)
+  - type (ENUM: 'info', 'success', 'warning', 'error')
+  - isRead (BOOLEAN, DEFAULT FALSE)
+  - relatedType (VARCHAR(50))
+- **Foreign Keys:**
+  - userId (INT, NOT NULL)
+  - userType (ENUM: 'admin', 'guru', 'siswa', 'orang_tua')
+  - relatedId (INT)
+- **Timestamps:** createdAt, updatedAt
+
+**12. ActivityLog**
+- **Primary Key:** id_log (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - action (VARCHAR(50), NOT NULL)
+  - target (VARCHAR(50))
+  - details (JSON)
+  - ipAddress (VARCHAR(45))
+  - userAgent (TEXT)
+- **Foreign Keys:**
+  - userId (INT)
+  - userType (ENUM: 'admin', 'guru', 'siswa', 'orang_tua')
+  - targetId (INT)
+- **Timestamps:** createdAt
+
+**13. SavedFilter**
+- **Primary Key:** id_filter (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - filterName (VARCHAR(100), NOT NULL)
+  - filterType (VARCHAR(50))
+  - filterData (JSON, NOT NULL)
+  - isDefault (BOOLEAN, DEFAULT FALSE)
+- **Foreign Keys:**
+  - userId (INT, NOT NULL)
+  - userType (ENUM: 'admin', 'guru', 'siswa', 'orang_tua')
+- **Timestamps:** createdAt, updatedAt
+
+**14. FileUpload**
+- **Primary Key:** id_file (INT, AUTO_INCREMENT)
+- **Attributes:** 
+  - originalName (VARCHAR(255), NOT NULL)
+  - fileName (VARCHAR(255), NOT NULL)
+  - filePath (VARCHAR(500), NOT NULL)
+  - fileType (VARCHAR(50))
+  - fileSize (INT)
+- **Foreign Keys:**
+  - uploadedBy (INT)
+  - uploaderType (ENUM: 'admin', 'guru', 'siswa', 'orang_tua')
+- **Timestamps:** createdAt, updatedAt
+
+### Relasi Antar Entitas
+
+#### Relasi Utama (Core Relationships)
 ```
-Guru (1)  records  (*) PelanggaranSiswa
-Siswa (1)  commits  (*) PelanggaranSiswa
-Siswa (*)  belongs to  (1) Kelas
-Siswa (*)  has  (1) OrangTua
-JenisPelanggaran (1)  categorizes  (*) PelanggaranSiswa
-PelanggaranSiswa (1)  receives  (*) TanggapanOrangTua
-PelanggaranSiswa (1)  receives  (*) TindakanSekolah
+Admin (1) ──creates/manages──> (0..*) JenisPelanggaran
+Guru (1) ──wali_kelas──> (0..*) Kelas
+Kelas (1) ──has_students──> (0..*) Siswa
+OrangTua (1) ──has_children──> (0..*) Siswa
+Siswa (1) ──commits──> (0..*) PelanggaranSiswa
+Guru (1) ──reports──> (0..*) PelanggaranSiswa
+JenisPelanggaran (1) ──categorizes──> (0..*) PelanggaranSiswa
+PelanggaranSiswa (1) ──receives_responses──> (0..*) TanggapanOrangTua
+PelanggaranSiswa (1) ──receives_actions──> (0..*) TindakanSekolah
+OrangTua (1) ──gives_responses──> (0..*) TanggapanOrangTua
+Guru (1) ──executes_actions──> (0..*) TindakanSekolah
+Guru (1) ──generates_reports──> (0..*) Laporan
 ```
+
+#### Kardinalitas
+- `(1)` = Exactly one (satu)
+- `(0..*)` = Zero or more (nol atau banyak)
+- `(1..*)` = One or more (satu atau banyak)
+
+#### Penjelasan Relasi
+1. **Admin → JenisPelanggaran**: Satu admin dapat membuat banyak jenis pelanggaran
+2. **Guru → Kelas**: Satu guru dapat menjadi wali kelas untuk beberapa kelas
+3. **Kelas → Siswa**: Satu kelas memiliki banyak siswa
+4. **OrangTua → Siswa**: Satu orang tua dapat memiliki beberapa anak
+5. **Siswa → PelanggaranSiswa**: Satu siswa dapat melakukan banyak pelanggaran
+6. **Guru → PelanggaranSiswa**: Satu guru dapat melaporkan banyak pelanggaran
+7. **JenisPelanggaran → PelanggaranSiswa**: Satu jenis pelanggaran dapat digunakan di banyak catatan
+8. **PelanggaranSiswa → TanggapanOrangTua**: Satu pelanggaran dapat menerima banyak tanggapan
+9. **PelanggaranSiswa → TindakanSekolah**: Satu pelanggaran dapat menerima banyak tindakan
+10. **OrangTua → TanggapanOrangTua**: Satu orang tua dapat memberikan banyak tanggapan
+11. **Guru → TindakanSekolah**: Satu guru dapat melaksanakan banyak tindakan
+12. **Guru → Laporan**: Satu guru dapat membuat banyak laporan
 
 ---
 
