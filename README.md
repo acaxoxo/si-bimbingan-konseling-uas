@@ -276,18 +276,28 @@ ERD menggambarkan struktur database lengkap dengan 14 entitas utama dan pendukun
 #### Relasi Utama (Key Relationships)
 ```
 Admin (1) ──creates──> (*) JenisPelanggaran
-Guru (1) ──wali_kelas──> (*) Kelas
-Kelas (1) ──has──> (*) Siswa
-OrangTua (1) ──has──> (*) Siswa
-Siswa (1) ──commits──> (*) PelanggaranSiswa
-Guru (1) ──reports──> (*) PelanggaranSiswa
-JenisPelanggaran (1) ──categorizes──> (*) PelanggaranSiswa
-PelanggaranSiswa (1) ──receives──> (*) TanggapanOrangTua
-PelanggaranSiswa (1) ──receives──> (*) TindakanSekolah
-OrangTua (1) ──gives──> (*) TanggapanOrangTua
-Guru (1) ──executes──> (*) TindakanSekolah
-Guru (1) ──generates──> (*) Laporan
+Guru (1) ──wali_kelas──> (0..*) Kelas
+Kelas (1) ──has──> (0..*) Siswa
+OrangTua (1) ──has_children──> (0..*) Siswa
+Siswa (1) ──commits──> (0..*) PelanggaranSiswa
+Guru (1) ──reports──> (0..*) PelanggaranSiswa
+JenisPelanggaran (1) ──categorizes──> (0..*) PelanggaranSiswa
+PelanggaranSiswa (1) ──receives_responses──> (0..*) TanggapanOrangTua
+PelanggaranSiswa (1) ──receives_actions──> (0..*) TindakanSekolah
+OrangTua (1) ──gives_responses──> (0..*) TanggapanOrangTua
+Guru (1) ──executes_actions──> (0..*) TindakanSekolah
+Guru (1) ──generates_reports──> (0..*) Laporan
 ```
+
+**Notasi Kardinalitas:**
+- `(1)` = Exactly one (satu)
+- `(0..*)` = Zero or more (nol atau banyak)
+- `(1..*)` = One or more (satu atau banyak)
+
+**Catatan Penting:**
+- Relasi menggunakan `0..*` karena data bisa tidak ada saat pertama kali (fresh install)
+- Semua foreign key nullable kecuali yang marked sebagai `NOT NULL`
+- Soft delete aktif di semua tabel utama untuk audit trail
 
 #### Fitur Database
 - **Primary Keys:** Auto-increment integer
@@ -421,6 +431,107 @@ Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) dan paste i
 
 ---
 
+### System Architecture Diagram
+
+**Lokasi File:** `backend/ARCHITECTURE.puml`
+
+Architecture diagram menggambarkan arsitektur 3-tier sistem:
+
+#### 1. Client Layer (Presentation)
+**Web Browser:**
+- React Application (v19.1.1)
+- Vite Dev Server (Port 5173)
+- Bootstrap UI (v5.3.8)
+- React Router (v7.9.3) - Client-side routing
+- Axios HTTP Client (v1.12.2) - API calls
+- Socket.io Client (v4.8.1) - Real-time communication
+
+**User Devices:**
+- Desktop (PC/Laptop)
+- Tablet (iPad/Android)
+- Mobile (Responsive design)
+
+#### 2. Application Layer (Backend)
+**Express.js Server (Port 3000):**
+
+**Middleware Stack:**
+- CORS - Cross-origin resource sharing
+- Rate Limiter - API rate limiting (100 req/15min)
+- Logger - Request/response logging
+- Error Handler - Centralized error handling
+- verifyToken (JWT) - Authentication middleware
+- authorizeRoles (RBAC) - Role-based access control
+- Multer - File upload handling
+
+**Routes (API Endpoints):**
+- `/api/auth` - Login, logout, refresh token
+- `/api/admin` - Admin management
+- `/api/guru` - Guru management
+- `/api/siswa` - Siswa management
+- `/api/orang-tua` - Orang tua management
+- `/api/kelas` - Kelas management
+- `/api/jenis-pelanggaran` - Jenis pelanggaran management
+- `/api/pelanggaran-siswa` - Pelanggaran siswa management
+- `/api/tanggapan-orang-tua` - Tanggapan orang tua
+- `/api/tindakan-sekolah` - Tindakan sekolah
+- `/api/laporan` - Laporan & analytics
+- `/api/notifications` - Notifications
+- `/api/activity-logs` - Activity logs
+- `/api/backup` - Database backup/restore
+- `/api/file-upload` - File upload management
+
+**Controllers (Business Logic):**
+- Authentication & Authorization
+- CRUD Operations
+- Data Validation (express-validator)
+- Business Rules & Calculations
+- File Processing
+
+**Services:**
+- Email Service (Nodemailer)
+- Backup Service (MySQL dump)
+- Notification Service (Push notifications)
+- Socket Service (Real-time WebSocket)
+
+#### 3. Data Layer
+**MySQL Database (Port 3306):**
+- 14 Tables (4 utama + 10 pendukung)
+- Sequelize ORM (v6.37.7)
+- Connection Pooling (max: 10, min: 0, idle: 10000ms)
+- Transaction Support (ACID compliance)
+- Indexes untuk performance
+- Foreign Keys dengan CASCADE/RESTRICT
+
+**File Storage:**
+- `uploads/profiles/` - User profile photos
+- `uploads/documents/` - Bukti pelanggaran & documents
+- `backups/` - Database backup files (.sql)
+
+**External Services:**
+- SMTP Server (Email notifications)
+- Socket.io Server (WebSocket)
+
+#### Communication Flow
+```
+Client ←→ HTTP/HTTPS (REST API) ←→ Express.js Server
+Client ←→ WebSocket (Socket.io) ←→ Socket.io Server
+Express.js ←→ Sequelize ORM ←→ MySQL Database
+Express.js ←→ File System ←→ Upload Storage
+Express.js ←→ SMTP ←→ Email Server
+```
+
+#### Cara Melihat Architecture Diagram
+```bash
+cd backend
+plantuml ARCHITECTURE.puml
+# Output: ARCHITECTURE.png
+```
+
+**Online Viewer:**  
+Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) dan paste isi `ARCHITECTURE.puml`
+
+---
+
 ## Use Case Skenario
 
 ### Skenario 1: Guru Mencatat Pelanggaran
@@ -431,6 +542,18 @@ Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) dan paste i
 5. Simpan → Poin otomatis ditambahkan
 6. Notifikasi terkirim ke orang tua
 
+**Detail Lengkap:**
+1. Guru login ke sistem dengan email dan password
+2. Guru membuka menu "Pelanggaran Siswa" dari sidebar
+3. Guru klik tombol "Tambah Pelanggaran"
+4. Guru memilih siswa dari dropdown (auto-complete)
+5. Guru memilih jenis pelanggaran dari dropdown
+6. Guru mengisi tanggal pelanggaran, tempat kejadian, dan kronologi detail
+7. Guru menyimpan data pelanggaran
+8. Sistem mencatat pelanggaran dan menambahkan poin ke total siswa
+9. Sistem mengirim notifikasi real-time ke orang tua siswa
+10. Guru menerima konfirmasi pelanggaran berhasil dicatat
+
 ### Skenario 2: Orang Tua Memberikan Tanggapan
 1. Orang tua login → "Laporan Anak Saya"
 2. Lihat daftar pelanggaran
@@ -438,11 +561,58 @@ Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) dan paste i
 4. Isi tanggapan → Simpan
 5. Guru BK menerima notifikasi
 
+**Detail Lengkap:**
+1. Orang tua login ke sistem dengan email dan password
+2. Orang tua membuka menu "Laporan Anak Saya" dari dashboard
+3. Orang tua melihat daftar pelanggaran anak (terbaru di atas)
+4. Orang tua klik tombol "Tanggapi" pada pelanggaran tertentu
+5. Orang tua mengisi tanggapan dan tindakan yang akan diambil di rumah
+6. Orang tua menyimpan tanggapan
+7. Sistem mencatat tanggapan dan memberi notifikasi real-time ke guru BK
+8. Status pelanggaran diupdate menjadi "Ditanggapi"
+
 ### Skenario 3: Admin Kelola Data Master
 1. Admin login → Menu "Data Guru/Siswa/Kelas"
 2. Klik "Tambah Data"
 3. Isi form lengkap → Simpan
 4. Data tersimpan di database
+
+**Detail Lengkap:**
+1. Admin login ke sistem dengan email dan password
+2. Admin membuka menu "Data Guru", "Data Siswa", atau "Data Kelas"
+3. Admin klik tombol "Tambah Data"
+4. Admin mengisi form dengan data lengkap:
+   - Untuk Guru: NIK, nama, email, password, alamat, telepon, dll
+   - Untuk Siswa: NIS, NISN, nama, kelas, orang tua, dll
+   - Untuk Kelas: Nama kelas, kejuruan, wali kelas
+5. Admin menyimpan data
+6. Sistem memvalidasi data (cek duplikat email, NIK, NIS)
+7. Data baru tersimpan di database
+8. Data baru muncul di tabel dengan status aktif
+
+### Skenario 4: Guru BK Memberikan Tindakan Sekolah
+1. Guru login ke sistem
+2. Guru membuka menu "Pelanggaran Siswa"
+3. Guru klik tombol "Detail" pada pelanggaran tertentu
+4. Guru melihat detail lengkap pelanggaran dan tanggapan orang tua
+5. Guru klik tombol "Tambah Tindakan"
+6. Guru memilih jenis tindakan (Teguran/Peringatan/Skorsing/Lainnya)
+7. Guru mengisi deskripsi tindakan dan tanggal pelaksanaan
+8. Guru menyimpan tindakan
+9. Sistem mencatat tindakan dan update status pelanggaran
+10. Notifikasi terkirim ke siswa dan orang tua
+
+### Skenario 5: Export Laporan ke Excel
+1. User login ke sistem
+2. User membuka menu "Laporan Pelanggaran"
+3. User memilih filter:
+   - Rentang tanggal (dari - sampai)
+   - Kelas tertentu (opsional)
+   - Kategori pelanggaran (opsional)
+4. User klik tombol "Export Excel"
+5. Sistem generate file Excel dengan data terfilter
+6. File Excel otomatis terdownload ke komputer user
+7. File berisi: No, Nama Siswa, Kelas, Jenis Pelanggaran, Poin, Tanggal, Tindakan
 
 ---
 
