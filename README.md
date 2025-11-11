@@ -431,107 +431,6 @@ Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) dan paste i
 
 ---
 
-### System Architecture Diagram
-
-**Lokasi File:** `backend/ARCHITECTURE.puml`
-
-Architecture diagram menggambarkan arsitektur 3-tier sistem:
-
-#### 1. Client Layer (Presentation)
-**Web Browser:**
-- React Application (v19.1.1)
-- Vite Dev Server (Port 5173)
-- Bootstrap UI (v5.3.8)
-- React Router (v7.9.3) - Client-side routing
-- Axios HTTP Client (v1.12.2) - API calls
-- Socket.io Client (v4.8.1) - Real-time communication
-
-**User Devices:**
-- Desktop (PC/Laptop)
-- Tablet (iPad/Android)
-- Mobile (Responsive design)
-
-#### 2. Application Layer (Backend)
-**Express.js Server (Port 3000):**
-
-**Middleware Stack:**
-- CORS - Cross-origin resource sharing
-- Rate Limiter - API rate limiting (100 req/15min)
-- Logger - Request/response logging
-- Error Handler - Centralized error handling
-- verifyToken (JWT) - Authentication middleware
-- authorizeRoles (RBAC) - Role-based access control
-- Multer - File upload handling
-
-**Routes (API Endpoints):**
-- `/api/auth` - Login, logout, refresh token
-- `/api/admin` - Admin management
-- `/api/guru` - Guru management
-- `/api/siswa` - Siswa management
-- `/api/orang-tua` - Orang tua management
-- `/api/kelas` - Kelas management
-- `/api/jenis-pelanggaran` - Jenis pelanggaran management
-- `/api/pelanggaran-siswa` - Pelanggaran siswa management
-- `/api/tanggapan-orang-tua` - Tanggapan orang tua
-- `/api/tindakan-sekolah` - Tindakan sekolah
-- `/api/laporan` - Laporan & analytics
-- `/api/notifications` - Notifications
-- `/api/activity-logs` - Activity logs
-- `/api/backup` - Database backup/restore
-- `/api/file-upload` - File upload management
-
-**Controllers (Business Logic):**
-- Authentication & Authorization
-- CRUD Operations
-- Data Validation (express-validator)
-- Business Rules & Calculations
-- File Processing
-
-**Services:**
-- Email Service (Nodemailer)
-- Backup Service (MySQL dump)
-- Notification Service (Push notifications)
-- Socket Service (Real-time WebSocket)
-
-#### 3. Data Layer
-**MySQL Database (Port 3306):**
-- 14 Tables (4 utama + 10 pendukung)
-- Sequelize ORM (v6.37.7)
-- Connection Pooling (max: 10, min: 0, idle: 10000ms)
-- Transaction Support (ACID compliance)
-- Indexes untuk performance
-- Foreign Keys dengan CASCADE/RESTRICT
-
-**File Storage:**
-- `uploads/profiles/` - User profile photos
-- `uploads/documents/` - Bukti pelanggaran & documents
-- `backups/` - Database backup files (.sql)
-
-**External Services:**
-- SMTP Server (Email notifications)
-- Socket.io Server (WebSocket)
-
-#### Communication Flow
-```
-Client ←→ HTTP/HTTPS (REST API) ←→ Express.js Server
-Client ←→ WebSocket (Socket.io) ←→ Socket.io Server
-Express.js ←→ Sequelize ORM ←→ MySQL Database
-Express.js ←→ File System ←→ Upload Storage
-Express.js ←→ SMTP ←→ Email Server
-```
-
-#### Cara Melihat Architecture Diagram
-```bash
-cd backend
-plantuml ARCHITECTURE.puml
-# Output: ARCHITECTURE.png
-```
-
-**Online Viewer:**  
-Buka [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) dan paste isi `ARCHITECTURE.puml`
-
----
-
 ## Use Case Skenario
 
 ### Skenario 1: Guru Mencatat Pelanggaran
@@ -2276,7 +2175,6 @@ Please include:
 | **README.md** | Complete documentation (all-in-one) | You're here! |
 | **ERD Diagram** | Database schema & relationships | [backend/ERD.puml](./backend/ERD.puml) |
 | **DFD Diagram** | Data flow & system processes | [backend/DFD.puml](./backend/DFD.puml) |
-| **System Architecture** | System architecture diagram | [backend/ARCHITECTURE.puml](./backend/ARCHITECTURE.puml) |
 
 ### Viewing PlantUML Diagrams
 

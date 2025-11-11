@@ -1,20 +1,8 @@
 @startuml SI_Bimbingan_Konseling_DFD
-' =============================================================================
-' SISTEM INFORMASI BIMBINGAN KONSELING - DATA FLOW DIAGRAM
-' SMK Negeri 1 Kupang
-' =============================================================================
-' Version: 1.0
-' Last Updated: 2025-11-11
-' Description: Complete data flow diagram showing processes and data stores
-' =============================================================================
 
 !theme plain
 skinparam backgroundColor #FEFEFE
 skinparam defaultFontSize 11
-
-' =============================================================================
-' STYLING
-' =============================================================================
 
 skinparam actor {
   BackgroundColor LightBlue
@@ -36,10 +24,6 @@ skinparam cloud {
   BackgroundColor LightPink
   BorderColor Black
 }
-
-' =============================================================================
-' LEVEL 0: CONTEXT DIAGRAM
-' =============================================================================
 
 package "Context Diagram (Level 0)" {
   
@@ -65,26 +49,19 @@ package "Context Diagram (Level 0)" {
 
 newpage
 
-' =============================================================================
-' LEVEL 1: MAIN PROCESSES
-' =============================================================================
-
 package "Level 1: Main Processes" {
   
-  ' External Entities
   actor "Admin" as admin1
   actor "Guru BK" as guru1
   actor "Siswa" as siswa1
   actor "Orang Tua" as ortu1
   
-  ' Data Stores
   database "D1: User Database" as db1
   database "D2: Master Data" as db2
   database "D3: Pelanggaran" as db3
   database "D4: Tanggapan & Tindakan" as db4
   database "D5: Laporan" as db5
   
-  ' Processes
   rectangle "1.0\nManajemen\nAutentikasi" as p1
   rectangle "2.0\nManajemen\nData Master" as p2
   rectangle "3.0\nPencatatan\nPelanggaran" as p3
@@ -92,7 +69,6 @@ package "Level 1: Main Processes" {
   rectangle "5.0\nPelaporan &\nAnalitik" as p5
   rectangle "6.0\nNotifikasi\nReal-time" as p6
   
-  ' Authentication Flow
   admin1 --> p1 : Credentials
   guru1 --> p1 : Credentials
   siswa1 --> p1 : Credentials
@@ -104,13 +80,11 @@ package "Level 1: Main Processes" {
   p1 --> siswa1 : Access Token
   p1 --> ortu1 : Access Token
   
-  ' Master Data Management
   admin1 --> p2 : CRUD Master Data
   p2 --> db2 : Store/Update Data
   db2 --> p2 : Master Data
   p2 --> admin1 : Confirmation
   
-  ' Violation Recording
   guru1 --> p3 : Input Pelanggaran
   p3 --> db2 : Get Jenis Pelanggaran,\nData Siswa
   p3 --> db3 : Store Pelanggaran
@@ -118,7 +92,6 @@ package "Level 1: Main Processes" {
   p3 --> guru1 : Confirmation
   p3 --> p6 : Trigger Notification
   
-  ' Response & Action Management
   ortu1 --> p4 : Beri Tanggapan
   guru1 --> p4 : Beri Tindakan
   p4 --> db3 : Get Pelanggaran
@@ -128,7 +101,6 @@ package "Level 1: Main Processes" {
   p4 --> guru1 : Confirmation
   p4 --> p6 : Trigger Notification
   
-  ' Reporting & Analytics
   admin1 --> p5 : Request Laporan
   guru1 --> p5 : Request Laporan
   siswa1 --> p5 : Request Riwayat
@@ -141,17 +113,12 @@ package "Level 1: Main Processes" {
   p5 --> siswa1 : Riwayat
   p5 --> ortu1 : Laporan Anak
   
-  ' Real-time Notifications
   p6 --> ortu1 : Notifikasi Pelanggaran
   p6 --> guru1 : Notifikasi Tanggapan
   p6 --> siswa1 : Notifikasi Tindakan
 }
 
 newpage
-
-' =============================================================================
-' LEVEL 2: DETAILED PROCESSES
-' =============================================================================
 
 package "Level 2: Authentication Process (1.0)" {
   
@@ -278,6 +245,8 @@ package "Level 2: Notification System (6.0)" {
   cloud "Email Service" as email
   cloud "WebSocket Server" as ws
   
+  actor "User Client" as userclient
+  
   p61 --> p62 : Event Data
   p62 --> db62 : Get User Preferences
   db62 --> p62 : Notification Settings
@@ -287,12 +256,8 @@ package "Level 2: Notification System (6.0)" {
   p63 --> p65 : Socket Data
   p64 --> email : Send Email
   p65 --> ws : Emit Event
-  ws --> actor "User Client" : Real-time Update
+  ws --> userclient : Real-time Update
 }
-
-' =============================================================================
-' LEGEND
-' =============================================================================
 
 legend right
   **KONVENSI DFD:**

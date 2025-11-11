@@ -1,12 +1,4 @@
 @startuml SI_Bimbingan_Konseling_ERD
-' =============================================================================
-' SISTEM INFORMASI BIMBINGAN KONSELING - ENTITY RELATIONSHIP DIAGRAM
-' SMK Negeri 1 Kupang
-' =============================================================================
-' Version: 2.0
-' Last Updated: 2025-11-11
-' Description: Complete database schema with all entities, attributes, and relationships
-' =============================================================================
 
 !define TABLE(x) entity x << (T,#FFAAAA) >>
 !define PK(x) <b>x</b>
@@ -20,11 +12,7 @@ skinparam entity {
 }
 skinparam linetype ortho
 
-' =============================================================================
-' ENTITAS UTAMA
-' =============================================================================
-
-entity Admin {
+entity Admin {sistem 
   * PK(id_admin) : INT <<AUTO_INCREMENT>>
   --
   nama_admin : VARCHAR(100) <<NOT NULL>>
@@ -198,10 +186,6 @@ entity Laporan {
   deletedAt : TIMESTAMP <<SOFT DELETE>>
 }
 
-' =============================================================================
-' ENTITAS PENDUKUNG
-' =============================================================================
-
 entity Notification {
   * PK(id_notification) : INT <<AUTO_INCREMENT>>
   --
@@ -262,49 +246,18 @@ entity FileUpload {
   updatedAt : TIMESTAMP
 }
 
-' =============================================================================
-' RELATIONSHIPS (RELASI ANTAR TABEL)
-' =============================================================================
-
-' Admin → JenisPelanggaran (One-to-Many)
 Admin ||--o{ JenisPelanggaran : "creates/manages"
-
-' Guru → Kelas (One-to-Many - Wali Kelas)
 Guru ||--o{ Kelas : "wali kelas"
-
-' Kelas → Siswa (One-to-Many)
 Kelas ||--o{ Siswa : "has students"
-
-' OrangTua → Siswa (One-to-Many)
 OrangTua ||--o{ Siswa : "has children"
-
-' Siswa → PelanggaranSiswa (One-to-Many)
 Siswa ||--o{ PelanggaranSiswa : "commits violations"
-
-' Guru → PelanggaranSiswa (One-to-Many - Pelapor)
 Guru ||--o{ PelanggaranSiswa : "reports violations"
-
-' JenisPelanggaran → PelanggaranSiswa (One-to-Many)
 JenisPelanggaran ||--o{ PelanggaranSiswa : "categorizes"
-
-' PelanggaranSiswa → TanggapanOrangTua (One-to-Many)
 PelanggaranSiswa ||--o{ TanggapanOrangTua : "receives responses"
-
-' OrangTua → TanggapanOrangTua (One-to-Many)
 OrangTua ||--o{ TanggapanOrangTua : "gives responses"
-
-' PelanggaranSiswa → TindakanSekolah (One-to-Many)
 PelanggaranSiswa ||--o{ TindakanSekolah : "receives actions"
-
-' Guru → TindakanSekolah (One-to-Many - Pelaksana)
 Guru ||--o{ TindakanSekolah : "executes actions"
-
-' Guru → Laporan (One-to-Many - Pembuat)
 Guru ||--o{ Laporan : "generates reports"
-
-' =============================================================================
-' CATATAN PENTING
-' =============================================================================
 
 note right of PelanggaranSiswa
   **ENTITAS UTAMA SISTEM**
@@ -364,10 +317,6 @@ note bottom of ActivityLog
   - Untuk keamanan & debugging
   - Retention: 90 hari
 end note
-
-' =============================================================================
-' LEGEND
-' =============================================================================
 
 legend right
   **KONVENSI:**
