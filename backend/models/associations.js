@@ -18,7 +18,8 @@ Siswa.belongsTo(Kelas, { foreignKey: "kelas_id" });
 Guru.hasMany(Kelas, { foreignKey: "guruId" });
 Kelas.belongsTo(Guru, { foreignKey: "guruId" });
 
-OrangTua.hasOne(Siswa, { foreignKey: "orangTuaId" });
+// Perubahan: OrangTua sekarang dapat memiliki banyak Siswa (one-to-many)
+OrangTua.hasMany(Siswa, { foreignKey: "orangTuaId" });
 Siswa.belongsTo(OrangTua, { foreignKey: "orangTuaId" });
 
 Siswa.hasMany(PelanggaranSiswa, { foreignKey: "siswaId" });

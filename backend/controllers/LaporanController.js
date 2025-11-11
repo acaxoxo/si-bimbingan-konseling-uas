@@ -64,13 +64,66 @@ export const getLaporanAnak = async (req, res) => {
       return res.status(401).json({ message: "Tidak terautentik" });
     }
 
-    const siswa = await Siswa.findOne({ where: { orangTuaId: parentId } });
-    if (!siswa) {
-      return res.json([]);
+    const { siswaId } = req.query;
+
+    // Jika pengguna meminta satu anak spesifik
+    if (siswaId) {
+      const siswa = await Siswa.findOne({
+        where: { id_siswa: siswaId, orangTuaId: parentId },
+      });
+      if (!siswa) {
+        return res.status(404).json({ message: "Siswa tidak ditemukan atau bukan milik orang tua ini" });
+      }
+
+      const pelanggarans = await PelanggaranSiswa.findAll({
+        where: { siswaId: siswa.id_siswa },
+        include: [
+          {
+            model: JenisPelanggaran,
+            attributes: [
+              "id_jenis_pelanggaran",
+              "nama_jenis_pelanggaran",
+              "poin_pelanggaran",
+              "kategori_pelanggaran",
+            ],
+          },
+          { model: Guru, attributes: ["id_guru", "nama_guru"] },
+        ],
+        order: [["tanggal_pelanggaran", "DESC"], ["id_pelanggaran_siswa", "DESC"]],
+      });
+
+      const resultSingle = pelanggarans.map((p) => ({
+        id_laporan: p.id_pelanggaran_siswa,
+        siswa_id: siswa.id_siswa,
+        nama_siswa: siswa.nama_siswa,
+        nis: siswa.nis,
+        jenis_pelanggaran: p.jenis_pelanggaran?.nama_jenis_pelanggaran || "",
+        poin: p.jenis_pelanggaran?.poin_pelanggaran || 0,
+        tanggal_pelanggaran: p.tanggal_pelanggaran,
+        catatan_konseling: p.catatan_konseling || "",
+        status_konseling: (p.status_konseling || "Belum").toString().toLowerCase(),
+        tindak_lanjut: p.tindak_lanjut || "",
+        guru: p.guru?.nama_guru || "",
+        tanggapan_orangtua: null,
+      }));
+
+      return res.json(resultSingle);
     }
 
+    // Mode: semua anak
+    const siswaList = await Siswa.findAll({
+      where: { orangTuaId: parentId },
+      attributes: ["id_siswa", "nama_siswa", "nis"],
+    });
+
+    if (!siswaList || siswaList.length === 0) {
+      return res.json([]); // Konsisten dengan respons lama (array kosong)
+    }
+
+    const siswaIds = siswaList.map((s) => s.id_siswa);
+
     const pelanggarans = await PelanggaranSiswa.findAll({
-      where: { siswaId: siswa.id_siswa },
+      where: { siswaId: { [Op.in]: siswaIds } },
       include: [
         {
           model: JenisPelanggaran,
@@ -82,12 +135,16 @@ export const getLaporanAnak = async (req, res) => {
           ],
         },
         { model: Guru, attributes: ["id_guru", "nama_guru"] },
+        { model: Siswa, attributes: ["id_siswa", "nama_siswa", "nis"] },
       ],
       order: [["tanggal_pelanggaran", "DESC"], ["id_pelanggaran_siswa", "DESC"]],
     });
 
     const result = pelanggarans.map((p) => ({
       id_laporan: p.id_pelanggaran_siswa,
+      siswa_id: p.siswa?.id_siswa || p.siswaId,
+      nama_siswa: p.siswa?.nama_siswa || "",
+      nis: p.siswa?.nis || "",
       jenis_pelanggaran: p.jenis_pelanggaran?.nama_jenis_pelanggaran || "",
       poin: p.jenis_pelanggaran?.poin_pelanggaran || 0,
       tanggal_pelanggaran: p.tanggal_pelanggaran,
@@ -98,7 +155,19 @@ export const getLaporanAnak = async (req, res) => {
       tanggapan_orangtua: null,
     }));
 
-    return res.json(result);
+    // Tambahan ringkasan per anak (opsional) bisa dipakai di UI
+    const summary = siswaList.map((s) => {
+      const pel = result.filter((r) => r.siswa_id === s.id_siswa);
+      return {
+        siswa_id: s.id_siswa,
+        nama_siswa: s.nama_siswa,
+        nis: s.nis,
+        jumlah_pelanggaran: pel.length,
+        total_poin: pel.reduce((sum, r) => sum + r.poin, 0),
+      };
+    });
+
+    return res.json({ pelanggaran: result, summary });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message });

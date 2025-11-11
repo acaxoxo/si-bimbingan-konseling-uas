@@ -54,6 +54,12 @@ router.get("/laporan",
 router.get("/anak",
   verifyToken,
   authorizeRoles("orangtua"),
+  [
+    query("siswaId")
+      .optional()
+      .isInt({ gt: 0 })
+      .withMessage("siswaId harus berupa angka positif"),
+  ],
   validate,
   getLaporanAnak
 );
