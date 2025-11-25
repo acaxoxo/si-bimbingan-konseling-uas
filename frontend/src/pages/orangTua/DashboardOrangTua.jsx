@@ -27,7 +27,7 @@ export default function DashboardOrangtua() {
       const tanggapans = Array.isArray(tanggapanRes.data?.data) ? tanggapanRes.data.data : (Array.isArray(tanggapanRes.data) ? tanggapanRes.data : []);
 
       const pelanggaranAnak = lap.length;
-      const guruMengajar = gurus.length; 
+      const guruMengajar = gurus.length;
       const kelasAktif = kelass.filter((k) => Number(k.guruId) > 0).length;
       const tanggapanDiberikan = tanggapans.filter((t) => Number(t.orangTuaId) === Number(user?.id)).length;
 
@@ -53,7 +53,7 @@ export default function DashboardOrangtua() {
 
   return (
     <div className="container mt-4 mb-5 pb-4">
-      {}
+      { }
       <div className="dashboard-card mb-4" style={{ background: "var(--bg-card)", borderRadius: "12px", padding: "24px" }}>
         <h2 style={{ color: "var(--text-primary)", marginBottom: "8px", fontSize: "1.75rem", fontWeight: 600 }}>
           Dashboard Orang Tua
@@ -63,7 +63,7 @@ export default function DashboardOrangtua() {
         </p>
       </div>
 
-      {}
+      { }
       <div className="dashboard-grid-top mb-4">
         <TopMetric title="Pelanggaran Anak" value={stats.pelanggaranAnak} color="#dc3545" />
         <TopMetric title="Guru Mengajar" value={stats.guruMengajar} color="#007bff" />
@@ -71,7 +71,7 @@ export default function DashboardOrangtua() {
         <TopMetric title="Tanggapan Diberikan" value={stats.tanggapanDiberikan} color="#ffc107" />
       </div>
 
-      {}
+      { }
       <h5 style={{ color: "var(--text-primary)", marginBottom: "16px", fontWeight: 600 }}>
         Akses Cepat
       </h5>

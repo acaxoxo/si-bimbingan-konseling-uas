@@ -77,7 +77,7 @@ export default function DashboardAdmin() {
         setStats(nextStats);
         setTotals({
           totalUsers: nextStats.admin + nextStats.orangTua + nextStats.guru + nextStats.siswa,
-          totalViolations: 0, 
+          totalViolations: 0,
         });
       } finally {
         setLoading(false);
@@ -90,7 +90,7 @@ export default function DashboardAdmin() {
         const res = await api.get("/laporan/dashboard-stats");
         const data = res.data || {};
         const bulanNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-  const trendFormatted = (data.trendBulanan || []).map((it) => ({ bulan: `${bulanNames[it.bulan - 1]} ${it.tahun}`, total: parseInt(it.total) }));
+        const trendFormatted = (data.trendBulanan || []).map((it) => ({ bulan: `${bulanNames[it.bulan - 1]} ${it.tahun}`, total: parseInt(it.total) }));
         const kategoriFormatted = (data.pelanggaranByKategori || []).map((it) => ({ kategori: it.kategori_pelanggaran, total: parseInt(it.total) }));
         const topPelanggarFormatted = (data.topPelanggar || []).map((it) => ({ nama: it.nama_siswa, nis: it.nis, total_poin: parseInt(it.total_poin) }));
         const kelasFormatted = (data.pelanggaranByKelas || []).map((it) => ({ kelas: it.nama_kelas, total: parseInt(it.total) }));
@@ -105,7 +105,7 @@ export default function DashboardAdmin() {
         setTotals((prev) => ({ ...prev, totalViolations }));
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
-        
+
         setChartData({
           trendBulanan: [],
           pelanggaranByKategori: [],
@@ -151,7 +151,7 @@ export default function DashboardAdmin() {
 
   return (
     <div className="container mt-5 mb-5 pb-4">
-      {}
+      { }
       <div className="card border-0 shadow-sm mb-4" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-light)' }}>
         <div className="card-body">
           <h3 className="fw-bold mb-0" style={{ color: 'var(--text-primary)' }}>Selamat Datang, {user?.name || "Administrator"}</h3>
@@ -159,14 +159,14 @@ export default function DashboardAdmin() {
         </div>
       </div>
 
-      {}
+      { }
       <div className="dashboard-grid-top mb-4">
         <TopMetric title="Total Pengguna" value={totals.totalUsers} color="#667eea" />
         <TopMetric title="Guru Aktif" value={stats.guruAktif} color="#10b981" />
         <TopMetric title="Total Pelanggaran (12 bln)" value={totals.totalViolations} color="#ef4444" />
       </div>
 
-      {}
+      { }
       <div className="dashboard-grid-secondary mb-4">
         {cards.map((item, idx) => (
           <div key={idx} className="dashboard-card">
@@ -179,13 +179,13 @@ export default function DashboardAdmin() {
         ))}
       </div>
 
-      {}
+      { }
       <h5 className="fw-bold mb-3" style={{ color: 'var(--text-primary)' }}><i className="fa-solid fa-chart-line me-2"></i>Statistik Pelanggaran</h5>
       {loadingChart ? (
         <div className="text-center py-5"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div><p className="mt-2" style={{ color: 'var(--text-secondary)' }}>Memuat grafik...</p></div>
       ) : (
         <>
-          {}
+          { }
           <div className="dashboard-panel mb-4">
             <div className="panel-header"><h6 className="mb-0"><i className="fa-solid fa-chart-line me-2"></i>Trend Pelanggaran (12 Bulan Terakhir)</h6></div>
             <div className={`panel-body ${chartData.trendBulanan.length === 0 ? 'shrink' : ''}`}>
@@ -206,9 +206,9 @@ export default function DashboardAdmin() {
             </div>
           </div>
 
-          {}
+          { }
           <div className="dashboard-grid-charts">
-            {}
+            { }
             <div className="dashboard-panel">
               <div className="panel-header"><h6 className="mb-0"><i className="fa-solid fa-chart-pie me-2"></i>Pelanggaran per Kategori</h6></div>
               <div className={`panel-body ${chartData.pelanggaranByKategori.length === 0 ? 'shrink' : ''}`}>
@@ -229,7 +229,7 @@ export default function DashboardAdmin() {
               </div>
             </div>
 
-            {}
+            { }
             <div className="dashboard-panel">
               <div className="panel-header"><h6 className="mb-0"><i className="fa-solid fa-chart-column me-2"></i>Pelanggaran per Kelas</h6></div>
               <div className={`panel-body ${chartData.pelanggaranByKelas.length === 0 ? 'shrink' : ''}`}>
@@ -251,7 +251,7 @@ export default function DashboardAdmin() {
             </div>
           </div>
 
-          {}
+          { }
           <div className="dashboard-panel mt-4">
             <div className="panel-header"><h6 className="mb-0"><i className="fa-solid fa-ranking-star me-2"></i>Top 10 Siswa (Poin Tertinggi)</h6></div>
             <div className={`panel-body ${chartData.topPelanggar.length === 0 ? 'shrink' : ''}`}>
