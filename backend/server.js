@@ -105,7 +105,7 @@ app.use("/api/orang-tua", OrangTuaRoute);
 app.use("/api/admin", AdminRoute);
 app.use("/api/jenis-pelanggaran", JenisPelanggaranRoute);
 app.use("/api/pelanggaran-siswa", PelanggaranSiswaRoute);
-app.use("/api/tanggapan", TanggapanRoute);
+app.use("/api/tanggapan", TanggapanRoute); 
 app.use("/api/tindakan", TindakanRoute);
 app.use("/api/laporan", LaporanRoute);
 app.use("/api/notifications", NotificationRoute);
