@@ -1,9 +1,9 @@
 import ActivityLog from "../models/ActivityLogModel.js";
 
-export const logActivity = async (req, action, module, description) => {
+export const logActivity = async (req, action, module, description, userContext = {}) => {
   try {
-    const userId = req.user?.id || null;
-    const userRole = req.user?.role || "guest";
+    const userId = userContext.userId || req.user?.id || null;
+    const userRole = userContext.userRole || req.user?.role || "guest";
     const ipAddress = req.ip || req.connection.remoteAddress;
     const userAgent = req.headers["user-agent"];
 
@@ -24,7 +24,13 @@ export const logActivity = async (req, action, module, description) => {
 
 export const ActivityLogger = {
   login: (req, userId, role) => {
-    return logActivity(req, "LOGIN", "auth", `User ${role} berhasil login`);
+    return logActivity(
+      req,
+      "LOGIN",
+      "auth",
+      `User ${role} berhasil login`,
+      { userId, userRole: role }
+    );
   },
   
   logout: (req) => {
