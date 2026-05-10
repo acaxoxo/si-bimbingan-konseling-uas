@@ -34,6 +34,8 @@ const isVercel = process.env.VERCEL === "1";
 export const app = express();
 export const server = http.createServer(app);
 
+app.set("trust proxy", 1);
+
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, Postman, curl, etc.)
