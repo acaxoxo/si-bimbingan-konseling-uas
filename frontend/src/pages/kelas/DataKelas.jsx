@@ -15,7 +15,8 @@ export default function KelasList() {
     try {
       const res = await api.get("/kelas");
       
-      setKelasData(res.data.data || res.data || []);
+      const payload = res.data?.data ?? res.data;
+      setKelasData(Array.isArray(payload) ? payload : []);
     } catch (err) {
       console.error("Gagal ambil data:", err);
       setKelasData([]);

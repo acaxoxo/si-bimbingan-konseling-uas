@@ -11,7 +11,8 @@ export default function DataAdmin() {
     try {
       const res = await api.get("/admin");
       
-      setAdminData(res.data.data || res.data || []);
+      const payload = res.data?.data ?? res.data;
+      setAdminData(Array.isArray(payload) ? payload : []);
     } catch (err) {
       console.error("Gagal fetch data admin:", err);
       setAdminData([]);

@@ -1,4 +1,24 @@
-import React from 'react';
+import React from "react";
+
+const getFallbackRoute = () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return "/login";
+
+    const parts = token.split(".");
+    if (parts.length < 3 || !parts[1]) return "/login";
+
+    const payload = JSON.parse(atob(parts[1]));
+    const role = (payload?.role || "").toLowerCase();
+
+    if (role === "admin") return "/admin";
+    if (role === "guru") return "/guru";
+    if (role === "siswa") return "/siswa";
+    if (role === "orangtua" || role === "orang_tua") return "/orang-tua";
+  } catch { /* ignore */ }
+
+  return "/login";
+};
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -13,7 +33,7 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
     this.setState({
       error,
       errorInfo
@@ -22,7 +42,7 @@ class ErrorBoundary extends React.Component {
 
   handleReset = () => {
     this.setState({ hasError: false, error: null, errorInfo: null });
-    window.location.href = '/';
+    window.location.href = getFallbackRoute();
   };
 
   render() {
@@ -32,7 +52,7 @@ class ErrorBoundary extends React.Component {
           <div className="card shadow-sm border-0">
             <div className="card-body text-center py-5">
               <div className="mb-4">
-                <i className="fa-solid fa-triangle-exclamation text-danger" style={{ fontSize: '4rem' }}></i>
+                <i className="fa-solid fa-triangle-exclamation text-danger" style={{ fontSize: "4rem" }}></i>
               </div>
               <h2 className="mb-3">Oops! Terjadi Kesalahan</h2>
               <p className="text-muted mb-4">
@@ -42,7 +62,7 @@ class ErrorBoundary extends React.Component {
               {import.meta.env.DEV && this.state.error && (
                 <div className="alert alert-danger text-start mb-4">
                   <h6 className="fw-bold">Error Details (Development Mode):</h6>
-                  <pre className="mb-0" style={{ fontSize: '0.85rem', maxHeight: '200px', overflow: 'auto' }}>
+                  <pre className="mb-0" style={{ fontSize: "0.85rem", maxHeight: "200px", overflow: "auto" }}>
                     {this.state.error.toString()}
                     {this.state.errorInfo && this.state.errorInfo.componentStack}
                   </pre>
