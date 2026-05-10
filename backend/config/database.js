@@ -1,4 +1,5 @@
 import { Sequelize } from "sequelize";
+import "mysql2"; // Ensure mysql2 is bundled for serverless
 import dotenv from "dotenv";
 
 dotenv.config();
