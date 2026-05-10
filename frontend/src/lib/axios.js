@@ -1,8 +1,18 @@
 import axios from "axios";
 
+const resolveApiUrl = (value) => {
+  if (!value) return value;
+  if (value.startsWith("/")) {
+    return `${window.location.origin}${value}`;
+  }
+  return value;
+};
+
 const baseURL =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.PROD ? "/api" : "http://localhost:3000/api");
+  resolveApiUrl(import.meta.env.VITE_API_URL) ||
+  (import.meta.env.PROD
+    ? `${window.location.origin}/api`
+    : "http://localhost:3000/api");
 
 const api = axios.create({
   baseURL,
