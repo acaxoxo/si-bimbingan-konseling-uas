@@ -30,8 +30,9 @@ import { verifyEmailConfig } from "./services/emailService.js";
 import { scheduleAutomaticBackups } from "./services/backupService.js";
 
 dotenv.config();
-const app = express();
-const server = http.createServer(app);
+const isVercel = process.env.VERCEL === "1";
+export const app = express();
+export const server = http.createServer(app);
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -91,12 +92,14 @@ app.use("/api/", apiLimiter);
   await db.sync();
     console.log("Semua model berhasil disinkronisasi.");
 
-    initSocket(server);
-
     verifyEmailConfig();
 
-    if (process.env.ENABLE_AUTO_BACKUP !== "false") {
-      scheduleAutomaticBackups();
+    if (!isVercel) {
+      initSocket(server);
+
+      if (process.env.ENABLE_AUTO_BACKUP !== "false") {
+        scheduleAutomaticBackups();
+      }
     }
   } catch (error) {
     console.error("Database connection failed:", error);
@@ -131,7 +134,9 @@ app.use(notFound);
 app.use(errorHandler);     
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(` Server running on http://localhost:${PORT}`);
-  console.log(` WebSocket ready on ws://localhost:${PORT}`);
-});
+if (!isVercel) {
+  server.listen(PORT, () => {
+    console.log(` Server running on http://localhost:${PORT}`);
+    console.log(` WebSocket ready on ws://localhost:${PORT}`);
+  });
+}

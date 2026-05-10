@@ -1,0 +1,8 @@
+{
+  "name": "si-bimbingan-konseling",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
+}
