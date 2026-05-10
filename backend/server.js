@@ -37,26 +37,32 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, Postman, curl, etc.)
     if (!origin) return callback(null, true);
-    
+
+    const envOrigins = (process.env.FRONTEND_URLS || "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
+
     const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:3000',
-      'http://127.0.0.1:5173',
-      process.env.FRONTEND_URL
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:3000",
+      "http://127.0.0.1:5173",
+      process.env.FRONTEND_URL,
+      ...envOrigins,
     ].filter(Boolean);
-    
+
     // In development, allow all origins
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       return callback(null, true);
     }
-    
+
     // In production, only allow specific origins
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       console.warn(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
