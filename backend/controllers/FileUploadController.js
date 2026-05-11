@@ -4,6 +4,12 @@ import { Op } from "sequelize";
 import fs from "fs";
 import path from "path";
 import ActivityLogger from "../middleware/activityLogger.js";
+import {
+  uploadBufferToCloudinary,
+  deleteFromCloudinary,
+  isCloudinaryUrl,
+  extractPublicId,
+} from "../services/storageService.js";
 
 export const uploadFile = async (req, res) => {
   try {
@@ -14,14 +20,18 @@ export const uploadFile = async (req, res) => {
     const { module, module_id, description } = req.body;
     
     if (!module) {
-      
-      fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: "Module wajib diisi" });
     }
 
+    const folder = module || "general";
+    const { url } = await uploadBufferToCloudinary({
+      buffer: req.file.buffer,
+      folder,
+    });
+
     const fileData = {
       file_name: req.file.originalname,
-      file_path: req.file.path.replace(/\\/g, '/'),
+      file_path: url,
       file_type: req.file.mimetype,
       file_size: req.file.size,
       module,
@@ -41,9 +51,6 @@ export const uploadFile = async (req, res) => {
     });
   } catch (error) {
     
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
     res.status(500).json({ message: error.message });
   }
 };
@@ -57,17 +64,21 @@ export const uploadMultipleFiles = async (req, res) => {
     const { module, module_id, description } = req.body;
     
     if (!module) {
-      
-      req.files.forEach(file => fs.unlinkSync(file.path));
       return res.status(400).json({ message: "Module wajib diisi" });
     }
 
     const uploadedFiles = [];
 
     for (const file of req.files) {
+      const folder = module || "general";
+      const { url } = await uploadBufferToCloudinary({
+        buffer: file.buffer,
+        folder,
+      });
+
       const fileData = {
         file_name: file.originalname,
-        file_path: file.path.replace(/\\/g, '/'),
+        file_path: url,
         file_type: file.mimetype,
         file_size: file.size,
         module,
@@ -89,13 +100,6 @@ export const uploadMultipleFiles = async (req, res) => {
     });
   } catch (error) {
     
-    if (req.files) {
-      req.files.forEach(file => {
-        if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
-        }
-      });
-    }
     res.status(500).json({ message: error.message });
   }
 };
@@ -154,15 +158,19 @@ export const downloadFile = async (req, res) => {
       return res.status(404).json({ message: "File tidak ditemukan" });
     }
 
+    if (isCloudinaryUrl(file.file_path)) {
+      await ActivityLogger.read(req, 'file_upload', `Download: ${file.file_name}`);
+      return res.redirect(file.file_path);
+    }
+
     const filePath = path.resolve(file.file_path);
-    
+
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ message: "File fisik tidak ditemukan" });
     }
 
     await ActivityLogger.read(req, 'file_upload', `Download: ${file.file_name}`);
-
-    res.download(filePath, file.file_name);
+    return res.download(filePath, file.file_name);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -176,9 +184,16 @@ export const deleteFile = async (req, res) => {
       return res.status(404).json({ message: "File tidak ditemukan" });
     }
 
-    const filePath = path.resolve(file.file_path);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (isCloudinaryUrl(file.file_path)) {
+      const publicId = extractPublicId(file.file_path);
+      if (publicId) {
+        await deleteFromCloudinary(publicId);
+      }
+    } else {
+      const filePath = path.resolve(file.file_path);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     }
 
     await ActivityLogger.delete(req, 'file_upload', file.file_name);

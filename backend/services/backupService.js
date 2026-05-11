@@ -13,6 +13,15 @@ const DB_HOST = process.env.DB_HOST || "localhost";
 const DB_USER = process.env.DB_USER || "root";
 const DB_PASSWORD = process.env.DB_PASSWORD || "";
 const DB_NAME = process.env.DB_NAME || "db_konseling";
+const isServerless = process.env.VERCEL === "1";
+const backupMode = process.env.BACKUP_MODE || "local";
+const isLocalBackupEnabled = !isServerless && backupMode === "local";
+
+const assertLocalBackupEnabled = () => {
+  if (!isLocalBackupEnabled) {
+    throw new Error("Backup lokal dinonaktifkan. Gunakan backup eksternal/CI.");
+  }
+};
 
 const ensureBackupDir = async () => {
   try {
@@ -25,6 +34,7 @@ const ensureBackupDir = async () => {
 
 const createDatabaseBackup = async () => {
   try {
+    assertLocalBackupEnabled();
     await ensureBackupDir();
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -91,6 +101,7 @@ const compressBackup = async (sqlFilePath) => {
 
 const restoreDatabaseBackup = async (backupFilePath) => {
   try {
+    assertLocalBackupEnabled();
     
     await fsPromises.access(backupFilePath);
 
@@ -142,6 +153,7 @@ const extractBackup = async (zipFilePath) => {
 
 const listBackups = async () => {
   try {
+    assertLocalBackupEnabled();
     await ensureBackupDir();
     
     const files = await fsPromises.readdir(BACKUP_DIR);
@@ -176,6 +188,7 @@ const listBackups = async () => {
 
 const cleanupOldBackups = async () => {
   try {
+    assertLocalBackupEnabled();
     const backups = await listBackups();
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - BACKUP_RETENTION_DAYS);
@@ -205,6 +218,7 @@ const cleanupOldBackups = async () => {
 
 const deleteBackup = async (fileName) => {
   try {
+    assertLocalBackupEnabled();
     const filePath = path.join(BACKUP_DIR, fileName);
     await fsPromises.unlink(filePath);
     console.log(`  Deleted backup: ${fileName}`);
@@ -216,6 +230,10 @@ const deleteBackup = async (fileName) => {
 };
 
 const scheduleAutomaticBackups = () => {
+  if (!isLocalBackupEnabled) {
+    console.log("Automatic backups are disabled in serverless/external mode.");
+    return;
+  }
   const cronSchedule = process.env.BACKUP_CRON_SCHEDULE || "0 2 * * *";
 
   cron.schedule(cronSchedule, async () => {

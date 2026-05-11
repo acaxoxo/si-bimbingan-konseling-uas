@@ -1,32 +1,7 @@
 import multer from "multer";
 import path from "path";
-import fs from "fs";
 
-const uploadDir = "./uploads";
-const profileDir = "./uploads/profiles";
-const documentDir = "./uploads/documents";
-
-[uploadDir, profileDir, documentDir].forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-});
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    if (file.fieldname === 'profile_photo') {
-      cb(null, profileDir);
-    } else {
-      cb(null, documentDir);
-    }
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    const nameWithoutExt = path.basename(file.originalname, ext);
-    cb(null, `${nameWithoutExt}-${uniqueSuffix}${ext}`);
-  }
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   

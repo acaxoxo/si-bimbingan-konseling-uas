@@ -6,8 +6,22 @@ import {
   deleteBackup,
 } from "../services/backupService.js";
 
+const isServerless = process.env.VERCEL === "1";
+const backupMode = process.env.BACKUP_MODE || "local";
+
+const ensureBackupEnabled = (res) => {
+  if (isServerless || backupMode !== "local") {
+    res.status(501).json({
+      message: "Backup lokal tidak tersedia. Gunakan backup eksternal/CI.",
+    });
+    return false;
+  }
+  return true;
+};
+
 export const createBackup = async (req, res) => {
   try {
+    if (!ensureBackupEnabled(res)) return;
     const result = await createDatabaseBackup();
     
     res.json({
@@ -25,6 +39,7 @@ export const createBackup = async (req, res) => {
 
 export const restoreBackup = async (req, res) => {
   try {
+    if (!ensureBackupEnabled(res)) return;
     const { fileName } = req.body;
 
     if (!fileName) {
@@ -55,6 +70,7 @@ export const restoreBackup = async (req, res) => {
 
 export const listAllBackups = async (req, res) => {
   try {
+    if (!ensureBackupEnabled(res)) return;
     const backups = await listBackups();
 
     res.json({
@@ -72,6 +88,7 @@ export const listAllBackups = async (req, res) => {
 
 export const downloadBackup = async (req, res) => {
   try {
+    if (!ensureBackupEnabled(res)) return;
     const { fileName } = req.params;
     const backups = await listBackups();
     const backup = backups.find((b) => b.fileName === fileName);
@@ -100,6 +117,7 @@ export const downloadBackup = async (req, res) => {
 
 export const deleteBackupFile = async (req, res) => {
   try {
+    if (!ensureBackupEnabled(res)) return;
     const { fileName } = req.params;
     
     const result = await deleteBackup(fileName);
@@ -119,6 +137,7 @@ export const deleteBackupFile = async (req, res) => {
 
 export const cleanupBackups = async (req, res) => {
   try {
+    if (!ensureBackupEnabled(res)) return;
     const result = await cleanupOldBackups();
 
     res.json({

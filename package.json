@@ -20,6 +20,7 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.10",
     "sequelize": "^6.37.7",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "cloudinary": "^2.5.1"
   }
 }

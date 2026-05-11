@@ -1,12 +1,43 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 
+const resolveCorsOrigins = () => {
+  const envOrigins = (process.env.FRONTEND_URLS || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  return [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    process.env.FRONTEND_URL,
+    ...envOrigins,
+  ].filter(Boolean);
+};
+
+const corsOrigin = (origin, callback) => {
+  if (!origin) return callback(null, true);
+
+  if (process.env.NODE_ENV === "development") {
+    return callback(null, true);
+  }
+
+  const allowedOrigins = resolveCorsOrigins();
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+
+  return callback(new Error("Not allowed by CORS"));
+};
+
 let io;
 
 export const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: ["http://localhost:5173", "http://localhost:3000"],
+      origin: corsOrigin,
       methods: ["GET", "POST"],
       credentials: true,
     },

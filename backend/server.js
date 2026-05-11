@@ -5,7 +5,6 @@ import http from "http";
 import db from "./config/database.js";
 import "./models/associations.js"; 
 
-dotenv.config();
 import GuruRoute from "./routes/GuruRoute.js";
 import KelasRoute from "./routes/KelasRoute.js";
 import SiswaRoute from "./routes/SiswaRoute.js";
@@ -29,8 +28,10 @@ import { initSocket } from "./services/socketService.js";
 import { verifyEmailConfig } from "./services/emailService.js";
 import { scheduleAutomaticBackups } from "./services/backupService.js";
 
-dotenv.config();
 const isVercel = process.env.VERCEL === "1";
+const socketMode = process.env.SOCKET_MODE || "local";
+const shouldSyncDb =
+  process.env.DB_SYNC === "true" || process.env.NODE_ENV === "development";
 export const app = express();
 export const server = http.createServer(app);
 
@@ -82,7 +83,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
-app.use('/uploads', express.static('uploads'));
+if (!isVercel) {
+  app.use('/uploads', express.static('uploads'));
+} else {
+  app.use('/uploads', (req, res) => {
+    res.status(410).json({
+      message: "Uploads are disabled on serverless. Use external storage.",
+    });
+  });
+}
 
 app.use("/api/", apiLimiter);
 
@@ -91,15 +100,22 @@ app.use("/api/", apiLimiter);
     await db.authenticate();
     console.log("Database connected successfully.");
 
-  await db.sync();
-    console.log("Semua model berhasil disinkronisasi.");
+    if (shouldSyncDb) {
+      await db.sync();
+      console.log("Semua model berhasil disinkronisasi.");
+    } else {
+      console.log("DB sync dilewati (set DB_SYNC=true untuk memaksa).");
+    }
 
     verifyEmailConfig();
 
-    if (!isVercel) {
+    if (!isVercel && socketMode !== "external") {
       initSocket(server);
 
-      if (process.env.ENABLE_AUTO_BACKUP !== "false") {
+      if (
+        process.env.ENABLE_AUTO_BACKUP !== "false" &&
+        (process.env.BACKUP_MODE || "local") === "local"
+      ) {
         scheduleAutomaticBackups();
       }
     }
@@ -142,3 +158,5 @@ if (!isVercel) {
     console.log(` WebSocket ready on ws://localhost:${PORT}`);
   });
 }
+
+export default app;
