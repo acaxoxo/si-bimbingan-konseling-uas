@@ -6,7 +6,7 @@
     "backend"
   ],
   "scripts": {
-    "build": "npm run build"
+    "build": "npm run build --prefix frontend"
   },
   "dependencies": {
     "archiver": "^7.0.1",
